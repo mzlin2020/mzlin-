@@ -3549,7 +3549,7 @@ SELECT * FROM products,brand
 
 完整写法：LEFT [OUTER] JOIN
 
-<img src="img/node/左连接.jpg" style="zoom:50%;" />
+<img src="img/node/左连接.jpg" style="zoom:80%;" />
 
 ```sql
 SELECT * FROM products LEFT JOIN brand ON products.brand_id = brand.id;
@@ -3564,7 +3564,7 @@ WHERE brand_id IS NULL;
 
 希望获取到的是右边的所有数据
 
-<img src="img/node/右连接.jpg" style="zoom:50%;" />
+<img src="img/node/右连接.jpg" style="zoom: 80%;" />
 
 ```sql
 SELECT * FROM products RIGHT JOIN brand on products.brand_id = brand.id;

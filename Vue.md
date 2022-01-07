@@ -536,7 +536,7 @@ diff的过程就是调用名为`patch`的函数，比较新旧节点，一边比
 
 1、`router.beforeEach`全局前置守卫：进入路由前
 
-2、`router.beforeResolve`全局解析守卫：在`beforeRouteEnte`r调用之后调用
+2、`router.beforeResolve`全局解析守卫：在`beforeRouteEnter`调用之后调用
 
 3、`router.afterEach`全局后置路由：进入路由后
 
@@ -896,12 +896,31 @@ PostCSS会给一个组件中所有DOM添加一个独一无二的动态属性data
 本质：hash模式本质上是改变`window.location`的href属性，可以直接赋值`location.hash`来改变href，但页面不发生刷新
 
 ```js
+//演示一
 setTimeout(() => {
     location.hash = 'home'
 }, 2000)
+//输出url: ..../#/home
+```
+
+```html
+//演示二
+<a href="#/home">change</a>
+<!-- URL: .../#/home-->
 ```
 
 特点：hash虽然出现在URL中，但不会被包括在HTTP请求中，对后端完全没有影响，因此改变hash不会重新加载页面
+
+
+
+监听路由的改变
+
+```js
+window.addEventListener("hashchange", () => {
+    console.log(location.hash)
+    //可以在这里做出路由改变后的操作，比如url改变后，页面怎么变化。（这就是前端路由的原理）
+})
+```
 
 
 

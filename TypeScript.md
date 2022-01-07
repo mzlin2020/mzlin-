@@ -239,14 +239,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 
 ```ts
-let message:string = "hello world;"
+let message:string = "hello world"
 ```
 
 注：string是小写的，大小写有很大的区别。
 
 string是typescript中定义的字符串类型，String是es定义的字符串包装类
-
-
 
 **类型推断**
 
@@ -258,7 +256,28 @@ let foo = "foo" //这里foo默认的类型为string
 foo = 123 //报错
 ```
 
+所以在开发中，实际上可以省略一些类型注解不屑
 
+**number类型**
+
+number类型不区分整数与浮点数。
+
+```js
+let num1:number = 100 //10进制
+let num2:number = 0b111
+let num3:number = 0o111 //8进制
+let num4:number = 0x100
+```
+
+
+
+**boolean类型**
+
+```js
+let bool:let bool:boolean = false
+//或者
+let bool2:boolean = 20 > 30
+```
 
 **数组类型的定义**
 
@@ -269,16 +288,37 @@ foo = 123 //报错
 const names1:string[] = ["12","13","15","16"] //推荐
 
 //方式二：
-const names2:Array<string> = ["12","23","32","54"] //不推荐（与jsx有冲突）
+const names2:Array<string> = ["12","23","32","54"] //泛型写法，不推荐（与jsx有冲突）
 ```
 
-这样子定义后，当向name1，name2添加其他类型时，会直接报错
+这样子定义后，当向name1，name2只能添加字符串类型的元素，添加其他类型时，会直接报错
+
+**其他数据类型**
+
+1、定义对象，直接让其自动类型推导
+
+2、null类型，只有一个值就是null，`let n:null = null`
+
+3、undefined类型，只有一个值就是undefined，`let un:undefined = undefined`
+
+4、symbol类型
+
+```js
+let s1:symbol = Symbol("title")
+let s2:symbol = Symbol("title")
+let obj = {
+  [s1]:"hello",
+  [s2]: "world"
+}
+```
 
 
 
 ### 3.2 ts中的数据类型
 
-**any类型**
+前面提到的类型都是js中已有的，后面介绍的就是ts特有的了
+
+**1、any类型**
 
 在某些情况下，我们确实无法确定一个变量的类型，并且可能它会发生一些变化，这个时候我们可以使用any类型
 
@@ -294,7 +334,7 @@ a = true;
 
 因为any太过于灵活，频繁使用会使得代码变得不安全。
 
-**unknown类型**
+**2、unknown类型**
 
 unknown是ts中比较特殊的一种类型，它用于描述类型不确定的变量。
 
@@ -318,9 +358,20 @@ if (flag) {
 //所以最好类型限制使用unknown
 ```
 
+注：unknown类型只能赋值给any和unknown类型（any可以赋值给任意类型的数据）
+
+```js
+let a:unknown
+let str:string = a //报错（因为a是不确定的）
 
 
-**void类型**
+let a:any 
+let str:string = a //不报错
+```
+
+
+
+**3、void类型**
 
 void通常用来指定一个函数是没有返回值的，那么它的返回值就是viod类型；
 
@@ -342,7 +393,7 @@ function sum(num1:number, num2:number):void {
 
 
 
-**never类型**
+**4、never类型**
 
 never表示永远不会发生值的类型，比如一个函数：
 
@@ -352,7 +403,6 @@ never表示永远不会发生值的类型，比如一个函数：
 function bar ():never{
     while(true) {
         console.log("死循环");
-        
     }
 }
 ```
@@ -377,7 +427,9 @@ console.log(name.length);
 
 元组的定义：
 
-`const info:[string,number,number] = ['ming', 20, 1.99]`
+元组允许我们传入不同类型的数据作为其元素
+
+例：	`const info:[string,number,number] = ['ming', 20, 1.99]`
 
 
 
@@ -399,8 +451,9 @@ console.log(name.length);
 	function sum(num1:number,num2:number):number {
         return num1 + num2
     }
-	//不过，在开发中，通常情况下可以不写返回值的类型（会自动推导）
 ```
+
+不过，在开发中，通常情况下可以不写返回值的类型（会自动推导）
 
 
 
@@ -482,7 +535,7 @@ typescript的类型系统允许我们使用多种运算符，从现有类型中�
 
 ```ts
     function printID(id: number|string|boolean) {
-        if(typeof id === 'string') {
+        if(typeof id === 'string') {//类型缩小
             console.log(id.toUpperCase()); //不会报错，ts会帮助我们确定id是个string类型
         } else {
             console.log(id);
@@ -497,7 +550,6 @@ typescript的类型系统允许我们使用多种运算符，从现有类型中�
 ```ts
     function foo(message?:string) {
         console.log(message);
-        
     }
     foo()
 ```
@@ -563,6 +615,7 @@ function printID(id: number|string|boolean) {}
 	function printMessageLength(message?:string) {
         console.log(message.length); //在没有tsconfig.json文件时，不报错，但是编译不通过
     }
+//因为message可能为undefined
 ```
 
 因为我们使用的ts-node在运行时，会在内部检测tsconfig.json的配置
@@ -583,6 +636,7 @@ function printID(id: number|string|boolean) {}
     function printMessageLength(message?:string) {
         console.log(message!.length);     
     }
+//保证message一定有值
 ```
 
 
@@ -623,11 +677,13 @@ console.log(content);  //输出：i do not like you
 
 **4、字面量类型**
 
+字面量类型必须与其值保持一致
+
 ```ts
 // "hello woeld"也是可以作为类型的，叫做字面量类型
 const message:"hello world" = "hello world"
-
 let num:123 = 123
+
 num = 321 //报错
 ```
 
@@ -649,10 +705,10 @@ align = 'center'
 
 类型缩小：在给定的执行路径中，我们可以缩小比声明时更小的类型，这个过程称之为缩小。
 
-而我们编写额度 `typeof 参数 === number`等判断语句，可以称之为类型保护。
+而我们编写的 `typeof 参数 === number`等判断语句，可以称之为类型保护。
 
 常见的类型保护有如下几种：
-1、typeog   
+1、typeof
 
 2、平等缩小
 
@@ -749,7 +805,7 @@ console.log(res2);
 在ts中，如果我们编写一个add函数，希望可以对字符串和数字类型进行相加，应该如何编写呢？
 
 ```ts
-//错误写法：联合类型
+//报错写法：联合类型（因为两个联合类型不能实现相加）
 function sum(a1:number|string,a2:number|string) :number|string {
     return a1 + a2
 }
@@ -757,18 +813,20 @@ function sum(a1:number|string,a2:number|string) :number|string {
 
 那么应该怎么编写呢？
 
+可以通过类型缩小来解决，或者使用函数重载
+
 在ts中，我们可以编写不同的重载签名来表示函数可以以不同的方式进行调用。一般是编写两个或者以上重载签名，再去编写一个通用的函数以及实现
 
 ```ts
-function add(num1:number,num2:number) :number; //没有函数体
-function add(num1:string,num2:string) :string; //没有函数体
+function add(num1:number,num2:number) :number; //只定义，没有函数体
+function add(num1:string,num2:string) :string; //只定义，没有函数体
 
 function add(num1:any,num2:any) :any {
     return num1 + num2
 }
 
-const res = add(20,30)
-const res2 = add('abc','bca')
+const res = add(20,30) //匹配第一个定义
+const res2 = add('abc','bca') //匹配第二个定义
 
 console.log(res,res2);
 ```
@@ -882,10 +940,11 @@ function turnDirection (direction:Direction) {
         case Direction.BOTTOM:
             console.log("转向下边~");
             break;
-        default:
+        default: //必须把所有的选项每应用一次，否则报错
             const muDirection:never = direction;
     }
 } 
+turnDirection(Direction.LEFT)
 ```
 
 
@@ -1142,7 +1201,13 @@ console.log(p.name);
 
 ### 5.1 接口的声明
 
-在前面我们通过type可以声明一个对象类型
+
+
+**声明对象类型**
+
+声明对象的两种方式：1、type别名 2、interface接口
+
+1、在前面我们通过type类型别名来声明一个对象类型
 
 ```ts
 type InfoType = { name:string, age:number }
@@ -1152,21 +1217,27 @@ const info:InfoType = {
 }
 ```
 
-对象的另一种声明方式就是通过接口来声明
+**2、对象的另一种声明方式就是通过接口来声明**
 
 ```ts
 //接口中可以定义可选类型，也可以定义只读类型
 interface InfoType {
-    name:string
-    age:number
+    name:string,
+    age?:number,
+	readonly phoneNum: number //只读
 }
 const info:InfoType = {
     name:"ming",
-    age:22
+    age:22,
+    phoneNum: 123321
 }
 ```
 
+注：在开发中接口的名称按惯例会加一个大写的`I`字母，指明它是一个接口
 
+
+
+**索引类型**
 
 我们可以通过接口来统一定义对象的属性值，跟属性名的具体类型
 
@@ -1181,8 +1252,32 @@ const frontLanguage:IndexLanguage = {
     1:"CSS",
     2:"javaScript",
     3:"vue"
-    //定义其他类型直接报错
 }
+```
+
+
+
+**函数类型**
+
+接口也可以用来声明一个函数
+
+`interface I函数类型名 { (参数): 返回值 }`
+
+```ts
+interface IcalcFn {
+  //(参数)：返回值
+  (n1:number, n2:number) :number
+}
+
+const fn:IcalcFn = function(n1,n2) {
+  return n1 + n2
+}
+```
+
+不过这样子可读性不好，建议定义函数类型时仍然使用type别名的方式
+
+```ts
+type calcFn = (n1:number, n2:number) => number
 ```
 
 
@@ -1204,7 +1299,7 @@ interface Iaction extends Iswim,Ifly {}  //可实现多继承
 const action :Iaction = {
     swimming(){},
     flying(){}
-}
+}	
 ```
 
 
@@ -1247,9 +1342,33 @@ const student= {  //一般的对象写法
 const p:IPerson = student  //字面量赋值
 ```
 
-这是因为ts在字面量直接赋值的过程中，为了进行类型推导会进行严格的类型限制。党史之后我们将一个变量标识符赋值给其他变量时，会进行freshness擦除操作（这里就把address擦除了）
+这是因为ts在字面量直接赋值的过程中，为了进行类型推导会进行严格的类型限制。但是之后我们将一个变量标识符赋值给其他变量时，会进行freshness擦除操作（这里就把address擦除了）
 
 
+
+### 5.4 interface和type的区别
+
+interface和type都可以用来定义对象类型，那么在开发中应该选择哪一个呢？
+
+1、如果定义非对象类型，推荐使用type
+
+2、如果定义对象类型，这两者之间是有区别的（interface可以重复定义，type定义不能重复）
+
+```ts
+interface Iaction {
+  runnig: () => void
+}
+interface Iaction {
+  eating: () => void
+}
+//重复定义不会报错，也不会后者覆盖前者，而是做了一次合并
+const obj:Iaction = {
+  runnig() {},
+  eating() {}
+}
+```
+
+但是如果是type，定义同样的别名立即报错
 
 ## 六、泛型
 
@@ -1275,8 +1394,8 @@ foo<any[]>(["aaa"])   //告知参数是数组
 
 
 // 调用方式二：类型推导
-foo(50)  //推导出来，参数类型为50
-foo("hello")  //参数类型为hello
+foo(50)  //推导出来，参数类型为50（字面量类型）
+foo("hello")  //参数类型为hello（字面量类型）
 ```
 
 
@@ -1308,6 +1427,20 @@ const p:IPerson<string,number> = {
 }
 ```
 
+这里也可以给泛型接口一个默认值
+
+```tsx
+interface IType<T1 = string,T2 = number> { //默认值
+  name: T1,
+  age: T2
+}
+
+const obj:IType = {
+  name: 'linming',
+  age: 22
+}
+```
+
 
 
 **泛型类的使用**
@@ -1332,6 +1465,14 @@ const p3:Point<string> = new Point("1.33.2","2.22.3","3.33.4")
 
 
 **泛型的类型约束**
+
+```ts
+function getLength<T>(arg:T) {
+    console.log(arg.length)
+}
+```
+
+这种写法是不严谨的，因为可能传入的参数是数值，数值是没有length方法的。这个时候就有必要对泛型的类型进行约束
 
 ```ts
 interface ILength {

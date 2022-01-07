@@ -955,7 +955,7 @@ vNode不只是一个简单的div，而是有一大堆的元素，那么它们应
         watch: {
             info(newValue,oldValue){
                 console.log('新值',newValue,'旧值',oldValue);
-            }
+            }	
         },
         methods:{
             changeInfo(){
@@ -2911,7 +2911,7 @@ v-slot ：替换为字符#
 
 2、子模板里所有的内容都是在子作用域中编译的
 
-```javascript
+```vue
 //NavBar.vue
     <div class="nav-bar">
         <slot>我是左边</slot>
@@ -2930,7 +2930,7 @@ v-slot ：替换为字符#
 
 **6、作用域插槽**
 
-```javascript
+```vue
 //App.vue
   data () {
     return {
@@ -2946,7 +2946,7 @@ v-slot ：替换为字符#
   </slot-area>
 ```
 
-```javascript
+```vue
 //SlotArea.vue
     <template v-for="(item,index) in arr" >
          <slot :item="item" :index="index"></slot>
@@ -5330,8 +5330,6 @@ boolean值：默认是false。如果设置为true，那么在刷新时，不会�
 
 `npm install vuex@next`
 
-
-
 ### 12.2 state
 
 
@@ -5352,7 +5350,7 @@ boolean值：默认是false。如果设置为true，那么在刷新时，不会�
 
 ```javascript
 //store/index.js
-import {createStore} from 'vuex'
+import { createStore } from 'vuex'
 
 const store = createStore({
     state() {

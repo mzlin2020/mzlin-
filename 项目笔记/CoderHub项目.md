@@ -1217,7 +1217,7 @@ useToken.get('/demo',(ctx,next) => {
 
 ### 3.7 为接口添加token
 
-在verifyLogin中间间的代码中，我们获取了数据库中user的相关信息。（表明了用户登录成功），将其保存在ctx.user中，方面在login中生成token
+在verifyLogin中间间的代码中，我们获取了数据库中user的相关信息。（表明了用户登录成功），将其保存在ctx.user中，方便在login中生成token
 
 ```js
 const jwt = require('jsonwebtoken')
