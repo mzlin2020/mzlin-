@@ -1,6 +1,6 @@
 # vue3笔记
 
-vue是一套构建用户界面的渐进式框架！
+Vue是一套构建用户界面的渐进式框架。
 
 ## 一、初识Vue3
 
@@ -4930,10 +4930,10 @@ const routes = [
     { path: '/about', 
       redirect: About,
       name:"about-page",
-     meta:{
+      meta:{
          name:"linming",   //这些属性都可通过this.$route获取到
          age:18
-     }
+      }
     }
 ]
 

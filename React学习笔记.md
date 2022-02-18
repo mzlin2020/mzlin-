@@ -2327,7 +2327,7 @@ test`my name is ${name}, age is ${age}`;
 1、基本使用
 
 ```jsx
-import  styled from 'styled-components'
+import styled from 'styled-components'
 
 const StyleWrapper = styled.div`
   font-size: 30px;
@@ -2406,7 +2406,7 @@ const StyleInput = styled.input`
 
 方式二：添加到attribute属性中
 
-用法：`styled.inout.attrs`返回一个函数，所以可以实现链式调用
+用法：`styled.input.attrs`返回一个函数，所以可以实现链式调用
 
 ```jsx
 const StyleInput = styled.input.attrs({
@@ -3239,7 +3239,7 @@ redux-thunk可以让dispatch(对象)，可以接收一个函数作为参数。
 
 安装：`yarn add redux-thunk`
 
-<img src="react-img/redux异步操作.jpg" style="zoom:50%;" />
+<img src="img/react-img/redux异步操作.jpg" style="zoom:50%;" />
 
 **具体使用步骤**
 
@@ -3961,8 +3961,6 @@ useEffect是一个hook，传入一个回调函数。这个回调函数会在组�
 
 
 
-
-
 **模拟实现生命周期的功能**
 
 在effect hook中可以模拟实现componentDidMount和componentDidUpdate的功能
@@ -4154,7 +4152,7 @@ export default function UseRefHook() {
 
 ```
 
-这个hook可以访问组件（但是不能访问函数组件，访问直接报错）
+这个hook可以访问类组件（但是不能访问函数组件，访问直接报错）
 
 ```jsx
 // 类组件
@@ -4215,15 +4213,143 @@ export default function UseRefSaveData() {
 
 
 
+## 四、React SSR
+
+### 4.1 SPA的弊端
+
+**为什么需要SSR？**
+
+因为单页面富应用的局限性。
+
+在开发程序的过程中采用spa的方式，浏览器是怎么执行代码的
+
+```js
+// 1、请求index.html
+// 2、下载js等资源
+// 3、执行js代码
+// 4、发送网络请求获取数据
+// 5、继续执行js代码，并将请求到的数据填充到index.html中
+// 6、展示页面
+```
+
+所以，最终整个应用只有一个html文件。
+
+由此产生了两个严重的问题：
+
+1、首屏显示的速度较慢
+
+2、不利于SEO
+
+
+
+**为什么不利于SEO呢**
+
+因为许多搜索引擎直接就是只检索index.html页面，而不会等js代码执行完毕后在执行检索。
+
+此时检索出来的index.html是基本没有什么关键词的
+
+我们可以利用postman来看看一个没有执行js等资源的index.html是什么样子
+
+```js
+120.25.202.60:8888
+```
+
+```js
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<link rel="icon" href="/favicon.ico">
+	<title>找直播网红后台系统</title>
+	<link href="/css/chunk-0000611c.4e123bba.css" rel="prefetch">
+	<link href="/css/chunk-21cbafe4.1734b55c.css" rel="prefetch">
+	<link href="/css/chunk-2256714a.835e8b5e.css" rel="prefetch">
+	<link href="/css/chunk-24143e1e.a0aad18f.css" rel="prefetch">
+	<link href="/css/chunk-2791b526.da146432.css" rel="prefetch">
+	<link href="/css/chunk-476dbc9a.8603e9a9.css" rel="prefetch">
+	<link href="/css/chunk-56455a2a.a9a55b6c.css" rel="prefetch">
+	<link href="/css/chunk-9574d16c.42c373b7.css" rel="prefetch">
+	<link href="/css/chunk-9d3a2c4c.c9115805.css" rel="prefetch">
+	<link href="/css/chunk-d786db44.46cd7e9a.css" rel="prefetch">
+	<link href="/js/chunk-0000611c.296e68ce.js" rel="prefetch">
+	<link href="/js/chunk-21cbafe4.2992b648.js" rel="prefetch">
+	<link href="/js/chunk-2256714a.297ab406.js" rel="prefetch">
+	<link href="/js/chunk-24143e1e.88519606.js" rel="prefetch">
+	<link href="/js/chunk-2791b526.b6fe96f0.js" rel="prefetch">
+	<link href="/js/chunk-2d0ae507.4bcecfe1.js" rel="prefetch">
+	<link href="/js/chunk-2d0bce34.3d8af904.js" rel="prefetch">
+	<link href="/js/chunk-476dbc9a.c0f6d035.js" rel="prefetch">
+	<link href="/js/chunk-56455a2a.a95003c4.js" rel="prefetch">
+	<link href="/js/chunk-9574d16c.b93cee82.js" rel="prefetch">
+	<link href="/js/chunk-9d3a2c4c.ff6bdc1d.js" rel="prefetch">
+	<link href="/js/chunk-d786db44.7cb9b4a8.js" rel="prefetch">
+	<link href="/css/app.0e139c77.css" rel="preload" as="style">
+	<link href="/css/chunk-vendors.834272ee.css" rel="preload" as="style">
+	<link href="/js/app.1e9cfc71.js" rel="preload" as="script">
+	<link href="/js/chunk-vendors.a4d945e4.js" rel="preload" as="script">
+	<link href="/css/chunk-vendors.834272ee.css" rel="stylesheet">
+	<link href="/css/app.0e139c77.css" rel="stylesheet">
+</head>
+
+<body>
+	<noscript><strong>We're sorry but ic_lechouchou doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript>
+	<div id="app"></div>
+	<script src="/js/chunk-vendors.a4d945e4.js"></script>
+	<script src="/js/app.1e9cfc71.js"></script>
+</body>
+
+</html>
+```
+
+
+
+所以，为了提高首屏加载速度、提供网站搜索排名，我们需要SSR
+
+
+
+### 4.2 SSR基本认识
+
+SSR（Server Side Rendering，服务端渲染），指的是页面在服务端已经生成了完整的HTML页面结构，不需要浏览器解析。与SSR对应的就是CSR（Client Side Rendering，客户端渲染），即SPA页面通常就是CSR
+
+
+
+早期的服务端渲染包括PHP、JSP、ASP等方式。
+
+在目前前后端分离的开发模式下，我们可以借助于在利用Node来帮助我们执行js代码，提前完成页面的渲染
+
+
+
+**什么是同构**
+
+一套代码既可以在服务端运行又可以在客户端运行，这就是同构应用。同构是一种SSR的形态。当用户发出请求时，现在服务器通过SSR渲染出首页的内容，对应的代码同样也可以在客户端被执行，执行的目的包括事件绑定等以及其他页面切换时也可以在客户端被渲染
 
 
 
 
 
+### 4.3 react的SSR
+
+目前react比较成熟的服务端渲染方案是`next.js`，而vue是`nuxt.js`
+
+我们可以来体验一下`next.js`
 
 
 
+```js
+//安装
+npm install –g create-next-app
 
+//创建项目
+create-next-app next-demo
+
+//运行项目
+yarn dev
+```
+
+一个文件就是一个页面，在pages下增加一个页面，就可以不用配置路由，直接通过`ip/文件名`访问到
 
 
 

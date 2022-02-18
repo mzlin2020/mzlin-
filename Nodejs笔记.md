@@ -3199,7 +3199,6 @@ ALTER TABLE `teacher22` DROP `age`;
 其他操作
 
 ```sql
-
 #根据一个表结构与创建另外一张表
 CREATE TABLE `teacher` LIKE `student`;
 
