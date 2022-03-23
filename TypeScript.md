@@ -256,7 +256,7 @@ let foo = "foo" //这里foo默认的类型为string
 foo = 123 //报错
 ```
 
-所以在开发中，实际上可以省略一些类型注解不屑
+所以在开发中，实际上可以省略一些类型注解不写
 
 **number类型**
 
@@ -274,7 +274,7 @@ let num4:number = 0x100
 **boolean类型**
 
 ```js
-let bool:let bool:boolean = false
+let bool:boolean = false
 //或者
 let bool2:boolean = 20 > 30
 ```
@@ -1239,7 +1239,7 @@ const info:InfoType = {
 
 **索引类型**
 
-我们可以通过接口来统一定义对象的属性值，跟属性名的具体类型
+可以通过接口来统一定义对象的属性值，跟属性名的具体类型
 
 ```ts
 // 通过interface来定义索引类型
@@ -1306,7 +1306,7 @@ const action :Iaction = {
 
 ### 5.3 字面量赋值
 
-来看下面的代码
+下面的代码
 
 ```ts
 interface IPerson {
@@ -1374,7 +1374,7 @@ const obj:Iaction = {
 
 软件工程的主要目的是构建不仅仅明确和一致的API，还要让代码具有很强的可重用性：
 
-比如我们可以通过函数来封装一些API，通过传入不同的函数参数，让函数帮助我们完成不同的操作。但是对于参数的类型是否也可以参数化呢？
+比如可以通过函数来封装一些API，通过传入不同的函数参数，让函数帮助我们完成不同的操作。但是对于参数的类型是否也可以参数化呢？
 
 
 
@@ -1494,7 +1494,7 @@ getLength({length:100})
 
 
 
-**类型的查找**
+**1、类型的查找**
 
 typescript会在哪里查找我们的类型声明呢？
 
@@ -1513,7 +1513,6 @@ import axios from 'axios'
 
 axios.get("接口").then(res => {
     console.log(res);
-    
 })
 ```
 
@@ -1535,7 +1534,7 @@ import lodash from 'lodash'
 //创建ming.d.ts
 
 declare module 'lodash' {
-    export function join(arr:ant[]):void
+    export function join(arr:any[]):void
 }
 ```
 
@@ -1545,13 +1544,42 @@ import lodash from 'lodash'  //这次不报错了
 console.log(lodash.join(["111","222"]))
 ```
 
+`.d.ts文件`，它是用来做类型声明的，它仅仅用来做类型检测，告知ts我们有哪些类型。该文件会自动检测，不需要引用
+
 
 
 方式二：通过社区的一个公有库DefinitelyTyped存放类型声明文件
 
 在`https://www.typescriptlang.org/dt/search?search=`查找该库的另外一种安装方式，这种安装方式默认添加了声明
 
+假设以上两个方式都没有相关的声明文件，那么就需要自己编写了
 
+
+
+**2、自己编写.d.ts文件**
+
+当我们在使用lodash这个库时，会发现该库的源码中没有声明类型，这意味着如下代码会报错
+
+```js
+import lodash form 'lodash' //报错
+```
+
+所以，当我们通过公有库DefinitelyTyped查找不到已经编写好的文件的时候，就需要自己编写了
+
+```js
+//lodash.d.ts
+//声明模块（也可以声明变量、函数、类）
+declare module 'lodash' {}
+```
+
+这样就解决了，我们使用其中的方法时，都需要进行声明
+
+```js
+// lodash.d.ts
+declare module 'lodash' {
+    export function join(arr: any[]): void
+}
+```
 
 
 
@@ -1581,12 +1609,14 @@ console.log(lodash.join(["111","222"]))
 ```js
 //ming.d.js
 
-// 声明变量/函数/类
+// 声明变量
 declare let name:string
 declare let age:number
 
+// 声明函数
 declare function foo():void
 
+//声明类
 declare class Person {
     name:string
     age:number
@@ -1606,4 +1636,70 @@ foo()
 const p = new Person("linming",23)
 console.log(p);
 ```
+
+
+
+如果在项目中引用了一张图片，也需要进行声明
+
+```js
+import myImage from './img/myImage.jpg' //报错
+
+//解决办法:声明该引用内容的类型
+//声明文件
+declare module '*.jpg'
+```
+
+
+
+**3、命名空间**
+
+在一个模块文件中是不允许有同名的代码的，如下
+
+```js
+function format(price: string) {
+    console.log(price)
+  }
+
+function format(time: number) {
+  console.log(time)
+```
+
+即使是不同功能的format函数，还是会报错
+
+
+
+ts提供了内部的命名空间，允许我们使用同名的对象、变量等
+
+```js
+namespace price {
+  export function format(price: string) {
+    console.log(price)
+  }
+  export const name:string = 'linming'
+}
+
+namespace time {
+  export function format(time: number) {
+    console.log(time)
+  }
+}
+
+// 访问
+price.format('22元')
+console.log(price.name)
+```
+
+
+
+当然如果想要这个命名空间能够被外部的文件使用，同样需要将命名空间导出`export namespace`
+
+**4、//@ts-ignore**
+
+ `// @ts-ignore`注释会忽略下一行中产生的所有错误 
+
+
+
+
+
+
 

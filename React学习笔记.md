@@ -69,7 +69,7 @@ react是一个构建用户界面的JavaScript库
 	ReactDOM.render(
 	<div>
     	<h2>{message}</h2> 
-    	<button onClick={btnClick}>change</button>
+            <button onClick={btnClick}>change</button>
     </div>,
     document.getElementById("app"))
 </script>
@@ -444,21 +444,21 @@ const element =
 ### 2.4 JSX绑定事件
 
 ```jsx
-    class App extends React.Component {
-      constructor() {
+class App extends React.Component {
+    constructor() {
         super()
-      }
-      render() {
-        return (
-          <div>
-            <button onClick={this.btnClick}>按钮</button>
-          </div>
-        )
-      }
-      btnClick() {
-        console.log("发生了点击")
-      }
     }
+    render() {
+        return (
+            <div>
+                <button onClick={this.btnClick}>按钮</button>
+            </div>
+        )
+    }
+    btnClick() {
+        console.log("发生了点击")
+    }
+}
 ```
 
 **事件处理程序中的this**
@@ -721,9 +721,9 @@ React.createElement(
 
 我们通过上方的`React.createElement`最终创建出来的就是一个`ReactElement`对象，而它就是所谓的虚拟DOM
 
-验证
+验证	
 
-```js
+```jsx
       render() {
         const CreateElement = (
           <div>
@@ -770,7 +770,7 @@ react的包管理工具是yarn
 npm install yarn -g
 ```
 
-![](react-img/yarn常用命令.jpg)
+![](img/react-img/yarn常用命令.jpg)
 
 
 
@@ -976,7 +976,7 @@ export default function App() {
 
 当render函数被调用时，它会检查this.props和this.state的变化并返回以下类型之一：
 
-1、react元素（通过就是JSX）
+1、react元素（通常就是JSX）
 
 2、数组或者fragments（使得render方法可以返回多个元素）
 
@@ -1000,7 +1000,7 @@ React组件有自己的生命周期，了解组件的生命周期可以让我们
 
 3、componentWillUnmount函数：组件即将移除时，就会回调
 
-![](react-img/react生命周期.jpg)
+![](img/react-img/react生命周期.jpg)
 
 
 
@@ -1147,7 +1147,7 @@ class Cpn extends Component {
   render() {
     const { name, age, address } = this.props
     return (
-      <div>
+      <div>	
         { name + " " + age + " " + address }
       </div>
     )
@@ -1758,6 +1758,8 @@ export default class App extends PureComponent {
 
 4、立即获取到setState更新后的数据
 
+setState的第二个参数是一个回调函数，会等到数据发生更新后调用
+
 类似于vue中的nexttick方法，即上方的案例中，message改变了，想要获取到更新后的值而非更新前的值
 
 ```jsx
@@ -1841,7 +1843,7 @@ this.state = {
 
 **结论**：要保证state中复杂数据的不可变性，特别是处理深层嵌套数据时
 
-在开发中，为了提升性能，经常会使用`shouldComponentUpdate`，或者`PureComponent`。这种情况下通过`setState`直接改变`state`中的复杂数据将会直接导致失效
+在开发中，为了提升性能，经常会使用`shouldComponentUpdate`，或者`PureComponent`。这种情况下通过`setState`直接改变`state`中的复杂数据将会直接导致失效。
 
 ```jsx
 export default class App extends Component {
@@ -2278,6 +2280,66 @@ export default class App extends PureComponent {
   color: #aaa;
 }
 ```
+
+
+
+React 脚手架搭建出来的项目，只有 `.module.css` 支持模块化。
+
+ 实际上 CSS Modules 推荐的命名是驼峰式，这样可以直接通过`style.className`访问到，如果是使用连接符的类名就需要改为如下形式
+
+```jsx
+import styles from './App.module.css';
+
+// ...
+<header className={styles['App-header']}></header>
+```
+
+默认情况下，我们添加的类名会根据特定的规则（可以修改）生成相应的类名
+
+```jsx
+//如上header会被渲染为
+<header class='App-App-header-XMDSK'></header>
+```
+
+
+
+全局作用域`:global`，在css modules中也可以像使用普通的`.css`文件一样使用类名，直接添加样式
+
+```css
+:global(.className) {
+  color: #61dafb;
+}
+```
+
+
+
+class组合，一个选择器可以继承另外一个选择器的规则
+
+```css
+.font-red {
+  color: red;
+}
+
+.App-header {
+  composes: font-red;
+}
+```
+
+甚至可以继承其他`module.css`文件的样式
+
+```css
+/*another.module.css*/
+.font-blue {
+  color: blue;
+}
+
+/*App.module.css*/
+.App-header {
+  composes: font-blue from './another.module.css';
+}
+```
+
+
 
 
 
@@ -3430,7 +3492,7 @@ BrowserRouter使用history模式，HashRouter使用hash模式
 
 2、Link和NavLnik
 
-通常路径的跳转是使用Link组件，最终会被渲染成a元素；
+通常路径的跳转是使用Link组件，但最终会被渲染成a元素；
 
 NavLink是Link基础上增加了一些样式属性；
 
@@ -3444,7 +3506,7 @@ path属性用于设置匹配到的路径；
 
 component属性：设置匹配到的路径后，渲染的组件
 
-exact：精准匹配，只有精准匹配到完全一直的路径，才会渲染对应的组件
+exact：精准匹配，只有精准匹配到完全一致的路径，才会渲染对应的组件
 
 ```jsx
     return (
@@ -3460,7 +3522,6 @@ exact：精准匹配，只有精准匹配到完全一直的路径，才会渲染
         </BrowserRouter>
       </div>
     );
-
 ```
 
 
@@ -3606,7 +3667,7 @@ export default class about extends PureComponent {
 
 问题1：我们要怎么实现改变url呢？这里并不提供vue中那样的router对象，也不能直接访问到history对象
 
-其实这里about组件是被路由创建的`<Route path="/about" component={about} />`，在创建about组件时，react-router往组件中的props中传递了一个history对象，我们可以利用这个对象实现跳转
+其实这里about组件是被路由创建的`<Route path="/about" component={about} />`，在创建about组件时，react-router往组件中的props中传递了一个history对象，我们可以利用这个对象实现跳转。
 
 ```jsx
   ToJoinUs() {
@@ -3614,14 +3675,13 @@ export default class about extends PureComponent {
       console.log(this.props.history)
       this.props.history.push('/about/joinus')
   }
-
 ```
 
 
 
 问题2：但是App组件不是路由创建，里边没有history属性，要怎么实现自定义tag跳转？
 
-要是App组件拥有props属性，可以将APP组件包裹在一个withRouter高阶组件中，而withRouter组件有需要包裹在Router组件内
+要是App组件拥有props属性，可以将APP组件包裹在一个withRouter高阶组件中，而withRouter组件有需要包裹在Router组件内	
 
 所以需要修改一下代码
 
@@ -4084,8 +4144,6 @@ export default function UseContext() {
     </div>
   )
 }
-
-
 ```
 
 

@@ -2632,7 +2632,7 @@ app.use((ctx,next) => {
         }
     }else {
         ctx.response.body = "other requres~"
-    }q
+    }
 })
 
 app.listen(8080,() => {
@@ -2846,6 +2846,46 @@ app.listen(8080,() => {
 ```
 
 
+
+### 11.6 补充
+
+1、`app.use()`返回this，因此可以链式调用
+
+> app.use(中间件).use(中间件)
+
+2、`app.context()`可以为ctx添加其他属性
+
+> app.context.mynane = 'mzlin'
+
+3、打印`ctx.response`
+
+> {
+>   status: 404,
+>   message: 'Not Found',
+>   header: [Object: null prototype] {},
+>   body: undefined
+> }
+
+4、打印`ctx.request`
+
+> {
+>   method: 'GET',
+>   url: '/路径',
+>   header: {
+>     authorization: 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ...(略)',
+>     'content-type': 'application/json',
+>     'user-agent': 'PostmanRuntime/7.29.0',
+>     accept: '*/*',
+>     'cache-control': 'no-cache',
+>     'postman-token': 'a6e85566-ea0f-49fb-9f84-adf91299373d',
+>     host: '127.0.0.1:8888',
+>     'accept-encoding': 'gzip, deflate, br',
+>     connection: 'keep-alive',
+>     'content-length': '81'
+>   }
+> }
+
+5、`ctx.res与ctx.req`分别指的是Node的response对象与request对象，而`ctx.response与ctx.requst`指的是koa的
 
 ## 十二、mysql
 
