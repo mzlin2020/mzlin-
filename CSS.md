@@ -387,6 +387,12 @@ resize事件也会引起回流
 
 ### 8、@import和link
 
+```css
+/*这两种相同 */
+@import url(./style.css);
+@import "./style.css";
+```
+
 1、link 是 HTML 标签，除了能导入 CSS 外，还能导入别的资源，比如图片、脚本和字体等；而 @import 是 CSS 的语法，只能用来导入 CSS；
 
 2、link 导入的样式会在页面加载时同时加载，@import 导入的样式需等页面加载完成后再加载（可能导致页面闪烁）；
@@ -506,6 +512,270 @@ opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了
 
 
 ### 14、css定位
+
+
+
+
+
+### 15、继承性
+
+**1、css的某些属性具备继承性**
+
+如果一个css属性具备继承性，那么在该元素上设置后，它的后代元素都可以继承这个属性。
+
+但是如果后代元素自己有设置该属性，那么优先使用后代元素自己的属性（不管继承过来的属性权重有多高）
+
+通过查询文档可以查看每一个css属性是否具备继承性
+
+
+
+**2、强制继承**
+
+有些属性没有继承性，也可以使它强制被继承
+
+```css
+/*例如：border不具备继承性，我们使它可以被继承*/
+  <style>
+    div#box {
+      color: red;
+      border: 1px solid black;
+    }
+  </style>
+
+<body>
+  <div id="box">
+    <span>span</span>
+    <p>p元素</p>
+  </div>
+</body>
+```
+
+使border可以继承到span
+
+```css
+  <style>
+    div#box {
+      color: red;
+      border: 1px solid black;
+    }
+    span {
+      border: inherit;
+    }
+  </style>
+```
+
+
+
+### 16、元素的隐藏
+
+1、display设置为none
+
+该方式不显示出来，也不占据位置
+
+2、visibility设置为hidden
+
+元素虽不可见，但是会占据空间
+
+3、通过rgba设置颜色，将a的值设置为0
+
+即通过透明度来隐藏元素，但是不会影响到其子元素
+
+4、通过opacity：0来隐藏元素
+
+会影响其自身及其后代元素
+
+
+
+### 17、margin上下传递
+
+案例理解：一个父盒子里放置着子盒子
+
+如果给子盒子设置`margin-left/right`，那么子盒子将相对于父盒子做出偏移
+
+1、但是如果子盒子的顶部与父元素重叠，设置`margin-top`，那么子盒子的这个值会传递给父盒子，最终结果是父盒子做出偏移
+
+2、如果子盒子的底部线和父盒子的底部线重叠，并且父盒子的高度是auto，那么这个子盒子的这个css样式依然会传递给父盒子
+
+
+
+**如何解决？**
+
+1、给父元素设置padding-top/padding-bottom
+
+2、给父元素设置border
+
+3、触发BFC
+
+
+
+**建议**
+
+1、margin一般用来设置兄弟元素之间的间距
+
+2、padding一般用来设置父子之间的间距
+
+### 18、margin上下的折叠
+
+垂直方向上相邻的两个盒子，一个设置margin-bottom，一个设置margin-top，会被合并为一个值（取最大的那一个）,这种现象叫做折叠
+
+
+
+### 19、行内非替换元素的特殊性
+
+诸如：span等行内非替换元素，有以下的特殊点
+
+1、设置padding，左右生效，上下生效但不占据空间（意味着，如果span紧挨着父元素，设置padding-top后依然挨着）
+
+2、设置border，左右生效，上下生效但不占据空间
+
+3、设置margin，左右生效，但是上下不生效
+
+
+
+### 20、长文本省略号显示
+
+单行——固定的三行文本
+
+```css
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
+```
+
+
+
+多行(不同浏览器可能存在兼容的问题——运行有问题后续解决)
+
+```css
+overflow: hidden;
+text-overflow: ellipsis;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+```
+
+
+
+### 21、结构伪类
+
+**1、nth-child()** 
+
+选中相同兄弟元素中的第几个，如nth-child(1)表示选中第一个
+
+案例：选中列表的前两个li
+
+```css
+/*方式一*/
+ul li:nth-child(1),ul li:nth-child(2) {
+    color: red;
+}
+/*方式二*/
+ul li:nth-child(-n + 2) {
+    color: red;
+}
+```
+
+
+
+案例：选中列表的偶数的li（奇数则是`2n+1`）
+
+```css
+ul li:nth-child(2n) {
+    color: red;
+}
+```
+
+
+
+**2、nth-last-child()**
+
+选中相同兄弟元素中倒数第几个
+
+**3、nth-of-type()**
+
+选中相同兄弟元素的第几个（可以排除其他干扰项）
+
+```html
+  <style>
+    ul>li:nth-of-type(2){
+      color: red;
+    }
+  </style>
+
+  <ul>
+    <li>内容1</li>
+    <span>干扰项</span>
+    <li>内容2</li>
+    <li>内容3</li>
+    <li>内容4</li>
+  </ul>
+```
+
+
+
+**4、其他结构伪类**
+
++ first-child，等同于nth-child(1)
++ last-child，等同于nth-last-child(1)
++ first-of-type，等同于nth-of-type(1)
++ last-of-type，等同于nth-last-of-type(1)
++ only-child，父元素中唯一的子元素（仅对父元素存在一个子元素时生效）
++ only-of-type，是父元素中唯一的这种类型的子元素
+
+
+
++ :root，根元素，就是HTML元素
+
+```css
+: root {
+    font-size: 30px  
+}
+```
+
++ :empty代表一个元素中内容完全空白的元素
+
+
+
+**否定伪类**
+
+:not(x)，其中x是一个简单选择器，除去x，其他的元素都被选中
+
+
+
+### 22、web fonts
+
+在设置`font-family`字体时，感觉系统的提供的字体不满足个性化需求，也可以引入网络字体
+
+使用过程：
+
+将字体放在对应的目录中，通过`@font-face`来引入字体，并设置格式，并通过`font-family`来使用引进的字体
+
+```html
+  <style>
+    @font-face {
+      font-family: my-font;
+      src: url('./fonts/YunFengMaLiangTi-2.ttf');
+    }
+    div {
+      font-family: my-font ;
+    }
+  </style>
+</head>
+<body>
+  <div>hello world</div>
+</body>
+</html>
+```
+
+问题：但是并不是所有的浏览器都能识别`.ttf`文件，有些浏览器不兼容
+
+解决：为了使所有浏览器都能够识别，我们需要该字体的其他所有格式的文件
+
+`https://font.qqe2.com/#`（网络上有一些网站能够识别字体文件的其他格式，并返回，例如该地址）
+
+当在引入所有的文件后，css有一个固定的编写方式
+
+![](img/css/web-font字体.jpg)
 
 
 
@@ -1865,3 +2135,90 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 </body>
 ```
 
+
+
+
+
+
+
+## 十、常见的css
+
+### 10.1 Emmet语法
+
+ Emmet语法的前身是Zen coding,它使用缩写,来提高html/css的编写速度, Vscode内部已经集成该语法 
+
+**> 和 +**
+
+`>`表示子代，`+`表示兄弟
+
+```html
+<!--  div> p + span  -->
+<div>
+    <p></p>
+    <span></span>
+</div>
+```
+
+
+
+***和^ **
+
+`*`表示多个，`^`表示上一级
+
+```html
+<!--  ul>li*3 -->
+<ul>
+   	<li></li>
+    <li></li>
+    <li></li>
+</ul>
+```
+
+```html
+<!-- div>p^span -->
+<div>
+    <p></p>
+</div>
+<span></span>
+```
+
+
+
+**元素[属性键值对]{内容}**
+
+```html
+<!--  div[id="box"]{hello world}   -->
+<div id="box">hello world</div>
+
+<!-- 其他写法 -->
+<!-- div#box  或者  #box-->
+<div id="box"></div>
+
+<!-- div.box  或者   .box -->
+<div class="box"></div>
+```
+
+
+
+**$数字**
+
+```html
+<!-- ul>li{内容$}*4 -->
+  <ul>
+    <li>内容1</li>
+    <li>内容2</li>
+    <li>内容3</li>
+    <li>内容4</li>
+  </ul>
+```
+
+
+
+**css Emmet**
+
++ font-szie——fz
++ background-color——bgc
++ w100——width：100px;
++ h100——height：100px;
+
+ 大致都可以通过css样式进行推断
