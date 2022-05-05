@@ -12,7 +12,7 @@
 
 **补充1、：img是行内元素吗？为什么可以设置宽高**
 
-> <img> 是一个**可替换元素**。它的 display 属性的默认值是 inline，但是它的默认分辨率是由被嵌入的图片的原始宽高来确定的，使得它就像 inline-block 一样。你可以为  设置 border/border-radius、padding/margin、width、height 等等的 CSS 属性。
+> <img> 是一个**可替换元素**。它的 display 属性的默认值是 inline，但是它的默认分辨率是由被嵌入的图片的原始宽高来确定的，使得它就像 **inline-block** 一样。所以可以设置 border/border-radius、padding/margin、width、height 等等的 CSS 属性。
 
 
 
@@ -67,7 +67,7 @@
 - 00001：元素选择器、伪元素选择器；
 - 00000：通配选择器、后代选择器、兄弟选择器；
 
-注1：选择器**从右往左**解析
+注1：选择器**从右往左**解析，即从优先级低到优先级高的顺序进行解析
 
 注2：`!important`为开发者提供了一个增加样式权重的方法。
 
@@ -126,14 +126,6 @@
     <div bbb>world</div>
 </body>
 ```
-
-
-
-
-
-
-
-
 
 
 
@@ -261,6 +253,8 @@
 
 
 
+常见的伪类和伪元素
+
 | 伪元素           | 说明                                              |
 | ---------------- | ------------------------------------------------- |
 | ：：first-letter | 设置对象内的第一个字符的样式                      |
@@ -269,8 +263,6 @@
 | ：：after        | 设置在对象后发生的内容，用来和content属性一起使用 |
 | ：：placeholder  | 设置对象文字占位符的样式                          |
 | ：：selection    | 设置对象被选择时的颜色                            |
-
-
 
 | 伪类          | 说明                                                 |
 | ------------- | ---------------------------------------------------- |
@@ -281,6 +273,8 @@
 | ：focus       | 设置元素在称为输入焦点时的样式                       |
 | ：first-child | 匹配父元素的第一个子元素                             |
 | ：last-child  | 匹配父元素的最后一个子元素                           |
+
+
 
 ### 5、高度塌陷
 
@@ -495,7 +489,7 @@ opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了
 
 
 
-### 12、一行文字省略
+### 12、一行文字省略（重复）
 
 
 
@@ -566,7 +560,7 @@ opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了
 
 
 
-### 16、元素的隐藏
+### 16、元素的隐藏（重复）
 
 1、display设置为none
 
@@ -644,7 +638,7 @@ text-overflow: ellipsis;
 
 
 
-多行(不同浏览器可能存在兼容的问题——运行有问题后续解决)
+多行(不同浏览器可能存在兼容的问题)
 
 ```css
 overflow: hidden;
@@ -653,6 +647,8 @@ display: -webkit-box;
 -webkit-line-clamp: 2;
 -webkit-box-orient: vertical;
 ```
+
+
 
 
 
@@ -779,7 +775,163 @@ ul li:nth-child(2n) {
 
 
 
-## 二、居中布局
+### 23、字体图标
+
+字体图标有来源于字体，具备字体的各种优势
+
+1、放大不会失真
+
+2、可以应用字体的样式
+
+3、占用空间较小
+
+
+
+在阿里巴巴矢量图标图可以找到大量的图标
+
+使用方式：
+
+1、直接下载为`SVG/Png/AI`等格式，并直接引入页面（不推荐）
+
+2、将想要的图标加入购物车，并下载为代码
+
+
+
+**使用过程**
+
+具体的使用步骤`demo_index.html`都有讲清楚
+
+1、方式一，直接使用`.ttf`文件
+
+```html
+ <head>
+	<style>
+        @font-face {
+            font-family: 'iconfont';
+            src: url('./download/font_mgurytal7ys/iconfont.ttf');
+        }
+        .iconfont {
+            font-family: "iconfont" !important;
+            font-size: 16px;
+            font-style: normal;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style> 
+</head>
+<body>
+    <span class="iconfont">&#xe68e;</span>
+</body>
+```
+
+`&#xe68e;` Unicode 编码从对应的下载结果中`demo_index.html`获取
+
+
+
+2、方式二、通过Font class的方式
+
+```html
+<head>
+	<link rel="stylesheet" href="./download/font_mgurytal7ys/iconfont.css">
+</head>
+<body>
+    <span class="iconfont icon-xxx"></span>
+</body>
+```
+
+`iconfont icon-xxx`这两个类名具体要查看css文件
+
+
+
+### 24、Emmet语法
+
+ Emmet语法的前身是Zen coding,它使用缩写,来提高html/css的编写速度, Vscode内部已经集成该语法 
+
+**> 和 +**
+
+`>`表示子代，`+`表示兄弟
+
+```html
+<!--  div> p + span  -->
+<div>
+    <p></p>
+    <span></span>
+</div>
+```
+
+
+
+***和^ **
+
+`*`表示多个，`^`表示上一级
+
+```html
+<!--  ul>li*3 -->
+<ul>
+   	<li></li>
+    <li></li>
+    <li></li>
+</ul>
+```
+
+```html
+<!-- div>p^span -->
+<div>
+    <p></p>
+</div>
+<span></span>
+```
+
+
+
+**元素[属性键值对]{内容}**
+
+```html
+<!--  div[id="box"]{hello world}   -->
+<div id="box">hello world</div>
+
+<!-- 其他写法 -->
+<!-- div#box  或者  #box-->
+<div id="box"></div>
+
+<!-- div.box  或者   .box -->
+<div class="box"></div>
+```
+
+
+
+**$数字**
+
+```html
+<!-- ul>li{内容$}*4 -->
+  <ul>
+    <li>内容1</li>
+    <li>内容2</li>
+    <li>内容3</li>
+    <li>内容4</li>
+  </ul>
+```
+
+
+
+**css Emmet**
+
++ font-szie——fz
++ background-color——bgc
++ w100——width：100px;
++ h100——height：100px;
+
+ 大致都可以通过css样式进行推断
+
+
+
+
+
+
+
+
+
+## 二、居中
 
 ### 1、水平居中
 
@@ -1413,7 +1565,7 @@ JS动画是逐帧动画，**在时间帧上绘制内容**，一帧一帧的，�
 
 
 
-## 八、清除浮动
+## 六、清除浮动
 
 1、什么是浮动？
 
@@ -1493,7 +1645,7 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 
 
 
-## 九、css布局
+## 七、css布局
 
 ### 9.1 两列布局
 
@@ -2141,84 +2293,5 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 
 
 
-## 十、常见的css
+## 八、其他补充
 
-### 10.1 Emmet语法
-
- Emmet语法的前身是Zen coding,它使用缩写,来提高html/css的编写速度, Vscode内部已经集成该语法 
-
-**> 和 +**
-
-`>`表示子代，`+`表示兄弟
-
-```html
-<!--  div> p + span  -->
-<div>
-    <p></p>
-    <span></span>
-</div>
-```
-
-
-
-***和^ **
-
-`*`表示多个，`^`表示上一级
-
-```html
-<!--  ul>li*3 -->
-<ul>
-   	<li></li>
-    <li></li>
-    <li></li>
-</ul>
-```
-
-```html
-<!-- div>p^span -->
-<div>
-    <p></p>
-</div>
-<span></span>
-```
-
-
-
-**元素[属性键值对]{内容}**
-
-```html
-<!--  div[id="box"]{hello world}   -->
-<div id="box">hello world</div>
-
-<!-- 其他写法 -->
-<!-- div#box  或者  #box-->
-<div id="box"></div>
-
-<!-- div.box  或者   .box -->
-<div class="box"></div>
-```
-
-
-
-**$数字**
-
-```html
-<!-- ul>li{内容$}*4 -->
-  <ul>
-    <li>内容1</li>
-    <li>内容2</li>
-    <li>内容3</li>
-    <li>内容4</li>
-  </ul>
-```
-
-
-
-**css Emmet**
-
-+ font-szie——fz
-+ background-color——bgc
-+ w100——width：100px;
-+ h100——height：100px;
-
- 大致都可以通过css样式进行推断
