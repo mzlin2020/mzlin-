@@ -925,7 +925,13 @@ ul li:nth-child(2n) {
 
 
 
+### 25、定位元素
 
+注意事项
+
+1、当position设置为absolute/fixed时，行内元素可以设置宽高（没有设置则默认由内容决定）
+
+2、设置position：absolute，元素的`top/right/bottom/left`是相对于开启了定位的祖先元素进行偏移，如果祖先元素没有开启定位元素的，则相对于视口定位
 
 
 
