@@ -933,7 +933,56 @@ ul li:nth-child(2n) {
 
 2、设置position：absolute，元素的`top/right/bottom/left`是相对于开启了定位的祖先元素进行偏移，如果祖先元素没有开启定位元素的，则相对于视口定位
 
+### 26、行内元素间的空格
 
+当多个行内元素在同一个中显示，且编写的代码如下所示时，那么他们之间就会存在空格
+
+```html
+<span>hello</span>
+<span>hello</span>
+<span>hello</span>
+```
+
+```js
+//结果
+hello hello hello
+```
+
+他们之间存在了空格
+
+去除空格的方式
+
+1、删除换行符（不推荐）
+
+`<span>hello</span><span>hello</span><span>hello</span>`
+
+2、父元素font-size设置为0
+
+```css
+//以上边的例子演示
+body{
+    font-size: 0;
+}
+span {
+    font-size:16px;
+}
+```
+
+3、使用浮动
+
+```css
+span {
+    float: left;
+}
+```
+
+4、使用flex布局（推荐）
+
+```css
+body {
+    display: flex;
+}
+```
 
 
 
@@ -1653,7 +1702,7 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 
 ## 七、css布局
 
-### 9.1 两列布局
+### 7.1 两列布局
 
 **1、左列定宽，右列自适应**
 
@@ -1803,7 +1852,7 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 
 
 
-### 9.2 三列布局
+### 7.2 三列布局
 
 **1、两列定宽，一列自适应**
 
@@ -2089,7 +2138,7 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 
 
 
-### 9.3 多列布局
+### 7.3 多列布局
 
 #### 多列等宽布局
 
@@ -2186,7 +2235,7 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 
 
 
-### 9.4 全屏布局
+### 7.4 全屏布局
 
 #### 绝对定位
 
@@ -2299,5 +2348,125 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 
 
 
-## 八、其他补充
+## 八、Flex布局
 
+### 8.1 重要概念
+
+<img src="img/css/flex布局1.jpg" style="zoom:50%;" />
+
+1、开启了flex布局的元素叫做`flex container`，其直接子元素叫做`flex item`
+
+2、`flex item`的布局受`flex container`的控制，且`flex item`不再严格区分块级元素和行内级元素
+
+3、怎么开启flex布局，display设置为`flex`或者`inline-flex`
+
+> 注：display：inline-flex设置后，flex-container变为行内级元素。不过该属性较少使用
+
+
+
+**模型**
+
+<img src="img/css/flex布局2.jpg" style="zoom:50%;" />
+
+`main axis`：主轴，默认开启flex布局的元素沿着主轴分布
+
+`cross axis`：交叉轴
+
+
+
+`main start/main end`：表示主轴的开始位置/结束位置
+
+`cross start/cross end`：表示交叉轴的开始位置/结束位置
+
+### 8.2 flex container属性
+
+**flex-direction**
+
+该属性决定了主轴的方向，有4个取值
+
++ row（默认，主轴从左往右）
++ row-reverse（主轴从右往左）
++ column（主轴从上往下）
++ column-reverse（主轴从下往上）
+
+**flex-wrap**
+
+该属性决定了`flex container`是单行还是多行，取值有三个
+
++ nowrap（默认，单行）
++ wrap（多行）
++ wrap-reverse（多行，在多行的分布下，cross start与cross end相关）
+
+**flex-flow**
+
+该属性属性是flex-direction和flex-wrap的简写，并且对于两个顺序没有要求
+
+**justify-content**
+
+该属性决定了`flex items`在主轴上的对齐方式
+
++ flex-start（默认值，与main start对齐）
++ flex-end（与main end对齐）
++ center（居中）
++ space-between（flex items之间距离相等，左右两个items分别紧贴flex container边缘）
++ space-around（fiex item的距离相等，左右两个items离边缘的距离是其他items之间距离的一般）
++ space-evenly（flex items之间距离都相等）
+
+
+
+**align-item**
+
+该属性决定了`flex items`在交叉轴上的对齐方式
+
++ nomal（默认）
++ stretch（当flex items在交叉轴方向的size为auto时，会自动拉伸至flex container）
++ flex-start（与cross start对齐）
++ flex-end（与cross end对齐）
++ center（居中）
++ baseline（与基准线对齐）
+
+**align-content**
+
+该属性决定了多行flex items在交叉轴上的对齐方式，用法与justify-tontent类似，取值也与其相同
+
+
+
+### 8.3 flex item属性
+
+**order**
+
+该属性决定了`flex items`的排布顺序
+
+可以设置任意整数，值越小就越排在前面，默认为0
+
+**align-self**
+
+该属性可以覆盖flex container设置的align-items，其取值与align-items一致
+
+
+
+**flex-grow**
+
+该属性决定了`flex items`如何扩展（拉伸）
+
+在flex container在主轴方向上有剩余空间时有效，可以将剩余的空间分配给flex items，可以甚至任意整数（默认是0）
+
+
+
+**flex-shrink**
+
+该属性决定了`flex items`如何收缩（缩小）
+
+仅当`flex items`在主轴方向上超过了`flex container`的空间时有效，可以设置任意非负数字，默认是1
+
+
+
+**flex**
+
+该属性是`flex-grow flex-shrink flex-basis`的简写，可以指定1个，2个或者3个值
+
+当指定一个值时，无单位值会被当做`flex-grow`的值，有单位为`flex-basis`
+
+当指定两个值时，一个无单位的值被当做`flex-shrink`，另一个有单位的值为`flex-basis`
+
+当指定三个值，第一个为无单位值的`flex-gow`，第二个为无单位值的`flex-shrink`，第三个为有单位的值的`flex-basis`
