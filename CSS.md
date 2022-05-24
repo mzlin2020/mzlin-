@@ -200,7 +200,7 @@
 
 4、外边距垂直方向重合的问题
 
-方法：给上box或者下box任意一个包裹新的box并开启BFC
+方法：给上box或者下box任意一个包裹新的box（container）并开启BFC
 
 原理：属于同一个BFC的两个相邻的Box会发生重叠
 
@@ -1032,6 +1032,100 @@ body {
 ![](img/css/vertical-align3.jpg)
 
 解决方案：将`vertival-align`设置为`top/bottom/middle`都可以解决，或者直接将图片改为块级元素
+
+
+
+### 28、浏览器前缀
+
+官方文档专业术语：vendor-specific-extensions(供应商特定扩展)
+
+为什么需要浏览器前缀：某些CSS属性刚开始并没有成为标准，浏览器为了防止W3C后续修改名字，就给这些属性添加前缀，后续即使标准改了，这些有前缀的属性也能根据标准进行解析
+
+
+
+**常见的前缀**
+
+```js
+-webkit-   #Safari Chrome
+-moz-      #FireFox
+-ms-  mso- #IE
+-o-  -xv-  #Opera
+```
+
+添加了对应的前缀，就只有对应的浏览器才能解析使用
+
+> 一般而言，使用某一CSS属性时，如果对应的浏览器及版本兼容性呈现黄色，说明需要通过浏览器前缀来使其适配该属性。不过，后来出现的模块化打包工具会自动识别CSS与浏览器的兼容情况，并自动添加前缀
+
+
+
+### 29、媒体查询
+
+媒体查询是一种提供给开发者针对不同设备需求进行定制化开发的一个接口，开发者可以根据设备的类型或者特性来修改页面
+
+**媒体查询使用的三种方式**
+
+**方式一**：通过`@media和@import`来使用不同的CSS规则
+
+语法：`@import url('./css/base.css') 媒体特性;`
+
+需求：当满足最大宽度800px时，导入并应用样式，反之不导入
+
+```html
+  <style>
+    @import url('./css/base.css') (max-width: 800px);
+  </style>
+```
+
+
+
+**方式二**：使用`media属性为<style> <link> <source>`和其他HTML元素指定的媒体类型
+
+语法：`<link rel="stylesheet" media="媒体特性" href="./css/base.css"> 或者@media 媒体特性{}`
+
+
+
+```html
+<link rel="stylesheet" media="(max-width: 800px)" href="./css/base.css">
+```
+
+或者
+
+```css
+  <style>
+    @media (max-width: 800px) {
+      body {
+        background-color: chocolate;
+      }
+    }
+  </style>
+```
+
+**方式三**：使用`Window.matchMedia()`和`MediaQueryList.addListener()`方法来测试和监控媒体状态
+
+
+
+**媒体类型**
+
+在使用媒体查询时，必须指定要使用的媒体类型（可选），默认为all类型。
+
++ all：适用与所有设置
++ print：适用于在打印预览模式下在屏幕上查看的分页材料和文档
++ screen：主要用于屏幕
++ speech：主要用于语音合成器
+
+**媒体特性**
+
+媒体特性描述了浏览器、输出设备或是预览环境的具体特性：
+
+通常将媒体特性描述为一个表达式，每条表达式必须用括号括起来
+
+![](img/css/媒体查询.jpg)
+
+> 注：也可以多条件匹配，需用到and or not逻辑运算符
+
+
+
+
 
 ## 二、居中
 
