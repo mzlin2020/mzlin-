@@ -222,9 +222,42 @@ src是source的缩写，指向外部资源的位置，指向的内容将会嵌�
 
 href是`Hypertext Reference`的缩写，指向网络资源所在位置，建立和当前元素或当前文档之间的链接
 
-
-
-### 10、vscode插件与配置
+## 10、vscode插件与配置
 
 ![](img/html/vscode基础插件与配置.jpg)
+
+##  11、H5新增全局属性data-
+
+该属性用于自定义属性数据，然后在js中DOM操作通过dataset获取到，通常用于HTML与js数据之间的传递
+
+```html
+//实例
+<body>
+  <div class="box" name="linzm" data-age="18" data-sex="男"></div>
+
+  <script>
+    const box = document.querySelector('.box')
+    console.log(box.dataset)
+  </script>
+</body>
+```
+
+```js
+//输出
+DOMStringMap
+age: "18"
+sex: "男"
+```
+
+
+
+
+
+
+
+
+
+
+
+
 

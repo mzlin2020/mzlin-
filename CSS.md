@@ -986,6 +986,53 @@ body {
 
 
 
+### 27、vertival-align
+
+该属性会影响在一个行盒(line box)中，行内块级元素的垂直方向位置。该属性是设置在line box中的行内级元素上
+
+> 行盒：就是一个块级元素独占一行，但是这一行中可能存在span等行内元素、也可能存在img等行内块级元素。		   但是这些行内级、行内块级的高度往往一致。行盒就他们都包裹在内，并把这一行的块级元素撑高
+
+
+
+案例分析
+
+```html
+![vertical-align1](img/css/vertical-align1.jpg)<head> 
+  <style>
+    #container {
+      border: 1px solid solid;
+      background-color: antiquewhite;
+    }
+    img{
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <span>xxxxxxx</span>
+    <img src="./img/others/test_img.jpg" alt="">
+  </div>
+
+</body>
+```
+
+最终效果:
+
+![](img/css/vertical-align1.jpg)
+
+可以看到最终图片下方有一段没被覆盖到的空间，为什么图片没有完全对齐底部呢？遵循什么样的垂直对齐方式？
+
+答案：默认的对齐方式是基线对齐方式（vertical-align：baseline），可简单理解为x字母的下方就是基线的位置
+
+![](img/css/vertical-align2.jpg)
+
+即使没有文本，依然是基线的对齐方式，图片下方还是留有一定的空间
+
+![](img/css/vertical-align3.jpg)
+
+解决方案：将`vertival-align`设置为`top/bottom/middle`都可以解决，或者直接将图片改为块级元素
+
 ## 二、居中
 
 ### 1、水平居中
@@ -1414,8 +1461,6 @@ css动画，也称为关键帧动画，通过@keyframes来定义关键帧
 }
 ```
 
-
-
 使用关键帧添加动画
 
 ```css
@@ -1424,6 +1469,8 @@ animation: theNmae 2s;
 animation-name: theName;  //不可省略
 animation-duration: 2s;
 ```
+
+
 
 **3、 属性说明**
 
@@ -1474,6 +1521,8 @@ animation-timing-function:ease /** linear、ease-in、ease-out、ease-in-out **/
 
 3、播放方向
 
+animation-direction
+
 | 属性              | 说明                                                         |
 | ----------------- | ------------------------------------------------------------ |
 | nomal             | 默认值                                                       |
@@ -1485,9 +1534,9 @@ animation-timing-function:ease /** linear、ease-in、ease-out、ease-in-out **/
 
 ### 5.2 CSS动画-transition
 
+`css transition`提供了一种在更改css属性时控制动画速度的方法
+
 transition翻译成中文是过渡的意思，顾名思义，它就是专门做过渡动画的，比如一些放大缩小，隐藏显示等
-
-
 
 | 值                         | 说明                              |
 | -------------------------- | --------------------------------- |
@@ -1495,8 +1544,6 @@ transition翻译成中文是过渡的意思，顾名思义，它就是专门做�
 | transition-property        | 指定CSS属性的name，transition效果 |
 | transition-timing-function | 运动曲线                          |
 | transition-delay           | 延迟执行                          |
-
- 
 
 1、transition-duration
 
@@ -1548,14 +1595,28 @@ div:hover{
 
 `transform`字面上就是变形，改变的意思
 
-它有很多的属性，总结起来就以下四个属性
+> 注：并非所有的盒子都能形变，非替换的行内元素不能进行形变
+
+它有很多的属性，以下四个属性比较常见
 
 + rotate旋转
 + skew扭曲
 + scale缩放
 + translate移动
 
-应用：
+**简单使用**
+
+默认是以box的中心作为原点进行变形，可以通过`tansform-origin`改变原点的位置
+
+```css
+.box {
+    transform: scale(60%, 60%)
+}
+```
+
+
+
+**应用**
 
 ```css
 div {
@@ -2470,3 +2531,67 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 当指定两个值时，一个无单位的值被当做`flex-shrink`，另一个有单位的值为`flex-basis`
 
 当指定三个值，第一个为无单位值的`flex-gow`，第二个为无单位值的`flex-shrink`，第三个为有单位的值的`flex-basis`
+
+
+
+## 九、css函数
+
+### 9.1 var
+
+在css中可以自定义属性，属性名以两个`--`开始。然后通过`var函数`来进行使用
+
+```html
+<style>
+    html {
+        --myColor: green;
+    }
+    .box {
+        color: var(--myColor);
+    }
+</style>
+<body>
+  <div class="box">字体颜色</div>
+</body>
+```
+
+自定义的属性只有在自身及后代元素中生效，所以推荐将自定义属性定义在html中，或者使用`:root`选择器
+
+
+
+### 9.2 calc
+
+calc()函数允许在声明CSS属性值时执行一些计算，支持加减乘除运算，通过用来设置一些元素的尺寸或者位置
+
+```css
+.container {
+    width:500px;
+    height:100px;
+}
+.content {
+    width:calc(100% - 50px);
+    height:100px;
+}
+```
+
+> 注意：+ 和 - 运算符的两边必须要有空白字符，否则不生效
+
+
+
+### 9.3 blur
+
+blur()函数将高斯模糊应用于输出图片或者元素上，通常回合`filter`与`backdrop-filter`这两个属性一起使用。
+
+```css
+img {
+    filter: blur(2px);
+}
+```
+
+
+
+
+
+
+
+
+
