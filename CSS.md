@@ -1,6 +1,6 @@
 # CSS
 
-## 一、基础
+## 一、基础提升
 
 ### 1、块元素和行内元素
 
@@ -44,7 +44,7 @@
 
 
 
-### 2、 选择器优先级
+### 2、选择器优先级
 
 1、css优先级？
 
@@ -489,11 +489,25 @@ opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了
 
 
 
-### 12、一行文字省略（重复）
+### 12、less基本使用
+
+| 语法           | 示例(说明)                                                   |
+| -------------- | ------------------------------------------------------------ |
+| less兼容css    | 可以在less中编写css                                          |
+| 定义变量       | 定义：`@myColor:chocolate;` 使用：`color:@myColor;`          |
+| 选择器嵌套     | `#container {  #box { } }`   `#container{ &:hover:{} },其中&代表当前选择器` |
+| 属性值运算     | `.box{ width: 100px * 2; }`                                  |
+| 混入（mixins） | 抽取相同css代码，使用时将其插入。定义：`.same{...}`  使用：`.box{ .same() }` |
+| 混入（带参数） | 定义：`.same(@myFont: 30px){ font-szie: @myFont }`  使用：`.box{ .same(chocolate) }` |
+| 混入与映射     | 定义混入：`colors{c1: red; c2: blue;}`  映射并使用：`.box{ color: colors()[c1]}` |
+| 继承           | 定义：`.myColor: { ... }`  继承使用： `.box { &: extend(.myColor)  }` |
+| 注释           | `//`注释与`/**/`都可以使用                                   |
 
 
 
-### 13、absolute和fixed的区别
+
+
+### 13、absolute和fixed
 
 共同点：都会脱离当前文档流、触发BFC
 
@@ -560,23 +574,54 @@ opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了
 
 
 
-### 16、元素的隐藏（重复）
+### 16、css函数
 
-1、display设置为none
+**var**
 
-该方式不显示出来，也不占据位置
+在css中可以自定义属性，属性名以两个`--`开始。然后通过`var函数`来进行使用
 
-2、visibility设置为hidden
+```html
+<style>
+    html {
+        --myColor: green;
+    }
+    .box {
+        color: var(--myColor);
+    }
+</style>
+<body>
+  <div class="box">字体颜色</div>
+</body>
+```
 
-元素虽不可见，但是会占据空间
+自定义的属性只有在自身及后代元素中生效，所以推荐将自定义属性定义在html中，或者使用`:root`选择器
 
-3、通过rgba设置颜色，将a的值设置为0
+**calc**
 
-即通过透明度来隐藏元素，但是不会影响到其子元素
+calc()函数允许在声明CSS属性值时执行一些计算，支持加减乘除运算，通过用来设置一些元素的尺寸或者位置
 
-4、通过opacity：0来隐藏元素
+```css
+.container {
+    width:500px;
+    height:100px;
+}
+.content {
+    width:calc(100% - 50px);
+    height:100px;
+}
+```
 
-会影响其自身及其后代元素
+> 注意：+ 和 - 运算符的两边必须要有空白字符，否则不生效
+
+**blur**
+
+blur()函数将高斯模糊应用于输出图片或者元素上，通常回合`filter`与`backdrop-filter`这两个属性一起使用。
+
+```css
+img {
+    filter: blur(2px);
+}
+```
 
 
 
@@ -614,7 +659,7 @@ opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了
 
 
 
-### 19、行内非替换元素的特殊性
+### 19、行内非替换元素
 
 诸如：span等行内非替换元素，有以下的特殊点
 
@@ -1124,6 +1169,105 @@ body {
 > 注：也可以多条件匹配，需用到and or not逻辑运算符
 
 
+
+### 30、css单位
+
+一般而言，可以将单位分为`绝对单位`和`相对单位`
+
+**绝对单位**
+
+绝对单位与其他任何东西都没有关系，通常被认为总是相同的大小。例如px(像素）
+
+
+
+**相对单位**
+
+相对单位相对于其他东西来调整大小，比如视图端口的大小。它的优势在于能够适应很多不同的页面，更灵活。
+
+| 相对单位 | 相对于                                                       |
+| -------- | ------------------------------------------------------------ |
+| em       | 相对于自身字体的大小(2em，则为font-size的两倍)，自身没有font-size则相对于父元素的font-size |
+| rem      | 相对于根元素的font-size                                      |
+| vw       | 视窗宽度的1%                                                 |
+| vh       | 视窗高度的1%                                                 |
+
+
+
+**1、em**
+
+```css
+#container {
+    font-size: 20px;
+}
+#box {
+    /*自身无font-size，则相对于父元素*/
+    width: 5em; /*相当于100px*/
+    height: 5em;
+    border: 1px solid black;
+}
+```
+
+
+
+**2、rem**
+
+```css
+html {
+    /*默认是16px*/
+    font-size: 10px;
+}
+#box {
+    width: 5rem; /*相当于50px*/
+    height: 5rem;
+    border: 1px solid black;
+}
+```
+
+
+
+**3、vw/vh**
+
+```css
+#box {
+    width: 100vw; /* 相当于视窗的100%宽度 */
+    height: 100vh;
+    background-color: chocolate;
+}
+```
+
+
+
+### 31、移动端视口
+
+移动端视口大致可以划分为三种情况：
+
++ 布局视口（layout viewport）
++ 视觉视口（visual viewport）：显示在可见区域的视口
++ 理想视口（ideal layout）：当布局视口与视觉视口相等时，就是理想视口
+
+**布局视口**
+
+<img src="img/css/布局视口.jpg" style="zoom:50%;" />
+
+布局视口默认是980px
+
+在PC端写入一些布局，当进入移动端时为了可以完整显示在页面中，它会按照宽度等比例缩小页面布局。
+
+但是着违背了我们的期望，我们往往希望在pc端显示多大，在移动端就显示多大，所以理想视口才是我们需要的
+
+
+
+**理想视口**
+
+当布局视口与视觉视口相等时，就是理想视口。
+
+怎么设置成理想视口呢？设置`meta中的viewport`
+
+![](img/css/理想视口的设置.jpg)
+
+`<meta name="viewport" content="width=device-width, initial-scale=1.0">`
+
+我们经常在html文件中看到这个标签，就是为了保证布局视口与用户的屏幕视口相等的
 
 
 
@@ -2625,63 +2769,6 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 当指定两个值时，一个无单位的值被当做`flex-shrink`，另一个有单位的值为`flex-basis`
 
 当指定三个值，第一个为无单位值的`flex-gow`，第二个为无单位值的`flex-shrink`，第三个为有单位的值的`flex-basis`
-
-
-
-## 九、css函数
-
-### 9.1 var
-
-在css中可以自定义属性，属性名以两个`--`开始。然后通过`var函数`来进行使用
-
-```html
-<style>
-    html {
-        --myColor: green;
-    }
-    .box {
-        color: var(--myColor);
-    }
-</style>
-<body>
-  <div class="box">字体颜色</div>
-</body>
-```
-
-自定义的属性只有在自身及后代元素中生效，所以推荐将自定义属性定义在html中，或者使用`:root`选择器
-
-
-
-### 9.2 calc
-
-calc()函数允许在声明CSS属性值时执行一些计算，支持加减乘除运算，通过用来设置一些元素的尺寸或者位置
-
-```css
-.container {
-    width:500px;
-    height:100px;
-}
-.content {
-    width:calc(100% - 50px);
-    height:100px;
-}
-```
-
-> 注意：+ 和 - 运算符的两边必须要有空白字符，否则不生效
-
-
-
-### 9.3 blur
-
-blur()函数将高斯模糊应用于输出图片或者元素上，通常回合`filter`与`backdrop-filter`这两个属性一起使用。
-
-```css
-img {
-    filter: blur(2px);
-}
-```
-
-
 
 
 
