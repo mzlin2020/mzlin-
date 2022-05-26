@@ -1271,6 +1271,154 @@ html {
 
 
 
+### 32、rem适配方案
+
+**移动端适配方案**
+
++ 方案一：百分比设置（不推荐）
++ 方案二：rem单位 + 动态html的font-szie
++ 方案三：vw单位
++ 方案四：flex弹性布局
+
+
+
+**rem适配方案**
+
+原理：rem单位是相对于html元素的font-size来设置的，可以通过将css的单位设置为rem，然后根据不同屏幕大小动态修改html的font-size，从而达到自适应布局的效果
+
+要点：1、统一使用rem单位       2、动态修改html元素的font-size
+
+**方式一：媒体查询**
+
+通过媒体查询来设置不同尺寸范围内的屏幕html的font-size尺寸
+
+```html
+  <style>
+    @media screen and (min-width:320px) {
+      html{
+        font-size: 20px;
+      }
+    }
+    @media screen and (min-width:375px) {
+      html{
+        font-size: 24px;
+      }
+    }
+    @media screen and (min-width:414px) {
+      html{
+        font-size: 28px;
+      }
+    }
+    @media screen and (min-width:480px) {
+      html{
+        font-size: 32px;
+      }
+    }
+    #box {
+      width: 5rem;
+      height: 5rem;
+      background-color: chocolate;
+    }
+  </style>
+```
+
+缺点：需要编写大量的媒体查询语句，且不能实时进行更新
+
+**方式二：js监听视口，动态修改**
+
+通过js事件监听视口的改变，然后动态修改html的font-size
+
+```html
+  <script>
+    const htmlEl = document.documentElement
+    function setFontSize() {
+      const htmlWidth = htmlEl.clientWidth //获取视口宽度
+      htmlEl.style.fontSize = htmlWidth / 10 + 'px' //自定义大小
+    }
+    setFontSize() 
+    window.addEventListener('resize', setFontSize)
+
+  </script>
+  <style>
+    #box {
+      width: 5rem;
+      height: 5rem;
+      background-color: chocolate;
+    }
+  </style>
+```
+
+问题：html的font-size的初始值应该设置为多少好呢？
+
+答：根据设计稿，一般的设计稿视口为375px或者750px，那么html的font-size可以设置为37.5或者75
+
+
+
+问题：假设html的font-szie设置为37.5px，设计稿中存在一个100px的盒子，换算成rem为多少呢？
+
+答：100 / 37.5 rem
+
+
+
+问题：开发中那么多的单位需要换算成rem，很麻烦，有什么办法解决吗？
+
+使用以下方式：
+
+1、使用less的函数、混入、映射解决
+
+```less
+.pxToRem(@px) {
+    result: 1rem * ( @px/ 37.5 ) // 这里的37.5得根据设计稿确定
+}
+.box {
+    width: .pxToRem(100)[result];
+    height: pxToRem(100)[result];
+}
+```
+
+2、使用webpack的工具（postcss-poxtorem）自动进行转换
+
+3、使用`px to rem`这个vscode插件
+
+**方式三：lib-flexible库**
+
+直接引用该库即可，该库的核心代码就是方式二的思想
+
+
+
+**33、vw的单位换算**
+
+vw、wh是相对于视口的单位，一般开发中我们仅用vw即可。
+
+在现代浏览器中，我们通常使用的是vw，该布局相比于rem布局更加简洁，但是仍然进行换算
+
+**方案一：手动换算**
+
+设计稿：375px，将100px转换为对应的vw值
+
+100/3.75 = 26.778vw
+
+**方案二：less函数**
+
+```less
+@vwUnit: 3.75; //根据设计稿
+.pxToVw(@px) {
+    result: (@px/@vwUnit) * 1vw
+}
+.box {
+    width: .pxToVw(100)[result];
+    height: .pxToVw(100)[result];
+}
+```
+
+**方案三：使用webpack**
+
+可以借助webpack的工具（postcss-px-to-viewport-8-plugin）来完成自动的转化
+
+**方案四：vscode插件**
+
+使用`px to rem`这个vscode插件，并根据设计稿的调整该插件是基于375px还是750px
+
 ## 二、居中
 
 ### 1、水平居中
