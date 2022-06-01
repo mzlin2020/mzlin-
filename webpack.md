@@ -4,7 +4,7 @@
 
 ### 1、 初识webpack
 
-![](E:/notes/img/其他img/webpack.png)
+![](img/其他img/webpack.png)
 
 **官方定义**：webpack是一个静态的模块化打包工具，应用于现代的JavaScript应用程序
 
@@ -42,8 +42,6 @@ npm install webpack webpack-cli –D # 局部安装
 
 注意：在真正的开发过程中，用的更多的是局部安装。一个项目有对应该项目版本的webpack。并且在开发项目时，只需要安装webpack的开发时依赖，不需要运行时依赖。
 
-
-
 webpack与webpack-cli之间的联系：
 
 1、执行webpack命令，会执行node_modules下的.bin目录下的webpack
@@ -73,9 +71,8 @@ module.exports = {mult}
 将两个文件导入到入口文件index.js中
 
 ```javascript
-// 获取通过es6导出的addNum函数
-import {addNum} from './js/Sum'// 获取CommonJS导出的mult函数
-const {mult} = require('./js/mult')
+import {addNum} from './js/Sum' // 获取通过es6导出的addNum函数
+const {mult} = require('./js/mult') // 获取CommonJS导出的mult函数
 console.log(addNum(10,20));
 console.log(mult(10,20));
 ```
@@ -94,15 +91,11 @@ console.log(mult(10,20));
 </html>
 ```
 
-
-
 解决：通过webpack将入口文件打包成浏览器能够识别的js代码，再引入
 
 ```javascript
 webpack ./index.js -o ./dist
 ```
-
-
 
 **自定义打包命令**
 
@@ -117,16 +110,12 @@ webpack ./index.js -o ./dist
 
 > 注意：源代码必须在src文件夹下，当执行`npm run build`打包时，webpack默认会到src文件夹下寻找index.js，所以src文件夹是必要的，index.js入口文件也是必要的
 
-
-
 当然，也可以指定以哪个文件作为入口文件（可以不必是index.js），哪个文件夹作为出口文件夹（可以不必是dist）
 
 ```javascript
 // npx webpack --入口 任意文件名  --出口 任意文件名
 npx webpack --entry ./src/main.js --output-path ./build			
 ```
-
-
 
 **最终解决方案：自定义打包**
 
@@ -1046,13 +1035,129 @@ import add from 'js/add'
 const {mult} = require("js/mult")
 ```
 
+### 10、postcss
+
+postCSS是一个通过js来转换样式的工具，可以帮助我们进行一些css的转换和适配，例如自动添加浏览器前缀、css样式的重置
+
+> 由于该工具本身的功能很少，所以通常为了实现一些功能需要安装对应的插件
+
+**独立使用**
+
+安装：`npm i postcss postcss-cli -d	`
+
+> postcss-cli允许我们在命令行中使用postcss这个工具
+
+转换css
+
+```css
+/* 以下css代码存在浏览器兼容问题 */
+:fullscreen {
+    
+}
+.content {
+    user-select: none;
+    transition: all 2s ease;
+}
+```
+
+`使用 npx postcss -o result.css ./src/css/test.css`
+
+输出成功，但是结果并不是我们想要的，因为添加浏览器适配这一功能需要安装额外的插件
+
+安装插件：`npm install autoprefixer -d`
+
+使用插件进行转换：`npx postcss --use autoprefixer -o result.css ./src/css/test.css`
+
+```css
+/* result.css */
+:-webkit-full-screen {
+    
+}
+:-ms-fullscreen {
+    
+}
+:fullscreen {
+    
+}
+.content {
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+    transition: all 2s ease;
+}
+```
 
 
 
+**在webpack中使用**
+
+安装：`npm install postcss-loader -d`
+
+```js
+// webpack.config.js
+{
+    loader: "postcss-loader",
+	options: {
+        postcssOptions: {
+            plugins: [
+                require("autoprefixer")
+            ]
+        }
+    }
+}
+```
+
+现在，可以在使用任意css而不用考虑浏览器的兼容了，因为postcss会自动给它加上前缀
+
+> 注意：postcss需要使用在css loader、style loader之前
 
 
 
+**最终使用**
+
+事实上，我们可以安装`postcss-preset-env`这个插件，该插件默认集成了autoprefixer，并且也拓展了一些其他新功能，例如可以帮助我们将一些现代的css特性，转换成大多数浏览器认识的css，并且根据目标浏览器或者运行时环境添加所需要的polyfill
+
+安装：`npm i postcss-preset-env -d`
+
+使用
+
+```js
+{
+    loader: "postcss-loader",
+	options: {
+        postcssOptions: {
+            plugins: [
+                // require("autoprefixer") 不需要了
+                require("postcss-preset-env")
+            ]
+        }
+    }
+}
+```
 
 
 
+简化代码
+
+```js
+{
+    test: /\.css$/,
+    use: [
+        "style-loader",
+        "css-loader",
+        "postcss-loader"
+    ]
+}
+```
+
+具体的options配置可以在根目录下创建一个`postcss.config.js`
+
+```js
+module.exports = {
+    plugins: [
+        require("postcss-preset-env")
+    ]
+}
+```
 
