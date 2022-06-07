@@ -332,13 +332,14 @@ document.body.appendChild(bgdiv)
     module:{
         rules:[
             {
-                test:/\.(jpg|png|jpeg|gif)/ ,
+                test:/\.(jpg|png|jpeg|gif)$/ ,
                 use:{
                     loader:"file-loader",
                     options:{
                         // [ext]表示根据原有图片的后缀命名
                         name:'img/[name]_[hash:6].[ext]'
                         //[name]_[hash:6] 表示文件名的命名规则
+                        outputPath: "img"
                     }
                 }
             }
@@ -378,7 +379,7 @@ document.body.appendChild(bgdiv)
 
 ```javascript
 {
-    test:/\.(jpg|png|jpeg|gif)/ ,
+    test:/\.(jpg|png|jpeg|gif)$/ ,
         use:{
             loader:"url-loader",
                 options:{
@@ -394,7 +395,7 @@ document.body.appendChild(bgdiv)
 
 **3、打包图片资源3**
 
-**资源模块类型(asset module type)**，通过添加 4 种新的模块类型，来替换所有这些 loader： 
+在webpack5中，**资源模块类型(asset module type)**，通过添加 4 种新的模块类型，来替换以下的 loader： 
 
 **asset/resource** 发送一个单独的文件并导出 URL。之前通过使用 file-loader 实现；
 
@@ -405,6 +406,66 @@ document.body.appendChild(bgdiv)
 **asset** 在导出一个 data URI 和发送一个单独的文件之间自动选择。之前通过使用 url-loader，并且配置资源体
 
 积限制实现；
+
+
+
+webpack5实现`file-loader`打包图片的方式
+
+```js
+{
+    test:/\.(jpg|png|jpeg|gif)$/ ,
+    type: "asset/resource"
+}
+```
+
+如果想要自定义输出路径及文件名
+
+```js
+output: {
+    assetModuleFilename: "img/[name].[hash:6][ext]"
+}
+//或者
+{
+    test:/\.(jpg|png|jpeg|gif)$/ ,
+    type: "asset/resource",
+    generator: {
+        filename: "img/[name].[hash:6][ext]"
+    }
+}
+```
+
+
+
+webpack5实现`url-loader`打包图片的方式
+
+```js
+{
+    test:/\.(jpg|png|jpeg|gif)$/ ,
+    type: "asset",
+    generator: {
+        filename: "img/[name].[hash:6][ext]"
+    },
+    parser: {
+        dataUrlCondition: {
+            maxSize: 100 * 1024
+        }
+    }
+}
+```
+
+
+
+webpack5实现`raw-loader`打包字体图标等资源的方式
+
+```js
+{
+    test:/\.ttg|eot|woff2?$/i ,
+    type: "asset/resource",
+    generator: {
+        filename: "font/[name].[hash:6][ext]"
+    },
+}
+```
 
 
 
@@ -515,13 +576,13 @@ module.exports = {
 
 2、title：在进行htmlWebpackPlugin.options.title读取时，就会读到该信息；
 
-但是此时使用`npm run build`进行打包时会报错，因为模板中还使用到一个BASE_URL的常量
+但是此时使用`npm run build`进行打包时会报错，因为模板中还使用到一个**BASE_URL的常量**
 
 解决：
 
 使用**DefinePlugin**
 
-DefinePlugin允许在编译时创建配置的全局常量，是一个webpack内置的插件（不需要单独安装）
+DefinePlugin允许在编译时创建配置的**全局常量**，是一个webpack内置的插件（不需要单独安装）
 
 配置
 
@@ -694,9 +755,116 @@ babel可以指定代码中的那些语法进行转换（使用插件），也可
     }
 ```
 
+> 该预设会默认去根据.browserslistrc中需要适配的浏览器进行转换。如果没有.browserslistrc文件，可以在webpack的配置文件中指定适配的浏览器options: {presets: [ targets: [ "chrome 88" ] ]}
+
+当babel插件的代码过多时，也可以将其抽取到一个单独的文件中`babel.config.js`中
+
+```js
+module.exports = {
+    presets: [
+        "@babel/preset-env"
+    ]
+}
+```
 
 
-### 7、 vue
+
+同理，babel**解析jsx**也需要安装插件
+
+`npm install @babel/preset-react -D `
+
+```js
+module.exports = {
+    presets: [
+        "@babel/preset-env",
+        "@babel/preset-react"
+    ]
+}
+```
+
+
+
+使用babel**解析ts**代码
+
+```js
+//webpack.config.js
+module: {
+    rules: [
+        {
+            test: /\.ts$/,
+            use: "babel-loader"
+        }
+    ]
+}
+```
+
+使用ts插件`@babel/tranform-typescript`，更推荐直接使用预设：`@babel/preset-typescript`
+
+```js
+//babel.config.js
+module.exports = {
+    presets: [
+        "@babel/preset-env",
+        "@babel/preset-react",
+        "@babel/preset-typescript"
+    ]
+}
+```
+
+> webpack转化ts代码其实也可以使用ts-loader，但是为什么要用babel-loader呢？因为ts-loader不能解析一些新特性语法（如promise等）但是可以检测类型错误，而babel-loader具备polyfill，但是却不能检测类型错误
+
+所以比较好的方式是使用babel-loader的同时，在每次打包前利用ts进行类型检测
+
+```js
+//package.json
+module.exports = {
+    "script" : {
+        "build": "webpack --config webpack.config.js",
+        "type-check": "tsc --noEmit",
+        "type-check-watch": "tsc --noEmit --watch"
+    } 
+}
+```
+
+
+
+
+
+### 7、polyfill
+
+polyfill：填充物、补丁
+
+在开发中我们有时会使用一些新的语法特性（例如Promise、Symbol等），但是部分浏览器不能识别这些特性，必然就会报错，这个时候就可以使用polyfill来填充一个补丁。
+
+
+
+babel7.4之后，可以通过单独引入core-js和regenerator-runtime来完成polyfill的使用
+
+`npm install core-js regenerator-runtimr --save`
+
+配置babel.config.js
+
+```js
+module.exports = {
+    presets: [
+        ["@babel/preset-env", {
+            useBuiltIns: "useage",
+            // false:不用任何polyfill相关的代码
+            // useage: 代码中需要哪些polyfill，就引用相关的api
+            // entry： 需要手动在入口文件中导入 core-js/ regenerator-runtime,之后根据目标浏览器引入所有对应
+            // 的polyfill
+            corejs: 3
+            
+        }]
+    ]
+}
+```
+
+
+
+
+
+### 8、 vue
 
 在vue的开发过程中，有三种方式来编写DOM元素：
 
@@ -762,7 +930,7 @@ new VueLoaderPlugin()
 
 
 
-### 8、 webpack搭建本地服务
+### 9、 webpack搭建本地服务
 
 每次修改代码都需要使用`npm run build`打包编译代码，影响效率。
 
@@ -982,7 +1150,7 @@ axios.get("/api/content").then(res=>{
 
 
 
-### 9、 resolve模块解析
+### 10、 resolve模块解析
 
 （用于起别名，引用文件的时候省略扩展名）
 
@@ -1035,7 +1203,7 @@ import add from 'js/add'
 const {mult} = require("js/mult")
 ```
 
-### 10、postcss
+### 11、postcss
 
 postCSS是一个通过js来转换样式的工具，可以帮助我们进行一些css的转换和适配，例如自动添加浏览器前缀、css样式的重置
 
@@ -1161,3 +1329,155 @@ module.exports = {
 }
 ```
 
+
+
+存在的问题：当解析css文件时，如果该文件引用了其他css文件，那么引入的css文件不会被postcss-loader解析。例如index.css引用了other.css，那么other.css不会被解析
+
+解决：当css文件存在引用关系时，让其从下往上执行一次解析流程
+
+```js
+{
+    test: /\.css$/,
+    use: [
+        "style-loader",
+        "css-loader": {
+        	options: {
+        		importLoaders: 1
+        	}
+        },
+         "postcss-loader"
+    ]
+}
+```
+
+
+
+### 12、eslint
+
+安装：`npm install eslint -d`
+
+定义规范：`npx eslint --init`
+
+```js
+> To check syntax only //仅检查语法
+  To check syntax and find problems //检查语法、找出错误
+  To check syntax, find problems, and enforce code style //检查语法、找出错误并规定代码风格
+```
+
+最终生成`eslintrc.js`文件
+
+```js
+module.exports = {
+    "env": { //运行环境
+        "browser": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": "eslint:recommended", // 扩展当前的配置
+    "parserOptions": { // 这里指定ESMAscript的版本
+        "ecmaVersion": "latest"
+    },
+    "rules": { // 自定义规则
+    }，
+    "plugins": {} //插件
+}
+```
+
+
+
+```js
+// src/index.js
+const name = "hehehe"
+console.log(name)
+```
+
+检验： `npx eslint ./src/index.js`
+
+```js
+  1:14  error    Strings must use singlequote                     quotes
+  1:22  error    Expected linebreaks to be 'LF' but found 'CRLF'  linebreak-style
+  1:22  error    Missing semicolon                                semi
+  2:1   warning  Unexpected console statement                     no-console
+  2:18  error    Newline required at end of file but not found    eol-last
+  2:18  error    Missing semicolon                                semi
+```
+
+如果不想要某些语法被归类为错误，可以在`eslintrc.js`文件中关闭
+
+```js
+  rules: {
+    semi: 'off', //这里有三个取值，默认是error(2)，也可以设置为warn(1)或者直接关闭off(0)
+  },
+```
+
+
+
+**在webpack中使用eslint**
+
+安装loader：`npm install eslint-loader -D`
+
+```js
+{
+    test: /\.js$/,
+    exclude: /node_moudles/,
+    use: [
+        "babel-loader",
+        "eslint-loader"
+    ]
+}
+```
+
+这样在进行打包时，进行babel转化前先进行代码规范检测
+
+
+
+**编译阶段校验代码规范**
+
+例如在vscode中使用**ESLint插件**，该插件会默认读取项目中的`eslintrc.js`文件，没有则使用自身的规则。
+
+使用该插件的好处在于，在编译阶段就可以报出格式错误，便于直接修改
+
+
+
+
+
+**格式化Prettier-Code formatter**
+
+Prettier 是一款强大的代码格式化工具，支持 JavaScript、TypeScript、CSS、SCSS、Less、JSX、Angular、Vue、GraphQL、JSON、Markdown 等语言，基本上前端能用到的文件格式它都可以搞定，是当下最流行的代码格式化工具。
+
+安装
+
+在vscode中安装该插件，并在设置中找到`Editor:Default Formatter`，设置为`Prettier-Code formatter`
+
+该插件有自己的规则，当然也可以通过`.prettierrc`进行自定义
+
+
+
+配置.prettierrc文件：
+
+```js
+* useTabs：使用tab缩进还是空格缩进，选择false；
+* tabWidth： tab是空格的情况下，是几个空格，选择2个；
+* printWidth：当行字符的长度，推荐80，也有人喜欢100或者120；
+* singleQuote：使用单引号还是双引号，选择true，使用单引号；
+* trailingComma：在多行输入的尾逗号是否添加，设置为 `none`；
+* semi：语句末尾是否要加分号，默认值true，选择false表示不加；
+```
+
+
+
+创建.prettierignore忽略文件
+
+```
+/dist/*
+.local
+.output.js
+/node_modules/**
+
+**/*.svg
+**/*.sh
+
+/public/*
+```
+
+> 注：ESLint与prettier都是规范代码，两个有时会有一些冲突。比如在prettier中规定单引号，在ESLint规定双引号就会产生冲突，需要进行配置
