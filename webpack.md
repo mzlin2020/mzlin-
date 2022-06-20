@@ -1,4 +1,4 @@
-# webpack
+# 	webpack
 
 
 
@@ -828,8 +828,6 @@ module.exports = {
 
 
 
-
-
 ### 7、polyfill
 
 polyfill：填充物、补丁
@@ -840,7 +838,7 @@ polyfill：填充物、补丁
 
 babel7.4之后，可以通过单独引入core-js和regenerator-runtime来完成polyfill的使用
 
-`npm install core-js regenerator-runtimr --save`
+`npm install core-js regenerator-runtime --save`
 
 配置babel.config.js
 
@@ -848,7 +846,7 @@ babel7.4之后，可以通过单独引入core-js和regenerator-runtime来完成p
 module.exports = {
     presets: [
         ["@babel/preset-env", {
-            useBuiltIns: "useage",
+            useBuiltIns: "usage",
             // false:不用任何polyfill相关的代码
             // useage: 代码中需要哪些polyfill，就引用相关的api
             // entry： 需要手动在入口文件中导入 core-js/ regenerator-runtime,之后根据目标浏览器引入所有对应
@@ -913,7 +911,7 @@ app.mount("#app")
 // 配置.vue文件打包
 {
     test:/.\vue$/,
-        loader:"vue-loader"
+    loader:"vue-loader"
 }
 ```
 
@@ -1093,7 +1091,7 @@ more是false，设置为true会打开浏览器
 
 **compress**
 
-默认值为false，设置为true会开启静态文件打包为gzip
+默认值为false，设置为true会开启静态文件打包为gzip（性能优化）
 
 
 
@@ -1150,6 +1148,34 @@ axios.get("/api/content").then(res=>{
 
 
 
+**3、webpack-dev-middleware**
+
+自定义一个服务，帮助我们运行代码
+
+安装：`npm install express webpack-dev-middleware`
+
+```js
+//server.js
+const express = require('express')
+const webpack = require('webpack')
+const webapckDevMiddleware = require('webpack-dev-middleware')
+const app = express()
+
+const config = require('./webpack.config')
+const cpmpiler = webpack(config)
+
+const middleware = webapckDevMiddleware(cpmpiler)
+app.use(middleware)
+
+app.listen(3000, () => {
+  console.log('服务在3000端口启动成功')
+})
+```
+
+运行`node server.js`，可以看到在3000端口运行了一个服务，该服务即是本地代码的运行结果
+
+
+
 ### 10、 resolve模块解析
 
 （用于起别名，引用文件的时候省略扩展名）
@@ -1190,7 +1216,7 @@ module.exports = {
         resolve:{
         alias: {
             "js":path.resolve(__dirname,"./src/js"),
-            "@":path.resolve(__dirname,"./src/js")
+            "@":path.resolve(__dirname,"./src")
         }
     }
 }
@@ -1481,3 +1507,534 @@ Prettier 是一款强大的代码格式化工具，支持 JavaScript、TypeScrip
 ```
 
 > 注：ESLint与prettier都是规范代码，两个有时会有一些冲突。比如在prettier中规定单引号，在ESLint规定双引号就会产生冲突，需要进行配置
+
+
+
+### 13、环境分离
+
+在上述的代码实践中，我们的配置代码都是在`webpack.config.js`中，但是在生产环境与开发环境下，所需要的配置是不相同的。（例如在生产环境下，不需要devServer）
+
+
+
+**方式一**
+
+新建config文件夹，并在其中分别创建`webpack.common.js/webpack.prod.js/webpack.dev.js`
+
+在执行命令时区分不同的环境
+
+```js
+//package.json
+{
+"scripts": {
+    "build": "webpack --config ./config/webpack.prod.js", //打包时使用生产环境的配置
+    "serve": "webpack serve --config ./config/webpack.dev.js" //开发时使用开发环境配置
+  },
+}
+```
+
+
+
+
+
+**方式二**
+
+通过传递参数的方式告知当前环境
+
+```js
+//package.json
+{
+"scripts": {
+    "build": "webpack --config ./config/webpack.common.js --env production", //传递production：true
+    "serve": "webpack serve --config ./config/webpack.common.js --env development"
+  },
+}
+```
+
+在`webpack.common.js`中，获取到传递过来的参数，以此判断环境
+
+```js
+//webpack.common.js
+const path = require('path')
+
+module.exports = function(env) {
+  console.log('env', env)
+
+  return {
+    entry: "./src/index.js",//该路径并不是相对于文件所在的路径，而是相对于context配置的路径
+    output: {
+      filename: "bundle.js",
+      path: path.resolve(__dirname, './build')
+    },
+  }
+}
+
+//env：{ WEBPACK_BUNDLE: true, WEBPACK_BUILD: true, prodution: true }
+```
+
+
+
+**分离代码**
+
+```js
+//webpack.config.js
+const path = require('path')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+
+module.exports = {
+  mode: "development",
+  devtool: "source-map",
+
+  entry: "./src/index.js",
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, './build')
+  },
+  devServer: {
+    hot: true
+  },
+  resolve: {
+    extensions: ['.js', '.vue', '.ts'],
+    alias: {
+      "@": path.resolve(__dirname, "./src")
+    }
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'babel-loader'
+        }
+      }
+    ]
+  },
+  plugins: [
+    new CleanWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      template: './index.html'
+    })
+  ]
+}
+```
+
+分离到`webpack.common.js`
+
+```js
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const devConfig = require('./webpack.dev')
+const prodConfig = require('./webpack.prod')
+const { merge } = require('webpack-merge')
+
+const commonConfig = {
+  entry: "./src/index.js",
+  output: {
+    filename: "bundle.js",
+    path: path.resolve(__dirname, '../build')
+  },
+  resolve: {
+    extensions: ['.js', '.vue', '.ts'],
+    alias: {
+      "pages": path.resolve(__dirname, "./src/pages")
+    }
+  },
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'babel-loader'
+        }
+      }
+    ]
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './index.html'
+    })
+  ],
+}
+
+module.exports = function(env) {
+  
+  const isProduction = env.production
+  console.log('env', isProduction)
+  return isProduction? merge(commonConfig, prodConfig) : merge(commonConfig,devConfig)
+}
+```
+
+分离到`webpack.dev.js`
+
+```js
+module.exports = {
+  mode: "production"
+}
+```
+
+分离到`webpack.prod.js`
+
+```js
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+
+module.exports = {
+  mode: "development",
+  plugins: [
+    new CleanWebpackPlugin(),
+  ],
+  devServer: {
+    hot: true
+  }
+}
+```
+
+其中，需要安装`npm install webapck-merge -D`，将通用配置合并到对应环境的文件
+
+```js
+//package.json
+  "scripts": {
+    "build": "webpack",
+    "serve": "webpack serve",
+    "build2": "webpack --config ./config/webpack.common.js --env production",
+    "serve2": "webpack serve --config ./config/webpack.common.js --env development"
+  },
+```
+
+这样一来，运行`npm run build2`就会合并运行`webpack.common.js`和`webpack.dev.js`中的配置
+
+运行`npm run serve2`就会合并运行`webpack.common.js`和`webapck.prod.js`中的配置
+
+
+
+### 14、代码分离
+
+代码分离是将代码分离到不同的bundle中，之后我们可以按需加载
+
+不分离代码的话，所有代码都在一个bundle.js文件中，下载慢从而影响首页加载速度
+
+> 只要是异步引用的代码，webpack都会进行分离
+
+
+
+常见的方式有三种：
+
++ 入口起点：使用entry配置手动分离代码
++ 防止重复：使用`Entry Ddpendencies`或者`SplitChunksPlugin`去重和分离代码
++ 动态导入：通过模块的内联函数调用分离代码
+
+
+
+**方式一**
+
+假设入口文件`index.js`中有home、about的代码，我们可以将其分成两个文件`home.js`和`about.js`
+
+配置多个入口文件
+
+```js
+//webpack.config.js
+module.exports = {
+  mode: "development",
+  entry: {
+    home: "./src/home.js",
+    about: "./src/about.js"
+  },
+  output: {
+    filename: "[name].bundle.js",
+    path: path.resolve(__dirname, './build')
+  }
+}
+```
+
+这样打包出来就有`home.bundle.js`和`about.bundle.js`
+
+
+
+但是这种方式存在问题：当两者都引入一些库时，都会被重复打包（home.bundle.js打包一份，about.bundle.js也会打包再一次）
+
+
+
+**方式二：splitChunks**
+
+该插件webpack已默认安装与集成
+
+```js
+const path = require('path')
+const TerserPlugin = require('terser-webpack-plugin')
+
+module.exports = {
+  mode: "development",
+  entry: {
+    main: "./src/main.js",
+    index: "./src/index.js"
+  },
+  output: {
+    filename: "[name].bundle.js",
+    path: path.resolve(__dirname, './build')
+  },
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        extractComments: false
+      })
+    ],
+    splitChunks: {
+      // async 异步导入
+      // initial 同步导入
+      // 异步/同步导入
+      chunks: "all"
+    },
+  },
+}
+```
+
+splitChunks的其他属性
+
+```js
+    splitChunks: {
+      chunks: "all",
+      minSize: 20000, //拆出来的包的最小尺寸：必须达到这个值，否则不进行拆分
+	  maxSize: 30000, //拆出来的包大于该值，再次进行拆分（需大于minSize）
+      minChunks: 2, // 表示引入的包，至少被导入了几次才进行拆分
+      cacheGroups: { //根据匹配到的文件夹/文件名,进行单独打包
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          filename: "[id]_vendors.js"
+        },
+        default: {
+          minChunks: 2,
+          filename: "common_[id].js"
+        }
+      }
+    },
+```
+
+
+
+**方式三**
+
+**懒加载**
+
+在需要的时候再将代码下载并执行
+
+```js
+//例如可以创建一个按钮，点击时才引入相关的代码文件
+button.addEventListener("click", () => {
+    import(/* webpackChunkName: '自定义文件名' */"./foo").then(res => {
+        console.log(res)
+    })
+})
+```
+
+在这种懒加载情况下，仅有点击时浏览器才会去下载代码，并执行代码
+
+问题：但是当加载的文件过大、过慢时，也会影响用户体验。能否利用浏览器的空闲时间，主动进行预下载，这样当需要用到该文件时，直接执行即可（省去了下载的时间）
+
+
+
+```js
+//解决：利用浏览器空闲预加载——魔法注释
+
+button.addEventListener("click", () => {
+    import(
+        /* webpackChunkName: '自定义文件名' */
+        /* webpackPrefetch: true */
+        "./foo").then(res => {
+        console.log(res)
+    })
+})
+```
+
+
+
+### 15、其他性能优化配置
+
+**1、CDN**
+
+在开发中，我们使用CDN的两种方式：
+
+一、打包所有的静态资源，放到CDN服务器，用户所有资源都是通过CDN服务器加载的
+
+二、一些第三方资源放到CDN服务器上
+
+
+
+使用
+
+需要购买CND服务器，并将资源放置在上边
+
+```js
+//webapck.config.js
+  output: {
+    filename: "[name].bundle.js",
+    path: path.resolve(__dirname, './build'),
+    publicPath: "https://linzm.com/cdn/"
+  },
+```
+
+这样一来，资源都会从CDN上进行加载
+
+```html
+</script><script defer="defer" src="https://linzm.com/cdn/index.bundle.js">
+```
+
+
+
+**第三方库的CDN服务器**
+
+中小型企业可能没有购买的CDN，但是将一些频繁使用的大型库（lodash、dayjs、vue、react）打包部署，又十分消耗性能，导致打包的文件十分大。
+
+这时候，就可以利用第三方库已有的CDN服务器。利用这些CDN，我们完全可以不用再将lodash等大型库进行打包了
+
+
+
+通常一些比较出名的开源框架都会将打包后的源码放到一些比较出名、免费的CDN服务器上：
+
++ 国际上出名的有：unpkg、JSDelivr、cdnjs
++ 国内：bootcdn
+
+
+
+应用
+
+```js
+//webpack.config.js
+module.exports = {
+  externals: { //将不需要打包的库罗列出来
+    "loadsh": "_", //key: 全局对象
+    "dayjs": "dayjs"
+  },
+}
+```
+
+此时打包后的文件不再包含这两个库的代码
+
+之后在html模板中直接引用这两个库CDN
+
+```html
+//index.html
+<body>
+  <div id="app"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.3/dayjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+</body>
+```
+
+
+
+**2、miniCssExtractPlugin**
+
+实现将css代码抽离到css文件中
+
+安装：`npm install mini-extract-plugin -D`
+
+```js
+//webpack.config.js
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: [
+          // "style-loader", //生产环境需要
+          MiniCssExtractPlugin.loader, // 开发环境需要
+          "css-loader"
+        ]
+      }
+    ]
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: "css/[name].[hash:8].css"
+    })
+  ]
+}
+```
+
+
+
+**3、DLL库**
+
+DLL（动态链接库Dynamic Link Library），是为软件在Windows中实现共享函数库的一种实现方式。
+
+webapck中也有内置的DLL功能，它可以将可共享的，不经常改变的代码抽取成一个公共的库。这个库在之后编译的过程中，会被引入到其他项目的代码中。
+
+
+
+使用
+
++ 打包一个DLL库
++ 项目中引入DLL库
+
+
+
+> 注意：目前出名的脚手架都移除了DLL库
+
+
+
+**4、Terser**
+
+Terser是一个对JavaScript进行解释（Parser）、丑化（Mangler）、压缩（Compressor）的工具集
+
+terset是一个独立的工具，所以可以独立安装`npm install terser`
+
+使用：
+
+`npx terser inputfiles -o outputfile`
+
+但是运行以上命令会发现它仅仅是删除了空格。要更大力度的压缩需要增加一些参数
+
+例如：删除不可达的代码
+
+`npx terser ./src/index.js -o index.min.js -c dead_code=true`
+
+例如：丑化代码
+
+`npx terser ./src/index.js -o index.min.js -m toplevel=true`
+
+
+
+
+
+**在webpack中使用terser**
+
+webpack5默认安装了terser-webpack-plugin，在production环境下会应用该插件
+
+当然我们也可以进行自定义设置
+
+
+
+```js
+//webapck.config.js
+const TerserPlugin = require('terser-webpack-plugin')
+module.exports = {
+  optimization: {
+    minimizer: [
+      minimize: true
+      new TerserPlugin({
+        extractComments: false
+      })
+    ],
+  }
+}
+```
+
+
+
+**css压缩**
+
+css压缩通常是去除无用的空格，因为很难修改选择器、属性等
+
+通常使用的插件：`npm install css-minimizer-webpack-plugin -D`
+
+使用
+
+```js
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+module.exports = {
+    plugins: [
+        new CssMinimizerPlugin()
+    ]
+}
+```
+
