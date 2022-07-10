@@ -2038,3 +2038,126 @@ module.exports = {
 }
 ```
 
+
+
+### 16、Tree Shaking
+
+Tree Shaking是一个术语，在计算机中表示消除死代码。
+
+
+
+在webpack中实现Tree Shaking有两种方案
+
+**1、usedExports**
+
+该方式的目的在于标注出哪些代码是未被使用的（打上注释），之后terser根据这些注释，进行删除。
+
+```js
+//webpack.config.js
+module.exports = {
+    optimazation:{
+        usedExports: true //在production模式下，默认为true
+    }
+}
+```
+
+
+
+**2、sideEffects**
+
+该方式用于告知webpack comoiler哪些**模块**具有副作用，有副作用就不进行删除
+
+
+
+使用方式：在package.json中设置sideEffect值，false即表示可以删除所有未用到的exports，如果希望保留一些有副作用的模块，可以设置为数组（例如css文件）
+
+```js
+//假设format模块具有副作用，不想被删除
+{
+    "sideEffects": [
+        "./src/util/format.js",
+        "**.css"
+    ]
+}
+```
+
+
+
+但是上边的两种方式都是针对于JavaScript代码的Tree Shaking，对于css不起作用
+
+css中有时候也会存在未被使用的代码，则需要利用一些插件实现摇树功能
+
+
+
+**css实现Tree Shaking**
+
+安装`PurgeCss`的webpack插件 `npm install purgecss-webpack-plugin`
+
+```js
+//webpack.config.js
+const PurgecssPlugin = require('purgecss-webpack-plugin')
+const glob = require('glob')
+module.exports = {
+    plugins: [
+        new PurgecssPlugin({
+            // 匹配到src文件夹下的所有css文件（不包括文件夹）
+          paths: glob.sync('./src/**/*', {nodir: true}),
+          safelist: function() {
+            // 添加白名单，以下属性均会被加入到打包中
+            return {
+              standard: ["body", "html"]
+            }
+          }
+        })
+    ]
+}
+```
+
+> glob该库为webpack默认安装，这里用于帮助匹配文件
+
+这样子一来，只要是没用过的css代码，就会被删除掉
+
+
+
+### 17、HTTP压缩
+
+HTTP压缩是一种内置在服务器和客户端之间的，以改进传输速度和带宽利用率的方式
+
+**流程**
+
++ HTTP数据在服务器发送前已经被压缩（可在webpack中完成）
++ 兼容的浏览器在向服务器发送请求时，会告知服务器自己支持哪些压缩格式`Accept-Encoding:gzip`
++ 服务器在浏览器的压缩格式下，直接返回对应的压缩后的文件，并且在响应头告知浏览器`Content-Encoding: gzip`
+
+**压缩格式**
+
+常见的有以下几种
+
+1、compress（不推荐使用）
+
+2、deflate -（基于deflate算法的压缩，使用zlib数据格式封装）
+
+3、gzip - （GNU zip格式，是目前使用比较广泛的压缩算法）
+
+4、br - （一种新的开源压缩算法，专为HTTP内容的编码而设计）
+
+
+
+**webpack对文件压缩**
+
+webpack中相当于是实现了HTTP压缩的第一步操作，可以使用CompressionPlugin
+
+安装：`npm install compression-webpack-plugin -D`
+
+```js
+const CompressionPlugin = require("compression-webpack-plugin")
+module.exports = {
+    plugins: [
+        new CompressionPlugin({
+            test: /\.(css|js)$/i
+        })
+    ]
+}
+```
+
+可以看到打包的的文件夹中出现了许多`.gz`结尾的文件
