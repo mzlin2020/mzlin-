@@ -974,7 +974,7 @@ module.exports = {
 
 通过配置watch的方式可以监听到文件的变化，但是事实上它本身没有自动刷新浏览器的功能，而是依赖了vscode的live-server插件
 
-那么，如何在不适用live-serve的情况下，可以具备live reloading（实时重新加载）的功能
+那么，如何在不适用live-serve的情况下，可以具备live reloading（实时重新加载）的功能?
 
 安装：
 
@@ -1006,7 +1006,9 @@ module.exports = {
 }
 ```
 
-在不适用CopyWebpackPlugin插件的情况下，该配置意味着public文件夹下的资源也可以在浏览器中呈现。但是跟CopyWebpackPlugin相区别，contentBase只是不会将资源打包进bundle。
+在不使用CopyWebpackPlugin插件的情况下，该配置意味着public文件夹下的资源也可以在浏览器中呈现。
+
+但是跟CopyWebpackPlugin相区别，contentBase不会将资源打包进bundle.js文件中。
 
 该配置，可以有利于开发阶段，不想将大型public下的资源进行打包，浪费时间性能时可以使用
 
@@ -1041,11 +1043,14 @@ import add from './js/add'
 if(module.hot) {
     module.hot.accept("./js/add.js",()=>{
         console.log("add文件热加载成功");
+        //当该模块发生更新了，可以在这里额外做些什么
     })
 }
 ```
 
 这样一来，在add.js文件中更改内容，就可以进行热更新了
+
+
 
 事实上，如果在vue中进行修改、替换、删减操作，不需要以上的操作，因为vue-loader中默认已经有HMR，开箱即用
 
@@ -1116,7 +1121,7 @@ axios.get("http://localhost:8888/content").then(res=>{
 })
 ```
 
-所以我们需要通过live-server的代理来解决这个问题
+所以我们需要通过dev-server的代理来解决这个问题
 
 ```javascript
 module.exports = {
@@ -1124,6 +1129,7 @@ module.exports = {
     devServer:{
         proxy:{
             "/api": {
+                //将/api代理到http://localhost:8888
                 target:"http://localhost:8888",
                 pathRewrite:{
                     "^/api" : ""
@@ -1132,7 +1138,13 @@ module.exports = {
         }
     }
 }
+//为什么需要pathRewrite？
+//是因为当我们在发送网络请求时axios.get("/api/content")，会被代理到http://localhost:8888/api/content，所以这里我们需要将/api置空
 ```
+
+因为devServer本身就是一个express服务器，服务器与服务器之间不存在跨域关系（只有浏览器与服务器之间存在跨域限制），所以我们可以借助devServer来实现跨域访问
+
+
 
 同时,发送网络请求的代码也要相应的进行修改
 
@@ -1145,6 +1157,26 @@ axios.get("/api/content").then(res=>{
 ```
 
 这样子就可以正常访问到想要的数据了
+
+
+
+其他属性
+
+```js
+    devServer:{
+        proxy:{
+            "/api": {
+                //将/api代理到http://localhost:8888
+                target:"http://localhost:8888",
+                pathRewrite:{
+                    "^/api" : ""
+                },
+                secure: false， //默认情况下true表示不接收转发到https的服务器上，希望支持则false
+                changeOrigin: true //表示是否更新代理后请求的headers中的host地址
+            }
+        }
+    }
+```
 
 
 
