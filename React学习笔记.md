@@ -12,15 +12,11 @@ react是一个构建用户界面的JavaScript库
 + react-dom：react渲染在不同平台所需要的的核心代码
 + babel：将jsx转换成React代码的工具
 
-
-
 **2、react和babel的关系**
 
 默认情况下开发React其实可以不使用babel，但前提是我们自己使用React.createElement来编写源代码，但是它编写的代码非常的繁琐、可读性差。
 
 那么就可以直接编写jsx（JavaScript XML）的语法，并且使用babel转换成React.createElement
-
-
 
 **3、引入react依赖**
 
@@ -35,8 +31,6 @@ react是一个构建用户界面的JavaScript库
 2、方式二：下载到本地，引用本地依赖
 
 3、方式三：通过npm管理
-
-
 
 **4、基本使用**
 
@@ -53,8 +47,6 @@ react是一个构建用户界面的JavaScript库
 
 注：给`script`增加`type = "text/babel"`，其中的jsx代码才能够被解析。
 
-
-
 ### 1.2 简单案例
 
 点击按钮，改变文字
@@ -62,13 +54,13 @@ react是一个构建用户界面的JavaScript库
 ```jsx
 <div id="app"></div>
 <script type="text/babel">
-	let message = "hello world"
-	function btnClick() {
-		message = "hello react"
-	}
-	ReactDOM.render(
-	<div>
-    	<h2>{message}</h2> 
+    let message = "hello world"
+    function btnClick() {
+        message = "hello react"
+    }
+    ReactDOM.render(
+    <div>
+        <h2>{message}</h2> 
             <button onClick={btnClick}>change</button>
     </div>,
     document.getElementById("app"))
@@ -85,26 +77,24 @@ react是一个构建用户界面的JavaScript库
 <!-- 正确做法 -->
 <div id="app"></div>
 <script type="text/babel">
-	let message = "hello world"
-	function btnClick() {
-		message = "hello react"
-		render()
-	}
-	function render() {
-	ReactDOM.render(
+    let message = "hello world"
+    function btnClick() {
+        message = "hello react"
+        render()
+    }
+    function render() {
+    ReactDOM.render(
         <div>
             <h2>{message}</h2> 
             <button onClick={btnClick}>change</button>
         </div>,
     document.getElementById("app"))
-	}
-	render()
+    }
+    render()
 </script>
 ```
 
 将其放进一个函数中，点击按钮时重新执行一遍
-
-
 
 ### 1.3 组件化改进案例
 
@@ -122,9 +112,9 @@ react是一个构建用户界面的JavaScript库
     }
     render() {
         return (
-        	<div>
-            	<h2>{this.state.message}</h2>
-            	<button onClick={this.btnClick.bind(this)}>改变文本</button>
+            <div>
+                <h2>{this.state.message}</h2>
+                <button onClick={this.btnClick.bind(this)}>改变文本</button>
             </div>
         )
     }
@@ -139,8 +129,6 @@ react是一个构建用户界面的JavaScript库
 ReactDOM.render(<App/>, document.getElementById("app"))
 </script>
 ```
-
-
 
 **电影列表案例**
 
@@ -221,11 +209,9 @@ const element = <div>hello world</div>
 ```jsx
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 <script type="text/babel">
-	const element = <div>hello world</div>    
+    const element = <div>hello world</div>    
 </script>
 ```
-
-
 
 **JSX书写规范**
 
@@ -235,19 +221,15 @@ const element = <div>hello world</div>
 
 3、JSX中可以使用单标签，但是必须使用/结尾
 
-
-
 **JSX注释**
 
-````jsx
+```jsx
 const element = 
       <div>
-      		{/*我是注释*/}
+              {/*我是注释*/}
           <P>content</P>
       </div>
-````
-
-
+```
 
 ### 2.2 JSX嵌入数据
 
@@ -275,8 +257,6 @@ const element =
       }
     }
 ```
-
-
 
 2、布尔值、null、undefined在JSX中显示不了
 
@@ -317,12 +297,10 @@ const element =
             }
         }
 
-		<p>{this.state.obj}</p>
+        <p>{this.state.obj}</p>
 ```
 
 上面的代码直接报错
-
-
 
 4、嵌入表达式
 
@@ -360,8 +338,6 @@ const element =
   </script>
 ```
 
-
-
 ### 2.3 JSX绑定属性
 
 1、绑定标签的title属性和img的src属性
@@ -390,8 +366,6 @@ const element =
     ReactDOM.render(<App/>, document.querySelector("#app"))
   </script>
 ```
-
-
 
 2、绑定class属性和for属性要特别注意
 
@@ -439,8 +413,6 @@ const element =
       }
 ```
 
-
-
 ### 2.4 JSX绑定事件
 
 ```jsx
@@ -473,8 +445,6 @@ btnClcik() {
 ```
 
 这是因为react内部是这样调用的`btnClick.call(undefined)`
-
-
 
 怎么让this指向正确的对象？
 
@@ -542,8 +512,6 @@ btnClcik() {
     }
 ```
 
-
-
 **绑定事件，并传递参数**
 
 ```jsx
@@ -572,8 +540,6 @@ btnClcik() {
     }
     ReactDOM.render(<App/>, document.getElementById('app'))
 ```
-
-
 
 ### 2.5 JSX条件渲染
 
@@ -619,8 +585,6 @@ btnClcik() {
 <h2>{ isLogin && "hello world" }</h2>
 ```
 
-
-
 **3、实现v-show效果**
 
 上边的条件渲染都是类似于vue中的v-if，即都是通过DOM来控制渲染。
@@ -633,8 +597,6 @@ btnClcik() {
     <div style={{ display: (isLogin? "block" : "none") }}>hello world</div>
 </div>
 ```
-
-
 
 ### 2.6 JSX的本质
 
@@ -665,8 +627,6 @@ btnClcik() {
 
 依然是能够正常运行的
 
-
-
 **createElement的三个参数**
 
 参数一：type
@@ -681,8 +641,6 @@ btnClcik() {
 
 存放标签中的内容（可能是文本或者新的标签），以children数组的方式进行存储
 
-
-
 **babel转化**
 
 将我们编写的JSX代码通过Babel可以转换成`React.createElement`函数
@@ -692,7 +650,7 @@ btnClcik() {
 <div>
     <h2 className="title">title</h2>
     <div>content</div>
-    <div>footer</div>x
+    <div>footer</div>
 </div>
 ```
 
@@ -712,16 +670,14 @@ React.createElement(
   ),
   /*#__PURE__*/ React.createElement("div", null, "content"),
   /*#__PURE__*/ React.createElement("div", null, "footer")
-);	
+);    
 ```
-
-
 
 **虚拟DOM**
 
 我们通过上方的`React.createElement`最终创建出来的就是一个`ReactElement`对象，而它就是所谓的虚拟DOM
 
-验证	
+验证    
 
 ```jsx
       render() {
@@ -744,8 +700,6 @@ React.createElement(
 {$$typeof: Symbol(react.element), type: 'div', key: null, ref: null, props: {…}, …}
 ```
 
-
-
 **总结**
 
 我们来梳理整个过程：
@@ -754,13 +708,9 @@ React.createElement(
 JSX --> createElment函数 --> ReactElement(虚拟DOM树) --> ReactDOM.render --> 真实DOM
 ```
 
-
-
 ## 三、react脚手架
 
 安装脚手架： `npm install create-react-app -g`
-
-
 
 ### 3.1 yarn
 
@@ -771,8 +721,6 @@ npm install yarn -g
 ```
 
 ![](img/react-img/yarn常用命令.jpg)
-
-
 
 ### 3.2 创建项目
 
@@ -788,23 +736,19 @@ create-react-app 项目名称
 yarn start
 ```
 
-
-
 **项目结构说明**
 
-| 文件名              | 说明                                                         |
-| ------------------- | ------------------------------------------------------------ |
-| yarn.lock           | 该文件与`package.json.lock`的职能相同，记录了项目中实际的版本依赖 |
-| favicon.icn         | 图标，显示在浏览器的项目标题处                               |
-| robots.txt          | 指定搜索引擎可以或者无法爬取哪些文件                         |
-| App.css与App.js     | App组件的代码文件和相关样式                                  |
-| App.test.js         | App组件的测试代码文件                                        |
-| index.css与index.js | 全局的样式文件与整个程序的入口文件                           |
-| setupTests.js       | 测试初始化文件                                               |
-| manifest.json       | 和web app配置相关                                            |
-| serviceWorker.js    | 默认帮助我们写好的注册Pwa相关的代码                          |
-
-
+| 文件名                | 说明                                         |
+| ------------------ | ------------------------------------------ |
+| yarn.lock          | 该文件与`package.json.lock`的职能相同，记录了项目中实际的版本依赖 |
+| favicon.icn        | 图标，显示在浏览器的项目标题处                            |
+| robots.txt         | 指定搜索引擎可以或者无法爬取哪些文件                         |
+| App.css与App.js     | App组件的代码文件和相关样式                            |
+| App.test.js        | App组件的测试代码文件                               |
+| index.css与index.js | 全局的样式文件与整个程序的入口文件                          |
+| setupTests.js      | 测试初始化文件                                    |
+| manifest.json      | 和web app配置相关                               |
+| serviceWorker.js   | 默认帮助我们写好的注册Pwa相关的代码                        |
 
 `manifest.json`与`serviceWorker.js`两个文件是帮助我们在开发web App时，提供一些配置
 
@@ -816,8 +760,6 @@ PWA全称`Progressive Web App`，即渐进式WEB应用。
 
 一个PWA应用首先是一个网页，我们可以通过web技术编写出一个网页应用，随后加上App Manifest和Service Worker来实现PWA的安装和离线等功能，这种Web存在的形式，称之为Web App
 
-
-
 Pwa解决了哪些问题？
 
 1、可以添加至主屏幕，点击主屏幕图标可以实现启动动画以及隐藏地址栏
@@ -826,11 +768,7 @@ Pwa解决了哪些问题？
 
 3、实现了消息推送等等类似于Native App相关的功能
 
-
-
 ### 3.3 基本使用
-
-
 
 为了更好地理解react脚手架，我们可以将src下的所有文件都删除，public文件夹下也只保留index.html与图标
 
@@ -849,8 +787,6 @@ ReactDOM.render(<h2>hello React</h2>, document.getElementById('root'))
 ```
 
 最终效果是h2被挂载到页面上
-
-
 
 将jsx代码抽取到一个类中
 
@@ -873,8 +809,6 @@ class App extends React.Component {
 }
 ReactDOM.render(<App/>, document.getElementById('root'))
 ```
-
-
 
 这样做有一个很大的好处，可以将类抽离出去再导入
 
@@ -904,16 +838,13 @@ import App from './App'
 ReactDOM.render(<App/>, document.getElementById('root'))
 ```
 
-
-
 ## 四、组件化开发
 
 > 小技巧: 
->
+> 
 > vscode中,通过alt + shift + f ，可以实现对代码的格式化
->
+> 
 > 生成react代码片段插件： ES7 React/Redux/GraphQL/React-Native snippets
->
 
 ### 4.1 类组件与函数组件
 
@@ -929,8 +860,6 @@ ReactDOM.render(<App/>, document.getElementById('root'))
 
 3、类组件必须实现render函数
 
-
-
 使用**class定义**一个组件： 
 
 1、constructor是可选的，我们通常在constructor中初始化一些数据； 
@@ -938,8 +867,6 @@ ReactDOM.render(<App/>, document.getElementById('root'))
 2、this.state中维护的就是我们组件内部的数据； 
 
 3、render() 方法是 class 组件中唯一必须实现的方法；
-
-
 
 ```jsx
 //类组件
@@ -970,8 +897,6 @@ export default function App() {
 
 2、没有内部状态
 
-
-
 ### 4.2 render返回值
 
 当render函数被调用时，它会检查this.props和this.state的变化并返回以下类型之一：
@@ -986,8 +911,6 @@ export default function App() {
 
 5、布尔类型或null（什么都不会渲染）
 
-
-
 ### 4.3 生命周期
 
 React组件有自己的生命周期，了解组件的生命周期可以让我们在最合适的地方完成自己想要的功能
@@ -1001,8 +924,6 @@ React组件有自己的生命周期，了解组件的生命周期可以让我们
 3、componentWillUnmount函数：组件即将移除时，就会回调
 
 ![](img/react-img/react生命周期.jpg)
-
-
 
 **挂载阶段**
 
@@ -1020,7 +941,7 @@ export default class App extends Component {
     console.log("2、执行了render函数");
     return (
       <div>
-        
+
       </div>
     )
   }
@@ -1035,8 +956,6 @@ export default class App extends Component {
 //2、执行了render函数
 //3、执行了componentDidMount方法
 ```
-
-
 
 **更新阶段**
 
@@ -1072,8 +991,6 @@ export default class App extends Component {
 //1、更新时，重新执行render函数
 //2、执行componentDidUpdate该回调函数~
 ```
-
-
 
 **卸载阶段**
 
@@ -1120,18 +1037,14 @@ export default class App extends Component {
 
 当点击取消Cpn组件时，就会触发其上的componentWillUnmount组件
 
-
-
 **汇总**
 
-| 函数名称             | 说明                                                        | 适用                                        |
-| -------------------- | ----------------------------------------------------------- | ------------------------------------------- |
-| constructor          | 可选，如果不初始化state或不进行方法绑定，则不需要该构造函数 | 通过this.state赋值对象来初始化内部的state   |
-| componentDidMount    | 组件挂载后立即调用                                          | 依赖于DOM的操作；发送网络请求；添加一些订阅 |
-| componentDidUpdate   | 更新时立即调用，首次渲染时不执行该函数                      | 组件更新后，可对DOM进行操作；发送网络请求   |
-| componentWillUnmount | 组件卸载以及销毁之前直接调用                                | 执行必要的清除操作                          |
-
-
+| 函数名称                 | 说明                               | 适用                           |
+| -------------------- | -------------------------------- | ---------------------------- |
+| constructor          | 可选，如果不初始化state或不进行方法绑定，则不需要该构造函数 | 通过this.state赋值对象来初始化内部的state |
+| componentDidMount    | 组件挂载后立即调用                        | 依赖于DOM的操作；发送网络请求；添加一些订阅      |
+| componentDidUpdate   | 更新时立即调用，首次渲染时不执行该函数              | 组件更新后，可对DOM进行操作；发送网络请求       |
+| componentWillUnmount | 组件卸载以及销毁之前直接调用                   | 执行必要的清除操作                    |
 
 ### 4.4 组件间的通信
 
@@ -1147,7 +1060,7 @@ class Cpn extends Component {
   render() {
     const { name, age, address } = this.props
     return (
-      <div>	
+      <div>    
         { name + " " + age + " " + address }
       </div>
     )
@@ -1183,8 +1096,6 @@ class Cpn extends Component {
 }
 ```
 
-
-
 **父传子（函数组件）**
 
 ```jsx
@@ -1210,8 +1121,6 @@ export default class App extends Component {
 }
 ```
 
-
-
 **父传子（类型检测）**
 
 在react中，如果想要对父组件传递到子组件的中内容进行限制，需要导入`prop-types`这个库
@@ -1226,7 +1135,7 @@ ChildCnp.propTypes = {
 }
 ```
 
-````jsx
+```jsx
 import propTypes from "prop-types"
 function ChildCnp (props) {
   const { name, age } = props
@@ -1259,9 +1168,7 @@ export default class App extends Component {
     );
   }
 }
-````
-
-
+```
 
 也可以定义默认值
 
@@ -1282,8 +1189,6 @@ export default class App extends Component {
   }
 }
 ```
-
-
 
 **子传父**
 
@@ -1328,8 +1233,6 @@ export default class App extends Component {
 }
 ```
 
-
-
 ### 4.5 实现插槽
 
 在react中是没有插槽这个概念的，但其实是完全没有这个必要，因为插槽在react中实现起来比较地简单
@@ -1343,7 +1246,7 @@ export default class App extends Component {
     <span>左边</span>
     <span>中间</span>
     <span>右边</span>
-</NavBar>	
+</NavBar>    
 ```
 
 在插槽组件中将传递过来的内容填充到对应的位置
@@ -1371,8 +1274,6 @@ export default class navBar extends Component {
   }
 }
 ```
-
-
 
 **方式二**
 
@@ -1409,8 +1310,6 @@ export default class navBar2 extends Component {
   }
 }
 ```
-
-
 
 ### 4.6 跨组件通信
 
@@ -1459,8 +1358,6 @@ class ComponentC extends Component {
 }
 ```
 
-
-
 **Context**
 
 Context提供了一种在组件之间共享此类值的方式，而不必显示地通过组件树逐层传递props，Context设计的目的就是为了共享那些对于一个组件树而言是“全局”的数据。
@@ -1479,15 +1376,11 @@ defaultValue是组件在顶层查找过程中没有找到对应的Provider，那
 
 `<MyContext.Provide value={/*某个值*/} >`
 
-
-
 3、Class.contextType
 
 挂载在class上的contextType属性会被重新赋值为一个由React.createContext()创建的Context对象：这能让你使用this.context来消费最近Context上的那个值；你可以在任何生命周期中访问到它，包括render函数中
 
 `MyClass.contextType = MyContext`
-
-
 
 使用过程
 
@@ -1515,7 +1408,7 @@ export default class ComponentA extends Component {
         <UserContext.Provider value={ this.state }>
           <ComponentB/>
         </UserContext.Provider>
-        
+
       </div>
     )
   }
@@ -1541,8 +1434,6 @@ class ComponentC extends Component {
 ComponentC.contextType = UserContext
 ```
 
-
-
 在函数式组件中没有this.context，要怎么使用呢？
 
 ```jsx
@@ -1565,15 +1456,11 @@ function ComponentC () {
 }
 ```
 
-
-
 ### 4.7 事件总线
 
 前面通过Context主要实现的数据的共享，但是在开发中如果有跨组件之间的事件传递，就需要用到事件总线。在react中使用比较多的是events来完成对应的操作
 
 安装：`yarn add events`
-
-
 
 event常用的API
 
@@ -1584,8 +1471,6 @@ event常用的API
 3、监听事件：eventBus.addListener（“事件名称”，监听函数）
 
 4、移除事件：eventBus.removeListener（“事件名称”，监听函数）
-
-
 
 **案例：A组件与B组件进行事件传递**
 
@@ -1627,8 +1512,6 @@ class CpnB extends PureComponent {
 
 一般在`componentWillUnmount`生命周期中对这个事件进行卸载处理
 
-
-
 ### 4.8 ref
 
 在react开发中，通常情况下不需要，也不建议直接操作DOM原生，但是某些特殊的情况确实需要取到DOM进行某些操作，这个时候就可以使用ref了
@@ -1668,8 +1551,6 @@ ref属性不仅可以使用在html标签上，还能使用在类组件上。
 
 但是如果要使用在函数式组件上，需要通过`React.forwordRef`
 
-
-
 ### 4.9 受控组件
 
 实现了类似于vue中`v-model`功能的组件就是受控组件
@@ -1707,11 +1588,7 @@ export default class App extends PureComponent {
 }
 ```
 
-
-
 ## 五、setState
-
-
 
 ### 5.1 基本认识
 
@@ -1729,11 +1606,7 @@ export default class App extends PureComponent {
 
 这种修改方式react并不知道数据发生了变化
 
-
-
 2、setState方法是从Component中继承过来的
-
-
 
 3、setState是异步更新的
 
@@ -1753,8 +1626,6 @@ export default class App extends PureComponent {
 
 + 可以提升性能。如果每次调用setState都进行一次更新，那么意味着render函数会被频繁调用，页面重新渲染，效率低。最好的办法是获取到多个更新，之后进行批量更新
 + 保持state和props一致，避免产生其他bug。同步更新了state，但是还未执行render函数时，state与props中的数据是不一致的
-
-
 
 4、立即获取到setState更新后的数据
 
@@ -1777,8 +1648,6 @@ setState的第二个参数是一个回调函数，会等到数据发生更新后
 
 另一个方式是通过生命周期函数：`componentDidUpdate()`
 
-
-
 5、在某些特殊情况下，setState是同步的
 
 情况一：定时器
@@ -1797,11 +1666,7 @@ setState的第二个参数是一个回调函数，会等到数据发生更新后
 
 直接同步输出：`你好世界`
 
-
-
 情况二：原生DOM事件
-
-
 
 6、this.setState中更新了state，但是并不会覆盖掉整个state
 
@@ -1815,8 +1680,6 @@ this.state = {
 假设`setState`更新了message1，那么它最终仅仅只更新了message1，而不会返回一个新的对象覆盖掉原来的state
 
 源码：`return Object.assign({}, preState, newState)`
-
-
 
 7、在this.setState中多次调用相同的操作会被合并
 
@@ -1836,8 +1699,6 @@ this.state = {
 ```
 
 最终结果并不会+3，而是简单地加1
-
-
 
 ### 5.2 不可变数据
 
@@ -1908,10 +1769,6 @@ this.setState({
 })
 ```
 
-
-
-
-
 ## 六、性能优化
 
 ### 6.1 keys优化
@@ -1924,15 +1781,11 @@ this.setState({
 
 情况二，在前面插入数据。（没有key时，所有的元素都需要进行修改；有key时，react会使用key来匹配原有树上的子元素以及最新树上的子元素，匹配到的元素仅仅进行位移，不需要其他的修改）
 
-
-
 注意事项：
 
 1、可以应该是唯一的。（尽量不使用index作为key，对性能并无优化）
 
 2、key不要使用随机数，应该是固定的
-
-
 
 ### 6.2 渲染优化
 
@@ -1956,8 +1809,6 @@ render() {
 
 这样子非常地消耗性能
 
-
-
 **shouldComponentUpdate**
 
 默认情况下，存在`shouldComponentUpdate(nextProps, nextState)`这么一个生命周期函数，其中返回值为true。表示不对组件中的内容渲染进行阻止（即调动render函数）
@@ -1976,8 +1827,6 @@ shouldComponentUpdate(nextProps, nextState) {
 
 这有做有点不严谨，且不方便
 
-
-
 **pureComponent**
 
 所以在开发中，一般让一个类继承自`pureComponent`
@@ -1989,8 +1838,6 @@ shouldComponentUpdate(nextProps, nextState) {
 import React, { PureComponent } from "react";
 export default class App extends PureComponent { }
 ```
-
-
 
 **memo**
 
@@ -2014,8 +1861,6 @@ const MemoOtherCpn = memo(function OtherCpn () {
 
 高阶组件（HOC）：高阶组件是参数为组件，返回值为新组件的函数
 
-
-
 案例：创建一个高阶组件，将App组件传递进去并返回新的组件挂载到root上
 
 ```jsx
@@ -2035,8 +1880,6 @@ export default EnhanceComponent
 ```
 
 理解：高阶组件可以看做是对传入组件进行了拦截操作，再处理后的组件返回出去
-
-
 
 **应用一**：增强props
 
@@ -2080,8 +1923,6 @@ export default class App extends PureComponent {
 }
 ```
 
-
-
 ### 7.2 fragment
 
 fragment类似于vue中的template，可以用来代替外层的div标签，并且不会渲染到页面上
@@ -2094,8 +1935,6 @@ fragment类似于vue中的template，可以用来代替外层的div标签，并�
       </div>
     )
 ```
-
-
 
 ```html
 <div id="root">
@@ -2122,15 +1961,11 @@ fragment类似于vue中的template，可以用来代替外层的div标签，并�
 {/*这种写法比较简洁，但是不能添加任何属性*/}
 ```
 
-
-
 ### 7.3 StrictMode
 
 StrictMode是一个用来突出显示应用程序中潜在问题的工具，相当于react的严格模式
 
 特点：不会渲染任何可见的UI，为其后代元素触发额外的检查和警告，仅在开发模式下运行不会影响生产构建
-
-
 
 **开启StrictMode**
 
@@ -2150,14 +1985,12 @@ ReactDOM.render(
 ```jsx
 {/*为ComponentA开启严格模式*/}
 <div>
-	<React.StrictMode>
-    	<ComponentA />
+    <React.StrictMode>
+        <ComponentA />
     </React.StrictMode>
     <ComponentB />
 </div>
 ```
-
-
 
 **检测内容**
 
@@ -2170,8 +2003,6 @@ ReactDOM.render(
 4、检查意外的副作用（如一个组件的constructor被调用了两次）
 
 5、检测过时的context API
-
-
 
 ## 八、react的CSS
 
@@ -2228,8 +2059,6 @@ export default class App extends PureComponent {
 
 缺点：及其容易造成组件之间的样式相互污染
 
-
-
 ### 8.3 css modules
 
 css modules不是react特有的解决方案，而是所有使用了类似于webpack配置的环境都可以使用。
@@ -2249,8 +2078,6 @@ css modules不是react特有的解决方案，而是所有使用了类似于webp
 2、比较麻烦，所有样式都需要通过`style.className`的形式来编写
 
 3、不方便动态修改某些样式
-
-
 
 **案例**
 
@@ -2281,8 +2108,6 @@ export default class App extends PureComponent {
 }
 ```
 
-
-
 React 脚手架搭建出来的项目，只有 `.module.css` 支持模块化。
 
  实际上 CSS Modules 推荐的命名是驼峰式，这样可以直接通过`style.className`访问到，如果是使用连接符的类名就需要改为如下形式
@@ -2301,8 +2126,6 @@ import styles from './App.module.css';
 <header class='App-App-header-XMDSK'></header>
 ```
 
-
-
 全局作用域`:global`，在css modules中也可以像使用普通的`.css`文件一样使用类名，直接添加样式
 
 ```css
@@ -2310,8 +2133,6 @@ import styles from './App.module.css';
   color: #61dafb;
 }
 ```
-
-
 
 class组合，一个选择器可以继承另外一个选择器的规则
 
@@ -2339,10 +2160,6 @@ class组合，一个选择器可以继承另外一个选择器的规则
 }
 ```
 
-
-
-
-
 ### 8.4 CSS in JS
 
 `css in js`是指一种模式，其中CSS由JavaScript生成而不是在外部文件中定义
@@ -2352,8 +2169,6 @@ JSX就是将html写到了js中，而`css in js`就是CSS样式写入到js中。
 `css in js`通过JavaScript来为css赋予一些能力，包括类似于css预处理器一样的样式嵌套、函数定义、逻辑复用、动态修改状态等等。目前比较流行的`css in js `库是**styled-components**
 
 安装：`yarn add styled-components`
-
-
 
 **标签模板字符串**
 
@@ -2379,8 +2194,6 @@ test`my name is ${name}, age is ${age}`;
 ```
 
 可以发现其中字符串部分被${}分割成三部分传进一个数组中，做为结果的第一个元素，${name}，${age}作为数组的第二、第三个元素
-
-
 
 **使用步骤**
 
@@ -2427,8 +2240,6 @@ return (
 )
 ```
 
-
-
 3、也可以使用伪类和伪元素
 
 为class值为content的标签添加伪类hover，伪元素：：after
@@ -2449,8 +2260,6 @@ const StyleWrapper = styled.div`
 `
 ```
 
-
-
 4、穿透props
 
 是否能够给带了样式的组件也添加上其他属性呢？比如`input`被替换成样式组件后，能够为其添加type属性
@@ -2462,7 +2271,7 @@ const StyleInput = styled.input`
   background-color: yellowgreen;
 `
 <div>
-	输入框：<StyleInput type="password"></StyleInput>      
+    输入框：<StyleInput type="password"></StyleInput>      
 </div>
 ```
 
@@ -2483,7 +2292,7 @@ const StyleInput = styled.input.attrs({
 const StyleInput = styled.input.attrs({
     bgColor: "red"
 })`
-	background-color: ${props => props.bgColor}
+    background-color: ${props => props.bgColor}
 `
 ```
 
@@ -2511,8 +2320,6 @@ export default class App extends PureComponent {
 }
 ```
 
-
-
 5、实现样式继承
 
 假设要定义两个按钮样式组件，其中存在大量相同的代码
@@ -2538,13 +2345,9 @@ const Btn2 = styled(Btn1)`
 `
 ```
 
-
-
 6、实现样式共享
 
 在外层的样式组件中添加的样式，可以被共享到里层样式组件的attrs上
-
-
 
 ## 九、AntDesign
 
@@ -2566,15 +2369,11 @@ AntDesign的**特点**：
 
 6、深入每个细节的主题定制能力。
 
-
-
 **安装**
 
 安装库：`npm install antd`或`yarn add antd`
 
 安装icon图标：` npm install --save @ant-design/icons `
-
-
 
 ### 9.2 基本使用
 
@@ -2602,8 +2401,6 @@ export default class App extends PureComponent {
 }
 ```
 
-
-
 ### 9.3 自定义主题
 
  我们需要对 create-react-app 的默认配置进行自定义，这里我们使用 [craco](https://github.com/gsoft-inc/craco) 
@@ -2620,8 +2417,6 @@ export default class App extends PureComponent {
     "eject": "react-scripts eject"
   },
 ```
-
-
 
 第三步：在根目录下创建craco.config.js文件用于修改默认配置
 
@@ -2645,23 +2440,15 @@ module.exports = {
 };
 ```
 
-
-
 第四步：按照 配置主题 的要求，自定义主题需要用到类似 less-loader 提供的 less 变量覆盖功能
 
 安装：`yarn add craco-less`
-
-
 
 第五步：引入antd的样式时，引入antd.less文件
 
 `import 'antd/dist/antd.less';`，原先的`import 'antd/dist/antd.less';`可以注释掉
 
-
-
 第六步：重启整个项目
-
-
 
 ## 十、react动画
 
@@ -2670,8 +2457,6 @@ module.exports = {
 是React社区为我们提供了react-transition-group用来完成过渡动画
 
 安装`yarn add react-transition-group`
-
-
 
 react-transition-group主要包含四个组件： 
 
@@ -2691,8 +2476,6 @@ react-transition-group主要包含四个组件：
 
 将多个动画组件包裹在其中，一般用于列表中元素的动画
 
-
-
 ### 10.2 CSSTransition
 
 CSSTransition是基于Transition组件构建的： 
@@ -2704,8 +2487,6 @@ CSSTransition是基于Transition组件构建的：
 2、第二类：执行动画：对应的类是-appear-active、-enter-active、-exit-active
 
 3、第三类：执行结束：对应的类是-appear-done、-enter-done、-exit-done
-
-
 
 **CSSTransition常见对应的属性：** 
 
@@ -2731,8 +2512,6 @@ CSSTransition是基于Transition组件构建的：
 
 是否在初次进入添加动画（需要和in同时为true） ，unmountOnExit：退出后卸载组件 
 
-
-
 CSSTransition对应的钩子函数：主要为了检测动画的执行过程，来完成一些JavaScript的操作 
 
 A、onEnter：在进入动画之前被触发
@@ -2740,8 +2519,6 @@ A、onEnter：在进入动画之前被触发
 B、onEntering：在应用进入动画时被触发
 
 C、onEntered：在应用进入动画结束后被触发
-
-
 
 **案例：实现显示隐藏的过渡效果**
 
@@ -2774,7 +2551,7 @@ export default class App extends PureComponent {
           <Card
             style={{ width: 300 }}
             cover={<img alt="example" 
-				src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png" />}
+                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png" />}
             actions={[
               <SettingOutlined key="setting" />,
               <EditOutlined key="edit" />,
@@ -2813,8 +2590,6 @@ export default class App extends PureComponent {
 }
 ```
 
-
-
 # React（二）
 
 ## 一、redux
@@ -2824,8 +2599,6 @@ export default class App extends PureComponent {
 Redux是JavaScript的状态容器，提供了可供预测的状态管理。
 
 它不仅可以和react一起使用，也可以和其他界面库（如vue）一起使用。并且其体积非常小（只有2kb）
-
-
 
 **核心概念**
 
@@ -2849,8 +2622,6 @@ const action = { type: "ADD_FRIEND", info: { name: "lihua", age: 20 } }
 
 reducer是一个纯函数，这个函数的做的事情就是将传入的state和action结合起来生成一个新的state
 
-
-
 **三大原则**
 
 1、单一数据源
@@ -2864,8 +2635,6 @@ reducer是一个纯函数，这个函数的做的事情就是将传入的state�
 3、使用纯函数来执行修改
 
 通过reducer将旧state和actions联系在一起，并且返回一个新的state。所有的reducer都应该是纯函数，不能产生任何副作用
-
-
 
 ### 1.2 基本使用
 
@@ -2922,8 +2691,6 @@ store.dispatch(action4);
 //counter: 5
 //counter: -7
 ```
-
-
 
 但是在真实的开发环境下，我们一般不会这么使用redux。而是会对其进行解构的抽离，使其解构更加地清晰
 
@@ -3057,7 +2824,6 @@ export default class App extends PureComponent {
     store.dispatch(addAction(num));
   }
 }
-
 ```
 
 最后，我们还需要在组件卸载前将订阅取消掉
@@ -3073,10 +2839,7 @@ componentDidMount() {
 componentWillUnmount() {
     this.unSubscribe()
 }
-
 ```
-
-
 
 ### 1.4 connect高阶函数
 
@@ -3098,7 +2861,7 @@ export default function connect(mapStateToProps, mapDispatchToProps) {
           storeState: mapStateToProps(store.getState())
         }
       }
-	//订阅
+    //订阅
       componentDidMount() {
         this.unsubscribe = store.subscribe(() => {
           this.setState({
@@ -3119,7 +2882,6 @@ export default function connect(mapStateToProps, mapDispatchToProps) {
     }
   }
 }
-
 ```
 
 注：
@@ -3157,10 +2919,7 @@ const mapDispatchToProps = dispatch => {
   }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(App)
-
 ```
-
-
 
 ### 1.5 react-redux库
 
@@ -3184,12 +2943,9 @@ ReactDOM.render(
 
 //App.js组件导入
 import { connect } from 'react-redux'
-
 ```
 
 其余的步骤不用改变，这样一来我们就省略了编写connect函数的步骤
-
-
 
 **案例分析——发送异步网络请求，保存数据**
 
@@ -3207,10 +2963,7 @@ const saveBannersAction = banners => {
 module.exports = {
   saveBannersAction
 }
-
 ```
-
-
 
 2、书写reducer函数
 
@@ -3231,7 +2984,6 @@ function reducer(state=defaultStore, action) {
 }
 
 module.exports = reducer
-
 ```
 
 3、在App组件中编写业务代码
@@ -3274,10 +3026,7 @@ const mapDispatchToProps = (dispatch) => {
   }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(App);
-
 ```
-
-
 
 ### 1.6 redux中异步操作
 
@@ -3288,8 +3037,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(App);
 redux中间件的目的是在dispatch的action和最终到达的reducer函数之间，扩展一些自己的代码。比如调用异步接口，添加代码调试功能等等
 
 官方推荐的网络请求的中间件`redux-thunk`
-
-
 
 **redux-thunk**
 
@@ -3317,7 +3064,6 @@ const storeEnhancer = applyMiddleware(thunkMiddleware)
 const store = createStore(reducer, storeEnhancer)
 
 export default store
-
 ```
 
 2、在组件中调用获取数据的函数
@@ -3326,7 +3072,6 @@ export default store
   componentDidMount() {
     this.props.getMuitidata();
   }
-
 ```
 
 注：此时组件中还没有这个函数，我们需要进行映射
@@ -3340,7 +3085,6 @@ const mapDispatchToProps = (dispatch) => ({
     dispatch(getMutidataAction); //派发一次action，不过该getMutidataAction是个函数
   },
 });
-
 ```
 
 4、编写对应的getMutidataAction函数
@@ -3354,14 +3098,9 @@ export const getMutidataAction = dispatch => {
       dispatch(saveBannersAction(res.data.data.banner.list)) //在派发的action里，再次进行派发
     });
 }
-
 ```
 
 在这里发送网络请求，并进行下一次派发，将网络请求的内容发送出去
-
-
-
-
 
 **devtools工具**
 
@@ -3384,11 +3123,7 @@ const storeEnhancer = applyMiddleware(thunkMiddleware)
 const store = createStore(reducer, composeEnhancers(storeEnhancer))
 
 export default store
-
-
 ```
-
-
 
 ### 1.7 异步操作saga
 
@@ -3417,7 +3152,6 @@ const store = createStore(reducer, storeEnhancer);
 sagaMiddleware.run(saga);
 
 export default store;
-
 ```
 
 运行saga中间件时要求传入一个saga的生成器函数
@@ -3459,10 +3193,7 @@ function* mySaga() {
 }
 
 export default mySaga;
-
 ```
-
-
 
 ## 二、router
 
@@ -3476,11 +3207,7 @@ react router不是集中在一个包中进行管理
 
 3、react-router-native是用于原生应用的
 
-
-
 安装：`yarn add react-router-dom@5.2.0`(会自动帮助我们安装react-router的依赖)
-
-
 
 react-router最主要的API是给我们提供了一些组件
 
@@ -3524,7 +3251,6 @@ exact：精准匹配，只有精准匹配到完全一致的路径，才会渲染
     );
 ```
 
-
 ### 2.2 navlink与switch
 
 **NavLink**
@@ -3539,8 +3265,6 @@ exact：精准匹配，只有精准匹配到完全一致的路径，才会渲染
 
 3、exact：是否实现精准匹配
 
-
-
 ```jsx
 <BrowserRouter>
     <NavLink to="/" exact activeStyle={{clolr:"red", fontSize: "30px"}}>首页</NavLink>
@@ -3551,7 +3275,6 @@ exact：精准匹配，只有精准匹配到完全一致的路径，才会渲染
     <Route path="/about" component={about}/>
     <Route path="/profile" component={profile}/>
 </BrowserRouter>
-
 ```
 
 当然，也可以给navLink一个类名`activeClassName`，到专门的样式文件中添加样式
@@ -3578,10 +3301,7 @@ exact：精准匹配，只有精准匹配到完全一致的路径，才会渲染
     <Route path="/about" component={about} />
     <Route path="/profile" component={profile} />
 </Switch>
-
 ```
-
-
 
 **redirect**
 
@@ -3593,10 +3313,9 @@ render() {
     <div>
             <div>user</div>
             <div>otherInfo</div>
-	</div>
+    </div>
     ) : <Redirect to="/login" />
 }
-
 ```
 
 ### 2.3 嵌套路由
@@ -3629,10 +3348,7 @@ export default class about extends PureComponent {
     )
   }
 }
-
 ```
-
-
 
 ### 2.4 手动路由跳转
 
@@ -3662,7 +3378,6 @@ export default class about extends PureComponent {
       // 跳转路由
   }
 }
-
 ```
 
 问题1：我们要怎么实现改变url呢？这里并不提供vue中那样的router对象，也不能直接访问到history对象
@@ -3677,11 +3392,9 @@ export default class about extends PureComponent {
   }
 ```
 
-
-
 问题2：但是App组件不是路由创建，里边没有history属性，要怎么实现自定义tag跳转？
 
-要是App组件拥有props属性，可以将APP组件包裹在一个withRouter高阶组件中，而withRouter组件有需要包裹在Router组件内	
+要是App组件拥有props属性，可以将APP组件包裹在一个withRouter高阶组件中，而withRouter组件有需要包裹在Router组件内    
 
 所以需要修改一下代码
 
@@ -3694,7 +3407,6 @@ ReactDOM.render(
 ,
   document.getElementById('root')
 );
-
 ```
 
 ```jsx
@@ -3727,12 +3439,9 @@ class App extends PureComponent {
   }
 }
 export default withRouter(App)
-
 ```
 
 这样一来，就能获取到`this.props.history`
-
-
 
 ### 2.5 动态路由
 
@@ -3743,8 +3452,6 @@ export default withRouter(App)
 2、search传递参数
 
 3、Link中to传入对象
-
-
 
 **动态路由的方式**
 
@@ -3771,12 +3478,9 @@ export default withRouter(App)
     console.log(this.props.match.params.id); //123
     return <h2>profile</h2>
   }
-
 ```
 
 该方式最后通过`this.props.match`来获取传递的参数
-
-
 
 **Link中to传入对象**
 
@@ -3802,7 +3506,7 @@ export default withRouter(App)
       </div>
     );
   }
-  
+
   //在detail组件中获取
   export default class detail extends PureComponent {
   render() {
@@ -3814,18 +3518,13 @@ export default withRouter(App)
     )
   }
 }
-
 ```
-
-
 
 ### 2,6 react-router-config
 
 从上边的演示中，我们发现react将所有路由的配置都放在一起，这样子非常不利于管理。
 
 通过`react-router-cinfig`这个插件可以实现像vue一样通过配置文件来划分结构
-
-
 
 安装`yarn add react-router-config`
 
@@ -3843,16 +3542,11 @@ export const routes = [
         routes: [] //子路由
     }
 ]
-
 ```
 
 使用`{renderRoutes(routes)}`
 
 注：如果是嵌套路由，在使用时应该是这样子`renderRoutes(this.props.route.routes)`
-
-
-
-
 
 ## 三、Hook
 
@@ -3862,8 +3556,6 @@ Hook是react 16.8的新增特性，它可以让我们在不编写class的情况�
 
 **Hook可以基本替代class组件**
 
-
-
 **A、class组件与函数式组件的对比**
 
 1、class组件可以定义state，并保留内部状态。函数式组件做不到
@@ -3871,8 +3563,6 @@ Hook是react 16.8的新增特性，它可以让我们在不编写class的情况�
 2、class组件有自己的生命周期，在生命周期中执行网络请求等操作比较方便
 
 3、class组件可以在状态改变时只重新执行render函数，而函数式组件整个会被执行
-
-
 
 **B、class组件存在的问题**
 
@@ -3882,11 +3572,30 @@ Hook是react 16.8的新增特性，它可以让我们在不编写class的情况�
 
 3、组件复用状态困难
 
+### 3.2 useState
+
+```js
+//改变值
+setChange(newValue)
+
+//函数式
+setChange((prev) => prev + 1 )
 
 
-### 3.2 计数器案例
+//合并更新对象
+setChange(prev => ({...prev, ...newValue})
 
 
+//初始值--惰性
+//对于初始值是通过复杂计算获得，可以传入一个函数。该函数只在初次渲染时调用
+//，后续渲染将被忽略（性能优化）
+const [data, setData] = useState(() => {
+    const initialData = complexCompute()
+    return initialData 
+})
+```
+
+**计数器案例**
 
 **实现方式：class组件**
 
@@ -3903,7 +3612,7 @@ export default class App extends PureComponent {
     render() {
         return(
             <div>
-            	<h2>当前计数：{this.state.counter}</h2>
+                <h2>当前计数：{this.state.counter}</h2>
                 <button onClick={e => this.increment()}>+1</button>
                 <button onClick={e => this.decrement()}>-1</button>
             </div>
@@ -3920,10 +3629,7 @@ export default class App extends PureComponent {
         })
     }
 }
-
 ```
-
-
 
 **实现方式：hook**
 
@@ -3947,10 +3653,7 @@ export default function CounterHook() {
   </div>
   );
 }
-
 ```
-
-
 
 **实现方式：hook（优化）**
 
@@ -3969,7 +3672,6 @@ export default function CounterHookBetter() {
     </div>
   )
 }
-
 ```
 
 ### 3.3 Effect Hook
@@ -3992,7 +3694,6 @@ Effect  Hook可以让你来完成一些类似于class中生命周期的功能
   componentDidUpdate() {
     document.title = this.state.title
   }
-
 ```
 
 可以看到，为了实现这一效果在class组件中使用了两个生命周期函数
@@ -4014,12 +3715,9 @@ export default function ChangeTitleHook() {
   </div>
   )
 }
-
 ```
 
 useEffect是一个hook，传入一个回调函数。这个回调函数会在组件第一次挂载时、更新时回调
-
-
 
 **模拟实现生命周期的功能**
 
@@ -4050,14 +3748,11 @@ export default function HookDemo() {
         </div>
       </div>
     )
-
 ```
 
 可以看到，当组件显示时，打印`这里是类似于componentDidMount`，当组件隐藏时，打印`这里是类似于componentDidUpdate`
 
 1、所以不难分析useEffect可以模拟组件挂载、更新、销毁时的生命周期
-
-
 
 2、useEffect可以多次调用，每次可以执行不同的内容
 
@@ -4082,7 +3777,6 @@ export default function HookEffect() {
     </div>
   )
 }
-
 ```
 
 useEffect可以调用多中内容的操作，并且不用堆在一个useEffect里边，增强了代码的可阅读性
@@ -4104,10 +3798,7 @@ useEffect可以调用多中内容的操作，并且不用堆在一个useEffect�
   useEffect(() => {
     console.log("发送了网络请求");
   },[])
-
 ```
-
-
 
 ### 3.4 useContext
 
@@ -4146,8 +3837,6 @@ export default function UseContext() {
 }
 ```
 
-
-
 ### 3.5 其他的Hook
 
 **1、useReducer**
@@ -4178,10 +3867,7 @@ export default function UseReducerHook() {
     </div>
   )
 }
-
 ```
-
-
 
 **2、useRef**
 
@@ -4207,7 +3893,6 @@ export default function UseRefHook() {
     </div>
   )
 }
-
 ```
 
 这个hook可以访问类组件（但是不能访问函数组件，访问直接报错）
@@ -4228,14 +3913,11 @@ export default function UseRefHook() {
   return (
     <div>
       <ClassCpn ref={Cpn_c}/>
-	  <button onClick={fn}>change</button>
+      <button onClick={fn}>change</button>
     </div>
   );
 }
-
 ```
-
-
 
 也可以使用该hook来保存一些数据，并且这些数据不会被改变
 
@@ -4247,7 +3929,6 @@ export default function UseRefSaveData() {
       <h2>numRef的值{numRef.current}</h2>
     </div>
   )
-
 ```
 
 ```jsx
@@ -4262,12 +3943,47 @@ export default function UseRefSaveData() {
     </div>
   )
 }
-
 ```
 
 当点击+10时，`{numRef.current}`的值始终保持不变
 
 
+
+**3、useLayoutEffect**
+
+useLayoutEffect 和 useEffect 不同的之处在于它采用了同步执行
+
+首先 useLayoutEffect 是在 DOM 更新之后，浏览器绘制之前，这样可以方便修改 DOM，获取 DOM 信息，这样浏览器只会绘制一次，
+
+如果修改 DOM 布局放在 useEffect ，那 useEffect 执行是在浏览器绘制视图之后，接下来又改 DOM ，就可能会导致浏览器再次回流和重绘。而且由于两次绘制，视图上可能会造成闪现突兀的效果。
+
+> 注意：在useLayoutEffect编写过于复杂的代码，会阻塞浏览器绘制
+
+
+
+**4、useMemo**
+
+与vue的computed类似，仅有当依赖的目标对象改变了，才会重新计算。这样子有利于避免在每次渲染时都进行高开销的计算。
+
+基本使用
+
+```js
+const cacheValue = useMemo(() => {
+    return computeToGetValue(num)
+}, [num])
+```
+
+接收两个参数，第一个参数是一个回调函数，该回调中运行一个复杂的计算返回一个值。第二个参数是一个数组，即依赖项。
+
+组件仅在初次渲染执行并进行缓存，后续仅在num发生变化时才重新执行
+
+
+
+**5、useCallback**
+
+`useCallback(fn, deps)` 相当于 `useMemo(() => fn, deps)`
+
+差别就在于它返回的是一个函数
 
 
 
@@ -4298,8 +4014,6 @@ export default function UseRefSaveData() {
 
 2、不利于SEO
 
-
-
 **为什么不利于SEO呢**
 
 因为许多搜索引擎直接就是只检索index.html页面，而不会等js代码执行完毕后在执行检索。
@@ -4317,84 +4031,70 @@ export default function UseRefSaveData() {
 <html lang="">
 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<link rel="icon" href="/favicon.ico">
-	<title>找直播网红后台系统</title>
-	<link href="/css/chunk-0000611c.4e123bba.css" rel="prefetch">
-	<link href="/css/chunk-21cbafe4.1734b55c.css" rel="prefetch">
-	<link href="/css/chunk-2256714a.835e8b5e.css" rel="prefetch">
-	<link href="/css/chunk-24143e1e.a0aad18f.css" rel="prefetch">
-	<link href="/css/chunk-2791b526.da146432.css" rel="prefetch">
-	<link href="/css/chunk-476dbc9a.8603e9a9.css" rel="prefetch">
-	<link href="/css/chunk-56455a2a.a9a55b6c.css" rel="prefetch">
-	<link href="/css/chunk-9574d16c.42c373b7.css" rel="prefetch">
-	<link href="/css/chunk-9d3a2c4c.c9115805.css" rel="prefetch">
-	<link href="/css/chunk-d786db44.46cd7e9a.css" rel="prefetch">
-	<link href="/js/chunk-0000611c.296e68ce.js" rel="prefetch">
-	<link href="/js/chunk-21cbafe4.2992b648.js" rel="prefetch">
-	<link href="/js/chunk-2256714a.297ab406.js" rel="prefetch">
-	<link href="/js/chunk-24143e1e.88519606.js" rel="prefetch">
-	<link href="/js/chunk-2791b526.b6fe96f0.js" rel="prefetch">
-	<link href="/js/chunk-2d0ae507.4bcecfe1.js" rel="prefetch">
-	<link href="/js/chunk-2d0bce34.3d8af904.js" rel="prefetch">
-	<link href="/js/chunk-476dbc9a.c0f6d035.js" rel="prefetch">
-	<link href="/js/chunk-56455a2a.a95003c4.js" rel="prefetch">
-	<link href="/js/chunk-9574d16c.b93cee82.js" rel="prefetch">
-	<link href="/js/chunk-9d3a2c4c.ff6bdc1d.js" rel="prefetch">
-	<link href="/js/chunk-d786db44.7cb9b4a8.js" rel="prefetch">
-	<link href="/css/app.0e139c77.css" rel="preload" as="style">
-	<link href="/css/chunk-vendors.834272ee.css" rel="preload" as="style">
-	<link href="/js/app.1e9cfc71.js" rel="preload" as="script">
-	<link href="/js/chunk-vendors.a4d945e4.js" rel="preload" as="script">
-	<link href="/css/chunk-vendors.834272ee.css" rel="stylesheet">
-	<link href="/css/app.0e139c77.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="icon" href="/favicon.ico">
+    <title>找直播网红后台系统</title>
+    <link href="/css/chunk-0000611c.4e123bba.css" rel="prefetch">
+    <link href="/css/chunk-21cbafe4.1734b55c.css" rel="prefetch">
+    <link href="/css/chunk-2256714a.835e8b5e.css" rel="prefetch">
+    <link href="/css/chunk-24143e1e.a0aad18f.css" rel="prefetch">
+    <link href="/css/chunk-2791b526.da146432.css" rel="prefetch">
+    <link href="/css/chunk-476dbc9a.8603e9a9.css" rel="prefetch">
+    <link href="/css/chunk-56455a2a.a9a55b6c.css" rel="prefetch">
+    <link href="/css/chunk-9574d16c.42c373b7.css" rel="prefetch">
+    <link href="/css/chunk-9d3a2c4c.c9115805.css" rel="prefetch">
+    <link href="/css/chunk-d786db44.46cd7e9a.css" rel="prefetch">
+    <link href="/js/chunk-0000611c.296e68ce.js" rel="prefetch">
+    <link href="/js/chunk-21cbafe4.2992b648.js" rel="prefetch">
+    <link href="/js/chunk-2256714a.297ab406.js" rel="prefetch">
+    <link href="/js/chunk-24143e1e.88519606.js" rel="prefetch">
+    <link href="/js/chunk-2791b526.b6fe96f0.js" rel="prefetch">
+    <link href="/js/chunk-2d0ae507.4bcecfe1.js" rel="prefetch">
+    <link href="/js/chunk-2d0bce34.3d8af904.js" rel="prefetch">
+    <link href="/js/chunk-476dbc9a.c0f6d035.js" rel="prefetch">
+    <link href="/js/chunk-56455a2a.a95003c4.js" rel="prefetch">
+    <link href="/js/chunk-9574d16c.b93cee82.js" rel="prefetch">
+    <link href="/js/chunk-9d3a2c4c.ff6bdc1d.js" rel="prefetch">
+    <link href="/js/chunk-d786db44.7cb9b4a8.js" rel="prefetch">
+    <link href="/css/app.0e139c77.css" rel="preload" as="style">
+    <link href="/css/chunk-vendors.834272ee.css" rel="preload" as="style">
+    <link href="/js/app.1e9cfc71.js" rel="preload" as="script">
+    <link href="/js/chunk-vendors.a4d945e4.js" rel="preload" as="script">
+    <link href="/css/chunk-vendors.834272ee.css" rel="stylesheet">
+    <link href="/css/app.0e139c77.css" rel="stylesheet">
 </head>
 
 <body>
-	<noscript><strong>We're sorry but ic_lechouchou doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript>
-	<div id="app"></div>
-	<script src="/js/chunk-vendors.a4d945e4.js"></script>
-	<script src="/js/app.1e9cfc71.js"></script>
+    <noscript><strong>We're sorry but ic_lechouchou doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript>
+    <div id="app"></div>
+    <script src="/js/chunk-vendors.a4d945e4.js"></script>
+    <script src="/js/app.1e9cfc71.js"></script>
 </body>
 
 </html>
 ```
 
-
-
 所以，为了提高首屏加载速度、提供网站搜索排名，我们需要SSR
-
-
 
 ### 4.2 SSR基本认识
 
 SSR（Server Side Rendering，服务端渲染），指的是页面在服务端已经生成了完整的HTML页面结构，不需要浏览器解析。与SSR对应的就是CSR（Client Side Rendering，客户端渲染），即SPA页面通常就是CSR
 
-
-
 早期的服务端渲染包括PHP、JSP、ASP等方式。
 
 在目前前后端分离的开发模式下，我们可以借助于在利用Node来帮助我们执行js代码，提前完成页面的渲染
 
-
-
 **什么是同构**
 
 一套代码既可以在服务端运行又可以在客户端运行，这就是同构应用。同构是一种SSR的形态。当用户发出请求时，现在服务器通过SSR渲染出首页的内容，对应的代码同样也可以在客户端被执行，执行的目的包括事件绑定等以及其他页面切换时也可以在客户端被渲染
-
-
-
-
 
 ### 4.3 react的SSR
 
 目前react比较成熟的服务端渲染方案是`next.js`，而vue是`nuxt.js`
 
 我们可以来体验一下`next.js`
-
-
 
 ```js
 //安装
@@ -4408,8 +4108,3 @@ yarn dev
 ```
 
 一个文件就是一个页面，在pages下增加一个页面，就可以不用配置路由，直接通过`ip/文件名`访问到
-
-
-
-
-
