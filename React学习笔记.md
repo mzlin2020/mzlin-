@@ -3987,6 +3987,47 @@ const cacheValue = useMemo(() => {
 
 
 
+**6、useImperativeHandle**
+
+在类组件中，我们可以直接通过ref获取到类子组件的实例。但是在函数式组件中，ref不能获取到。
+
+但是使用`useImperativeHandle`可以实现这个效果，useImperativeHandle 可以配合 forwardRef 自定义暴露给父组件的实例值
+
+```js
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+
+function Child(props: any, ref: any) {
+  const inputRef = useRef(null)
+  useImperativeHandle(ref, () => ({
+      focus: () => {
+      // @ts-ignore
+      inputRef.current.focus() //子组件暴露的方法
+    }
+  }))
+  return (
+    <input type="text" ref={inputRef} />
+  )
+}
+const ChildC = forwardRef(Child)
+
+export default function App() {
+  const inputRef = useRef(null)
+  const focusAction = () => {
+    // @ts-ignore
+    inputRef.current.focus()
+  }
+    return (
+    <div className="App">
+      <ChildC ref={inputRef}/>
+      <button onClick={focusAction}>get</button>
+    </div>
+  );
+}
+
+```
+
+
+
 ## 四、React SSR
 
 ### 4.1 SPA的弊端
