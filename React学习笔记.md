@@ -2160,6 +2160,35 @@ class组合，一个选择器可以继承另外一个选择器的规则
 }
 ```
 
+
+
+**原理浅析**
+
+具体而言，CSS Modules 通过工程化的方法，可以将类名编译为哈希字符串，从而使得每个类名都是独一无二的，不会与其他的选择器重名，由此可以产生局部作用域。 
+
+ `Webpack` 的 [CSS Loader](https://link.juejin.cn/?target=https%3A%2F%2Fgithub.com%2Fwebpack-contrib%2Fcss-loader%23css-modules) 插件提供了对 CSS Modules 的支持，可以很方便地打开 `CSS Modules` 功能 
+
+```js
+module.exports = {
+  module: {
+    loaders: [
+      { test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!postcss-loader') },
+    ]
+  }
+```
+
+ 开启 `CSS Modules` 之后，所有的类名都会被编译成一个哈希字符串。 `css-loader` 默认的哈希算法是`[hash:base64]`，但是可以通过设置 `localIdentName`的属性来更改哈希算法的规则 
+
+```js
+//例子
+<h1 className={styles.appTitle}>
+    
+//编译
+<h1 class="App__appTitle__GyYTO">
+```
+
+这样一来，就生成了独一无二的类名
+
 ### 8.4 CSS in JS
 
 `css in js`是指一种模式，其中CSS由JavaScript生成而不是在外部文件中定义
@@ -3947,8 +3976,6 @@ export default function UseRefSaveData() {
 
 当点击+10时，`{numRef.current}`的值始终保持不变
 
-
-
 **3、useLayoutEffect**
 
 useLayoutEffect 和 useEffect 不同的之处在于它采用了同步执行
@@ -3958,8 +3985,6 @@ useLayoutEffect 和 useEffect 不同的之处在于它采用了同步执行
 如果修改 DOM 布局放在 useEffect ，那 useEffect 执行是在浏览器绘制视图之后，接下来又改 DOM ，就可能会导致浏览器再次回流和重绘。而且由于两次绘制，视图上可能会造成闪现突兀的效果。
 
 > 注意：在useLayoutEffect编写过于复杂的代码，会阻塞浏览器绘制
-
-
 
 **4、useMemo**
 
@@ -3977,15 +4002,11 @@ const cacheValue = useMemo(() => {
 
 组件仅在初次渲染执行并进行缓存，后续仅在num发生变化时才重新执行
 
-
-
 **5、useCallback**
 
 `useCallback(fn, deps)` 相当于 `useMemo(() => fn, deps)`
 
 差别就在于它返回的是一个函数
-
-
 
 **6、useImperativeHandle**
 
@@ -4023,10 +4044,7 @@ export default function App() {
     </div>
   );
 }
-
 ```
-
-
 
 ## 四、React SSR
 
