@@ -33,8 +33,6 @@ foo(); //没有传值，报错
 
 这种类型检测的缺点，只有等到运行期间才发现。并且当这个错误产生时，会影响后续代码的继续执行，也就是整个项目都因为这一个小小错误而陷入崩溃。
 
-
-
 **如何避免这样的错误**
 
 当我们自己编写简单的项目时，这样的错误很容易避免，并且当出现错误时，也很容易检查出来。
@@ -47,8 +45,6 @@ foo(); //没有传值，报错
 
 比如foo函数必须是String类型，传入其他类型，编译期间直接报错；
 
-
-
 **解决方案**
 
 为了弥补JavaScript类型约束上的缺陷，增加类型约束，很多公司推出了自己的方案：
@@ -58,8 +54,6 @@ foo(); //没有传值，报错
 2、同年，Microsoft微软也推出了TypeScript1.0版本；
 
 时至今日，无疑TypeScript是更好用的，Vue3.x已经全线转向TypeScript，很多的项目都慢慢过渡到了TypeScript。
-
-
 
 ## 二、TypeSctipt概述
 
@@ -97,8 +91,6 @@ TypeScript提供最新的和不断发展的JavaScript特性，包括那些来自
 
 这些特性为高可信应用程序开发时是可用的，但是会被编译成简洁的ECMAScript3（或更新版本）的JavaScript；
 
-
-
 **typescript编译时环境**
 
 安装：`npm i typescript -g`
@@ -132,8 +124,6 @@ bar("hi");
 
 这是因为默认所有的ts元素在同一文件夹中是处于同一作用域的，可以通过export关键字表明每一个文件是一个模块，元素有自己的作用域。
 
-
-
 **ts运行时环境搭建**
 
 上边的编译过程略显麻烦，我们可以通过以下两种方式，一步到位。
@@ -145,8 +135,6 @@ bar("hi");
 安装依赖：`npm install tslib @types/node -g`
 
 使用：`ts-node hellots.ts`
-
-
 
 **2、webpack搭建环境**
 
@@ -236,8 +224,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 `var/let/const 标识符：数据类型 = 赋值;`
 
-
-
 ```ts
 let message:string = "hello world"
 ```
@@ -268,8 +254,6 @@ let num2:number = 0b111
 let num3:number = 0o111 //8进制
 let num4:number = 0x100
 ```
-
-
 
 **boolean类型**
 
@@ -311,8 +295,6 @@ let obj = {
   [s2]: "world"
 }
 ```
-
-
 
 ### 3.2 ts中的数据类型
 
@@ -369,8 +351,6 @@ let a:any
 let str:string = a //不报错
 ```
 
-
-
 **3、void类型**
 
 void通常用来指定一个函数是没有返回值的，那么它的返回值就是viod类型；
@@ -391,8 +371,6 @@ function sum(num1:number, num2:number):void {
 //这个函数没有写任何类型，那么它的默认值就是viod
 ```
 
-
-
 **4、never类型**
 
 never表示永远不会发生值的类型，比如一个函数：
@@ -406,8 +384,6 @@ function bar ():never{
     }
 }
 ```
-
-
 
 **tuple类型**
 
@@ -429,9 +405,7 @@ console.log(name.length);
 
 元组允许我们传入不同类型的数据作为其元素
 
-例：	`const info:[string,number,number] = ['ming', 20, 1.99]`
-
-
+例：    `const info:[string,number,number] = ['ming', 20, 1.99]`
 
 ### 3.3 函数的参数类型
 
@@ -441,21 +415,19 @@ console.log(name.length);
 
 ```ts
     //给参数加上类型注解：num1:number ,num2:number
-	function sum(num1:number,num2:number) {
+    function sum(num1:number,num2:number) {
         return num1 + num2
     }
 ```
 
 ```ts
-	//给返回值加上类型注解
-	function sum(num1:number,num2:number):number {
+    //给返回值加上类型注解
+    function sum(num1:number,num2:number):number {
         return num1 + num2
     }
 ```
 
 不过，在开发中，通常情况下可以不写返回值的类型（会自动推导）
-
-
 
 通常情况下，定义一个函数时，都会给参数加上参数注解
 
@@ -473,8 +445,6 @@ names.forEach(function(item:string) {  //这里可以不写
 })
 //注：item会根据上下文的环境推导出来，这个时候可以不添加类型注解
 ```
-
-
 
 **参数是对象类型**
 
@@ -497,11 +467,8 @@ names.forEach(function(item:string) {  //这里可以不写
         console.log(point.z)
     }
     printPoint({x:123,y:232}) //输出：123 232 undefined
-	printPoint({x:123,y:433,z:223}) //输出：123 433 233
-	
+    printPoint({x:123,y:433,z:223}) //输出：123 433 233
 ```
-
-
 
 **参数是联合类型**
 
@@ -554,8 +521,6 @@ typescript的类型系统允许我们使用多种运算符，从现有类型中�
     foo()
 ```
 
-
-
 **类型别名**
 
 在前边，通过类型注解中编写对象类型 和 联合类型，但是当我们想多次复用代码看起来太长的时候，可以给对象类型起一个别名
@@ -577,12 +542,10 @@ function printID(id: number|string|boolean) {}
 ```
 
 ```ts
-	type IDType = string | number | boolean
+    type IDType = string | number | boolean
 
     function printID(id:IDType) {}
 ```
-
-
 
 ### 3.4 ts类型补充
 
@@ -604,15 +567,13 @@ function printID(id: number|string|boolean) {}
     el.src = "url地址"  //不报错了
 ```
 
-
-
 **2、非空类型断言！**
 
 非空类型断言使用 ！ ，表示可以确定某个标识符是有值的，跳过ts在编译阶段对它的检测
 
 ```TS
     //message是可选的 --> undefined | string
-	function printMessageLength(message?:string) {
+    function printMessageLength(message?:string) {
         console.log(message.length); //在没有tsconfig.json文件时，不报错，但是编译不通过
     }
 //因为message可能为undefined
@@ -638,8 +599,6 @@ function printID(id: number|string|boolean) {}
     }
 //保证message一定有值
 ```
-
-
 
 **3、!! 和 ??**
 
@@ -673,8 +632,6 @@ const content = message?? "hello world"
 console.log(content);  //输出：i do not like you
 ```
 
-
-
 **4、字面量类型**
 
 字面量类型必须与其值保持一致
@@ -698,8 +655,6 @@ align = 'center'
 ```
 
 这样一来，就将align的取值限定在这三个值中的一个
-
-
 
 ### 3.5 类型缩小
 
@@ -796,8 +751,6 @@ const res2 = calc(20,30,function(a1,a2){
 console.log(res2);
 ```
 
-
-
 **函数的重载**
 
 函数的重载：函数的名称相同，但是参数不同的几个函数，就是函数重载
@@ -831,8 +784,6 @@ const res2 = add('abc','bca') //匹配第二个定义
 console.log(res,res2);
 ```
 
-
-
 **默认参数与剩余参数**
 
 从ES6开始，JavaScript是支持默认参数的，TypeScript也是支持默认参数的
@@ -843,8 +794,6 @@ function foo(x:number,y:number = 6) { //y其实是undefined和number的类型联
 }
 console.log(foo(10));
 ```
-
-
 
 从ES6开始，JavaScript也支持剩余参数，剩余参数语法允许我们将一个不定数量的参数放到一个数组中
 
@@ -861,8 +810,6 @@ console.log(sum(10,20,30));
 console.log(sum(10,20,30,40));
 console.log(sum(10,20,30,40,50));
 ```
-
-
 
 **ts中的this**
 
@@ -908,8 +855,6 @@ const info = {
 info.eating()
 ```
 
-
-
 ### 3.7 枚举类型
 
 枚举类型是为数不多的ts特有的特性之一
@@ -946,10 +891,6 @@ function turnDirection (direction:Direction) {
 } 
 turnDirection(Direction.LEFT)
 ```
-
-
-
-
 
 ## 四、类
 
@@ -994,13 +935,9 @@ console.log(p.name);
 
 可以给属性初始值，或者通过构造函数constructor，在调用时传入。（constructor，在我们通过new关键字创建实例时，会被调用）
 
-
-
 ### 4.2 类的继承
 
 面向对象的其中一大特性就是继承，继承不仅仅可以减少我们的代码量，也是多态的使用前提
-
-
 
 场景解析：
 
@@ -1093,8 +1030,6 @@ console.log(stu1.name);
 console.log(stu1.sno);
 ```
 
-
-
 ### 4.3 类的多态
 
 ```ts
@@ -1124,8 +1059,6 @@ function makeActions(animals:Animal[]) {
 
 makeActions([new Dog(),new Fish()])
 ```
-
-
 
 ### 4.4 ts类的成员修饰符
 
@@ -1168,8 +1101,6 @@ const stu = new Student()
 console.log(stu.getName());
 ```
 
-
-
 **getter和setter**
 
 在前面一些私有属性我们是不能直接访问的，或者某些属性我们想要监听它的获取(getter)和设置(setter)的过程，
@@ -1195,13 +1126,9 @@ p.name = "ming"
 console.log(p.name);
 ```
 
-
-
 ## 五、ts的接口
 
 ### 5.1 接口的声明
-
-
 
 **声明对象类型**
 
@@ -1224,7 +1151,7 @@ const info:InfoType = {
 interface InfoType {
     name:string,
     age?:number,
-	readonly phoneNum: number //只读
+    readonly phoneNum: number //只读
 }
 const info:InfoType = {
     name:"ming",
@@ -1234,8 +1161,6 @@ const info:InfoType = {
 ```
 
 注：在开发中接口的名称按惯例会加一个大写的`I`字母，指明它是一个接口
-
-
 
 **索引类型**
 
@@ -1254,8 +1179,6 @@ const frontLanguage:IndexLanguage = {
     3:"vue"
 }
 ```
-
-
 
 **函数类型**
 
@@ -1280,8 +1203,6 @@ const fn:IcalcFn = function(n1,n2) {
 type calcFn = (n1:number, n2:number) => number
 ```
 
-
-
 ### 5.2 接口的继承
 
 ```ts
@@ -1299,10 +1220,8 @@ interface Iaction extends Iswim,Ifly {}  //可实现多继承
 const action :Iaction = {
     swimming(){},
     flying(){}
-}	
+}    
 ```
-
-
 
 ### 5.3 字面量赋值
 
@@ -1344,8 +1263,6 @@ const p:IPerson = student  //字面量赋值
 
 这是因为ts在字面量直接赋值的过程中，为了进行类型推导会进行严格的类型限制。但是之后我们将一个变量标识符赋值给其他变量时，会进行freshness擦除操作（这里就把address擦除了）
 
-
-
 ### 5.4 interface和type的区别
 
 interface和type都可以用来定义对象类型，那么在开发中应该选择哪一个呢？
@@ -1376,8 +1293,6 @@ const obj:Iaction = {
 
 比如可以通过函数来封装一些API，通过传入不同的函数参数，让函数帮助我们完成不同的操作。但是对于参数的类型是否也可以参数化呢？
 
-
-
 **类型的参数化**
 
 在定义一个函数时，先不决定参数的类型。而是让调用者以参数的形式告知函数中的参数应该是什么类型
@@ -1398,8 +1313,6 @@ foo(50)  //推导出来，参数类型为50（字面量类型）
 foo("hello")  //参数类型为hello（字面量类型）
 ```
 
-
-
 **泛型接收多种参数类型**
 
 ```ts
@@ -1409,8 +1322,6 @@ function foo<T,E,O>(arg1:T,arg2:E,arg3:O) {
 
 foo<number,string,boolean>(10,"aaa",true)
 ```
-
-
 
 **泛型接口**
 
@@ -1441,8 +1352,6 @@ const obj:IType = {
 }
 ```
 
-
-
 **泛型类的使用**
 
 ```ts
@@ -1456,13 +1365,11 @@ class Point<T> {
         this.z = z
     }
 }
- 
+
 const p1 = new Point("1.33.2","2.22.3","3.33.4")  //自行推导
 const p2 = new Point<string>("1.33.2","2.22.3","3.33.4") 
 const p3:Point<string> = new Point("1.33.2","2.22.3","3.33.4") 
 ```
-
-
 
 **泛型的类型约束**
 
@@ -1488,11 +1395,7 @@ getLength(["acb","fas"])
 getLength({length:100})
 ```
 
-
-
 ## 七、其他
-
-
 
 **1、类型的查找**
 
@@ -1503,8 +1406,6 @@ typescript会在哪里查找我们的类型声明呢？
 2、外部定义类型声明；
 
 3、自己定义类型声明
-
-
 
 在项目实际的开发过程中，我们经常会使用一些第三方库。比如axios、lodash 
 
@@ -1544,17 +1445,13 @@ import lodash from 'lodash'  //这次不报错了
 console.log(lodash.join(["111","222"]))
 ```
 
-`.d.ts文件`，它是用来做类型声明的，它仅仅用来做类型检测，告知ts我们有哪些类型。该文件会自动检测，不需要引用
-
-
+`.d.ts文件`，它是用来做类型声明的，它仅仅用来做类型检测，告知ts我们有哪些类型。该**文件会自动检测，不需要引用**
 
 方式二：通过社区的一个公有库DefinitelyTyped存放类型声明文件
 
 在`https://www.typescriptlang.org/dt/search?search=`查找该库的另外一种安装方式，这种安装方式默认添加了声明
 
 假设以上两个方式都没有相关的声明文件，那么就需要自己编写了
-
-
 
 **2、自己编写.d.ts文件**
 
@@ -1580,8 +1477,6 @@ declare module 'lodash' {
     export function join(arr: any[]): void
 }
 ```
-
-
 
 假设在index.html中的script标签中有如下代码
 
@@ -1637,8 +1532,6 @@ const p = new Person("linming",23)
 console.log(p);
 ```
 
-
-
 如果在项目中引用了一张图片，也需要进行声明
 
 ```js
@@ -1648,8 +1541,6 @@ import myImage from './img/myImage.jpg' //报错
 //声明文件
 declare module '*.jpg'
 ```
-
-
 
 **3、命名空间**
 
@@ -1665,8 +1556,6 @@ function format(time: number) {
 ```
 
 即使是不同功能的format函数，还是会报错
-
-
 
 ts提供了内部的命名空间，允许我们使用同名的对象、变量等
 
@@ -1689,17 +1578,8 @@ price.format('22元')
 console.log(price.name)
 ```
 
-
-
 当然如果想要这个命名空间能够被外部的文件使用，同样需要将命名空间导出`export namespace`
 
 **4、//@ts-ignore**
 
- `// @ts-ignore`注释会忽略下一行中产生的所有错误 
-
-
-
-
-
-
-
+ `// @ts-ignore`注释会忽略下一行中产生的所有错误!
