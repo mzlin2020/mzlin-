@@ -1601,7 +1601,7 @@ vw、wh是相对于视口的单位，一般开发中我们仅用vw即可。
 .son {
     position: absolute;
     left: 0;
-    top: 0;
+    right: 0;
     top: 0;
     bottom: 0;
     margin:
