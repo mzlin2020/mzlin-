@@ -236,7 +236,8 @@ const element =
 1、字符串、数值、数组在JSX中能够正常显示
 
 ```jsx
-    class App extends React.Component {
+    const arrTag = [<div>hello</div>, <div>world</div>]
+	class App extends React.Component {
       constructor() {
         super()
         this.state = {
@@ -252,11 +253,18 @@ const element =
             <p>{this.state.str}</p>
             <p>{this.state.num}</p>
             <p>{this.state.arr}</p>
+            <div>
+                {arrTag}  {/*自动展开*/}
+            </div>
           </div>
         )
       }
     }
 ```
+
+> 数组会被展开
+
+
 
 2、布尔值、null、undefined在JSX中显示不了
 
