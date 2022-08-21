@@ -560,7 +560,29 @@ constructor(props) {
 }
 ```
 
-4、componentWillMount() 
+4、**static   getDerivedStateFromProps(nextProps, prevState)**
+
+react17新增, 这个生命周期函数是为了替代componentWillReceiveProps存在的 
+
+ 这个[生命周期](https://so.csdn.net/so/search?q=生命周期&spm=1001.2101.3001.7020)的功能实际上就是将传入的props映射到state上面 
+
+```js
+static getDerivedStateFromProps(nextProps, prevState) {
+    const {type} = nextProps;
+    // 当传入的type发生变化的时候，更新state
+    if (type !== prevState.type) {
+        return {
+            type,
+        };
+    }
+    // 否则，对于state不进行任何操作
+    return null;
+}
+```
+
+
+
+5、componentWillMount() 
 
  组件挂载前调用，不推荐使用
 
@@ -620,7 +642,7 @@ componentDidUpdate(prevProps, prevState, snapshot) {
 
 ```
 
-## 卸载阶段
+### 卸载阶段
 
 1、**componentWillUnmount()** 
 
@@ -628,7 +650,338 @@ componentDidUpdate(prevProps, prevState, snapshot) {
 
 
 
-新增了两个生命周期函数：
+## 9、JSX原理
 
-1. `static getDerivedStateFromProps(nextProps, prevState)`
-2. `getSnapshotBeforeUpdate(prevProps, prevState)`
+实际上，`JSX`仅仅只是`React.createElement(component, props, ...children)`函数的语法糖。
+
+最终的`JSX`都会通过babel转换成`React.createElement`的函数调用
+
+> 思考：`import React from 'react'`有时没有使用过，但是却是必须的？因为babel转化过程中，需要使用调用`React.createElement()`方法
+
+
+
+```jsx
+<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+<script type="text/babel">
+    const message1 = <h2>hello react</h2>
+    const message2 = React.createElement("h2", null, "hello react")
+
+    ReactDOM.render(message2, document.getElementById("app"))
+</script>
+```
+
+在上方的代码中，message1与message2可以说是相等的
+
+前面提到，引入babel是用来解析jsx的，但是上方的代码并没有用到jsx，所以可以改成这样子
+
+```jsx
+<script>
+    const message2 = React.createElement("h2", null, "hello react")
+    ReactDOM.render(message2, document.getElementById("app"))
+</script>
+```
+
+依然是能够正常运行的
+
+
+
+**createElement的三个参数**
+
+参数一：type
+
+当前的ReactElement的类型。如果是标签元素，那么就使用字符串表示；如果是组件元素，那么就直接使用组件的名称
+
+参数二：config
+
+所有的jsx中的属性都在config中以对象的属性和值的形式存储
+
+参数三：children
+
+存放标签中的内容（可能是文本或者新的标签），以children数组的方式进行存储
+
+**babel转化**
+
+将我们编写的JSX代码通过Babel可以转换成`React.createElement`函数
+
+```jsx
+//JSX代码
+<div>
+    <h2 className="title">title</h2>
+    <div>content</div>
+    <div>footer</div>
+</div>
+```
+
+转化
+
+```js
+/*#__PURE__*/
+React.createElement(
+  "div",
+  null,
+  /*#__PURE__*/ React.createElement(
+    "h2",
+    {
+      className: "title"
+    },
+    "title"
+  ),
+  /*#__PURE__*/ React.createElement("div", null, "content"),
+  /*#__PURE__*/ React.createElement("div", null, "footer")
+);    
+```
+
+
+
+## 10、虚拟DOM
+
+通过的`React.createElement`最终创建出来的就是一个`ReactElement`对象，而它就是所谓的虚拟DOM
+
+验证    
+
+```jsx
+      render() {
+        const CreateElement = (
+            <div className="container">
+              <h3>Hello React</h3>
+              <p>React is great </p>
+            </div>
+        )
+        console.log(CreateElement);
+        return CreateElement
+        }
+```
+
+结果为
+
+```jsx
+//虚拟DOM对象
+{
+  type: "div",
+  props: { className: "container" },
+  children: [
+    {
+      type: "h3",
+      props: null,
+      children: [
+        {
+          type: "text",
+          props: {
+            textContent: "Hello React"
+          }
+        }
+      ]
+    },
+    {
+      type: "p",
+      props: null,
+      children: [
+        {
+          type: "text",
+          props: {
+            textContent: "React is great"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+
+
+## 11、实现react
+
+基于react的核心原理实现一个自己的react
+
+### 环境准备
+
+搭建babel和webpack环境
+
+```js
+//依赖
+    "@babel/core": "^7.11.4",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-react": "^7.10.4",
+    "babel-loader": "^8.1.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "html-webpack-plugin": "^4.3.0",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
+```
+
+配置
+
+```js
+const path = require("path")
+const HtmlWebpackPlugin = require("html-webpack-plugin")
+const { CleanWebpackPlugin } = require("clean-webpack-plugin")
+
+module.exports = {
+  entry: "./src/index.js",
+  output: {
+    path: path.resolve("dist"),
+    filename: "bundle.js"
+  },
+  devtool: "inline-source-map",
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: "babel-loader"
+      }
+    ]
+  },
+  plugins: [
+    // 在构建之前将dist文件夹清理掉
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ["./dist"]
+    }),
+    // 指定HTML模板, 插件会将构建好的js文件自动插入到HTML文件中
+    new HtmlWebpackPlugin({
+      template: "./src/index.html"
+    })
+  ],
+  devServer: {
+    // 指定开发环境应用运行的根据目录
+    contentBase: "./dist",
+    // 指定控制台输出的信息
+    stats: "errors-only",
+    // 不启动压缩
+    compress: false,
+    host: "localhost",
+    port: 5000
+  }
+}
+```
+
+问题：babel转化jsx时，会默认调用`React.createElement `,需要将其换为`myReact.createElement`
+
+可以在每个jsx文件开头添加一行注释`/** @jsx myReact.createElement*/`，或者进行babel配置
+
+babel配置
+
+```js
+//.babelrc
+{
+    "presets": [
+      "@babel/preset-env",
+      [
+        "@babel/preset-react",
+        {
+          "pragma": "myReact.createElement"
+        }
+      ]
+    ]
+  }
+```
+
+
+
+单独创建一个myReact文件夹，并引用至index中，之后所有实现的方法都写入该文件夹中
+
+
+
+### 实现createElement
+
+createElement方法目标：将jsx代码转化为虚拟DOM对象
+
+```js
+//myReact/createElement.js
+function createElement (type, props, ...children) {
+    return {
+        type,
+        props,
+        children
+    }
+}
+export default createElement
+
+
+//myReact/index.js
+import createElement from './createElement'
+
+export default {
+    createElement
+}
+```
+
+在入口文件中使用，babel会自动调用`myReact.createElement`进行转化
+
+```jsx
+import myReact from './myReact'
+
+const virtualDOM = (
+    <div className="container">
+      <h1>你好 myReact</h1>
+      <h2 data-test="test">(编码必杀技)</h2>
+    </div>
+  )
+
+  console.log(virtualDOM)
+```
+
+浏览器输出虚拟DOM
+
+```js
+{
+    type: 'div',
+    props: { className: 'container' },
+    children: [
+        {
+            type: 'h1',
+            props: null,
+            children: ['你好 myReact']
+        },
+        {
+            type: 'h2',
+            props: [data-test: 'test'],
+            children: ['(编码必杀技)']
+        }
+    ]
+}
+```
+
+
+
+问题1：文本节点转化错误`children: ['(编码必杀技)']`
+
+正确做法：`children: [ type: 'text', props: { textContent: '(编码必杀技)' }  ]
+
+思路：当children不是一个对象时，那么它就是一个文本节点，进行特殊处理
+
+```js
+function createElement (type, props, ...children) {
+    const textElement = [...children].map(child => {
+        if(child instanceof Object) {
+            return child
+        } else {
+            return createElement("text", {textContent: child})
+        }
+    })
+    return {
+        type,
+        props,
+        children: textElement
+    }
+}
+
+export default createElement
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

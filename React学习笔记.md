@@ -610,7 +610,7 @@ btnClcik() {
 
 实际上，`JSX`仅仅只是`React.createElement(component, props, ...children)`函数的语法糖。
 
-最终的`JSX`都会被转换成`React.createElement`的函数调用
+最终的`JSX`都会通过babel转换成`React.createElement`的函数调用
 
 ```jsx
 <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
@@ -3372,14 +3372,14 @@ export default class about extends PureComponent {
   render() {
     return (
       <div>
-        <NavLink exact to="/about">企业历史</NavLink>
-        <NavLink exact to="/about/culture">企业文化</NavLink>
-        <NavLink exact to="/about/contact">联系我们</NavLink>
+        <NavLink exact to=`${props.match.url}/history`>企业历史</NavLink>
+        <NavLink exact to=`${props.match.url}/culture`>企业文化</NavLink>
+        <NavLink exact to=`${props.match.url}/contact`>联系我们</NavLink>
 
         <Switch>
-          <Route exact path="/about" component={HistoryCpn}></Route>
-          <Route exact path="/about/culture" component={CultureCpn}></Route>
-          <Route exact path="/about/contact" component={ConnacteCpn}></Route>
+          <Route exact path=`${props.match.path}/history` component={HistoryCpn}></Route>
+          <Route exact path=`${props.match.path}/culture` component={CultureCpn}></Route>
+          <Route exact path=`${props.match.path}/contact` component={ConnacteCpn}></Route>
         </Switch>
       </div>
     )
