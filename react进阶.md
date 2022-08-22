@@ -973,11 +973,82 @@ export default createElement
 
 
 
+问题2：null / true / false 在react中是不用显示的，也就不用生成虚拟DOM
+
+例如：`<div className='container'>{2 == 1 && <div>如果2和1相等渲染当前内容</div>}</div>`
+
+```js
+//结果为
+{
+    type: 'div',
+    props: {className: 'container'},
+    children: [
+        {
+            type: 'text',
+            props: {textContent: false},
+            children: []
+        }
+    ]
+}
+```
+
+解决方案：移除值为布尔值或者null的child
+
+```js
+function createElement (type, props, ...children) {
+    const textElement = [...children].reduce((result,child) => {
+        if(child !== null && child !== false && child !== true) {
+            if(child instanceof Object) {
+                result.push(child)
+            } else {
+                result.push(createElement("text", {textContent: child}))
+            }
+        }
+        return result
+    }, [])
+    return {
+        type,
+        props,
+        children: textElement
+    }
+}
+
+export default createElement
+```
 
 
 
+问题3：在react中，我们可以通过props拿到children
+
+解决方法：复制一份children到props中
+
+```js
+function createElement (type, props, ...children) {
+    const textElement = [...children].reduce((result,child) => {
+        if(child !== null && child !== false && child !== true) {
+            if(child instanceof Object) {
+                result.push(child)
+            } else {
+                result.push(createElement("text", {textContent: child}))
+            }
+        }
+        return result
+    }, [])
+    return {
+        type,
+        props: Object.assign({children: textElement}, props),
+        children: textElement
+    }
+}
+
+export default createElement
+```
 
 
+
+### 实现render
+
+目标：将虚拟DOM转化为真实DOM，并渲染到页面中
 
 
 
