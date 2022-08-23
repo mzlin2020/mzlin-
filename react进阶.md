@@ -1,4 +1,4 @@
-# react进阶
+# 	react进阶
 
 ## 1、event对象
 
@@ -1050,9 +1050,117 @@ export default createElement
 
 目标：将虚拟DOM转化为真实DOM，并渲染到页面中
 
+创建render文件,并导入到index中使用
+
+```jsx
+import myReact from './myReact'
+
+const root = document.getElementById('root')
+
+const virtualDOM = (
+    <div className="container">
+      <h1>你好 myReact</h1>
+      <h2 data-test="test">(编码必杀技)</h2>
+      {2 == 1 && <div>如果2和1相等渲染当前内容</div>}
+    </div>
+  )
+
+myReact.render(virtualDOM, root)
+```
+
+在render函数中实现diff算法
+
+```js
+export default function diff(virtualDOM, container, oldDOM) {
+    // 当oldDOM不存在时
+    if(!oldDOM) {
+        mountElement(virtualDOM, container) //挂载
+    }
+
+    // 当oldDOM存在时
+    
+}
+```
+
+当oldDOM不存在时，将virtualDOM转化为真实DOM，此时virtualDOM分为两种情况，一种是普通的元素，另一种它可以是一个组件
+
+```js
+//mountElement
+export default function mountElement(virtualDOM, container) {
+    //处理普通元素
+    mountNativeElement(virtualDOM, container)
+}
+```
+
+```js
+//mountNativeElement
+export default mountNativeElement(virtualDOM, container){
+    
+}
+```
 
 
 
+**挂载普通元素**
+
+```js
+export default function mountNativeElement(virtualDOM, container) {
+    let newElement = null
+    if(virtualDOM.type === 'text') {
+        // 处理文本
+        newElement = document.createTextNode(virtualDOM.props.textContent)
+    } else {
+        // 处理元素节点
+        newElement = document.createElement(virtualDOM.type)
+    }
+
+    // 递归创建子节点
+    virtualDOM.children.forEach(child => {
+        mountNativeElement(child, newElement) //最好使用mountElement来递归
+    })
+
+    // 将转化好的真实DOM挂载到根元素上
+    container.appendChild(newElement)
+}
+```
+
+当代码跑通后，便可在浏览器中看到对应的内容
+
+
+
+因为后续有一些代码需要复用，可以将这一部分的代码进行简单抽离
+
+```js
+//mountElement
+import mountNativeElement from './mountNativeElement'
+
+export default function mountElement(virtualDOM, container) {
+    
+    // 处理普通元素
+    mountNativeElement(virtualDOM, container)
+}
+
+//createDOMElement
+import mountElement from './mountElement'
+
+export default function createDOMElement(virtualDOM) {
+    let newElement = null
+    if(virtualDOM.type === 'text') {
+        // 处理文本
+        newElement = document.createTextNode(virtualDOM.props.textContent)
+    } else {
+        // 处理元素节点
+        newElement = document.createElement(virtualDOM.type)
+    }
+
+    // 递归创建子节点
+    virtualDOM.children.forEach(child => {
+        mountElement(child, newElement)
+    })
+
+    return newElement
+}
+```
 
 
 
