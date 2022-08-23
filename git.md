@@ -494,7 +494,7 @@ git clone https://github.com/facebook/react.git
 
 （在c盘用户文件夹中有这个.ssh这个文件）
 
-1、没有没有.ssh文件，需要通过命令行生成.ssh秘钥目录
+1、没有.ssh文件，需要通过命令行生成.ssh秘钥目录
 
 ```shell
 ssh-keygen -t rsa -C mzlin2020@163.com
@@ -502,7 +502,7 @@ ssh-keygen -t rsa -C mzlin2020@163.com
 
 会自动生成公钥和私钥
 
-2、拿到公钥的内容，到远程仓库中进行设置
+2、拿到公钥`id_rsa.pub`的内容，到远程仓库中进行设置
 
 `SSH and GPS keys` -> ` new ssh key	` -> 输入公钥内容
 
@@ -511,4 +511,46 @@ ssh-keygen -t rsa -C mzlin2020@163.com
 3、无密码访问远程仓库
 
 完成以上操作后，就可以在本机自由地访问远程仓库了（可以通过https地址，也可以是SSH地址）
+
+
+
+## 六、git回滚代码
+
+### 6.1 git reset
+
+git reset命令有3种方式：
+
+1、git reset --mixed：
+
+此为默认方式，等同于不带任何参数的git reset。
+
+2、git reset --soft：
+
+回退到某个版本，只回退了commit的信息，如果还要提交，直接commit即可（修改的内容变成未add的状态），索引（暂存区）和工作目录的内容是不变的，在三个命令中对现有版本库状态改动最小。
+
+3、git reset --hard：
+
+彻底回退到某个版本，本地的源码也会变为上一个版本的内容，所有修改的内容都会丢失， (修改的代码 不会变成未add的状态)。索引（暂存区）内容和工作目录内容都会变给定提交时的状态。
+
+![](.\img\git\reset.png)
+
+
+
+### 6.2 git revert
+
+在当前提交后面，新增一次提交，抵消掉上一次提交导致的所有变化，不会改变过去的历史，主要是用于安全地取消过去发布的提交
+
+
+
+两者主要区别如下：
+
+- git revert是用一次新的commit来回滚之前的commit，git reset是直接删除指定的commit
+- git reset 是把HEAD向后移动了一下，而git revert是HEAD继续前进，只是新的commit的内容和要revert的内容正好相反，能够抵消要被revert的内容
+- 在回滚这一操作上看，效果差不多。但是在日后继续 merge 以前的老版本时有区别
+
+
+
+
+
+
 

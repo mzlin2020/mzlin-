@@ -1562,7 +1562,7 @@ inputEl.oninput = newFn
 
 ### 6.1 简单实现浅拷贝
 
-可以通过展开运算符或者`Obejct.assign()`来实现浅拷贝
+可以通过**展开运算符**、**Obejct.assign()**、**=**、**contact**、**slice**等方式实现浅拷贝
 
 ```js
 function clone(obj) {
@@ -1600,6 +1600,39 @@ console.log(newObj)
 ```
 
 
+
+**首层深拷贝**
+
+其实JavaScript中的数组和对象自带的拷贝方法都是“首层深拷贝”，例如`Obejct.assign()，展开运算符，slice，contact`
+
+怎么理解？
+
+```js
+const orignArr = [1,2,3,4,5]
+const cloneArr = orignArr.slice()
+
+console.log(orignArr === cloneArr) //false
+cloneArr.push(6)
+console.log(orignArr) //[1,2,3,4,5]
+```
+
+可以发现首层实现了深拷贝。但是如果其中包含了其他引用类型呢
+
+```js
+const orignArr = [1,2,3,4,5, {a: 'xx'}]
+const cloneArr = orignArr.slice()
+
+console.log(orignArr === cloneArr) //false
+
+cloneArr[5].a = 'yy'
+console.log(orignArr) //[1,2,3,4,5, {a: 'yy'}]
+```
+
+可以看到包含引用类型时，便又可以被修改了
+
+
+
+结论：这些方法仅对第一层的数据进行了深拷贝，如果其中包含了其他引用类型，就是浅拷贝了
 
 
 
