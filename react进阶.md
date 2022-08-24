@@ -1131,13 +1131,13 @@ export default function mountNativeElement(virtualDOM, container) {
 因为后续有一些代码需要复用，可以将这一部分的代码进行简单抽离
 
 ```js
-//mountElement
-import mountNativeElement from './mountNativeElement'
+//mountNativeElement
+import createDOMElement from './createDOMElement'
+export default function mountNativeElement(virtualDOM, container) {
+    let newElement = createDOMElement(virtualDOM)
 
-export default function mountElement(virtualDOM, container) {
-    
-    // 处理普通元素
-    mountNativeElement(virtualDOM, container)
+    // 将转化好的真实DOM挂载到根元素上
+    container.appendChild(newElement)
 }
 
 //createDOMElement
@@ -1151,6 +1151,64 @@ export default function createDOMElement(virtualDOM) {
     } else {
         // 处理元素节点
         newElement = document.createElement(virtualDOM.type)
+    }
+
+    // 递归创建子节点
+    virtualDOM.children.forEach(child => {
+        mountElement(child, newElement)
+    })
+
+    return newElement
+}
+```
+
+
+
+**为DOM对象添加属性**
+
+```js
+//updateNodeElement
+// 为DOM元素添加属性
+export default function updateNodeElement(newElement, virtualDOM) {
+    // 获取节点对应的属性
+    const newProps = virtualDOM.props
+    Object.keys(newProps).forEach(propsName => {
+        const propsValue = newProps[propsName]
+        // 处理事件
+        if(propsName.slice(0,2) === 'on') {
+            // 事件名称 
+            const eventName = propsName.toLowerCase().slice(2)
+            // 添加事件
+            newElement.addEventListener(eventName, propsValue)
+        }
+        else if(propsName === 'value' || propsName ==='checked') {
+            newElement[propsName] = propsValue
+        }
+        else if(propsName !== 'children') { //children将不进行处理,抛弃
+            if(propsName === 'className') {
+                newElement.setAttribute('class', propsValue)
+            }
+            else {
+                newElement.setAttribute(propsName, propsValue)
+            }
+        }
+    })
+}
+```
+
+引用
+
+```js
+//createDOMElement
+export default function createDOMElement(virtualDOM) {
+    let newElement = null
+    if(virtualDOM.type === 'text') {
+        // 处理文本
+        newElement = document.createTextNode(virtualDOM.props.textContent)
+    } else {
+        // 处理元素节点
+        newElement = document.createElement(virtualDOM.type)
+        updateNodeElement(newElement, virtualDOM) //设置属性
     }
 
     // 递归创建子节点
