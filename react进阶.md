@@ -948,7 +948,7 @@ const virtualDOM = (
 
 问题1：文本节点转化错误`children: ['(编码必杀技)']`
 
-正确做法：`children: [ type: 'text', props: { textContent: '(编码必杀技)' }  ]
+正确做法：`children: [ type: 'text', props: { textContent: '(编码必杀技)' }  ]`
 
 思路：当children不是一个对象时，那么它就是一个文本节点，进行特殊处理
 
@@ -1221,4 +1221,173 @@ export default function createDOMElement(virtualDOM) {
 ```
 
 
+
+### 挂载组件
+
+需要明确一点，如果要挂载的目标对象是一个组件，那么它的生成的虚拟DOM的type是一个函数
+
+```jsx
+//组件
+const Heart = () => <span>&hearts;</span>
+
+//虚拟DOM
+{
+    type: f function() {}.
+    props: {},
+        children: []
+}
+```
+
+修改代码为
+
+```js
+//index
+import myReact from './myReact'
+const root = document.getElementById('root')
+
+const APP = () => {
+  return  <div>APP</div>
+}
+
+myReact.render(<APP/>, root)
+
+//mountElement
+import mountNativeElement from './mountNativeElement'
+import isFunction from './isFunction'
+
+export default function mountElement(virtualDOM, container) {
+    if(isFunction(virtualDOM)) {
+        console.log("处理函数")
+        mountConponent(virtualDOM, container)
+    } else {
+        // 处理普通元素
+        mountNativeElement(virtualDOM, container)
+    }
+}
+```
+
+mountConponent挂载组件
+
+```js
+//mountConponent
+import isFunctionComponent from './isFunctionComponent'
+export default function mountComponent(virtualDOM, container) {
+  if(isFunctionComponent(virtualDOM)) {
+    // 函数组件
+    console.log('函数组件')
+  }
+  else {
+    // class组件
+    console.log('class组件')
+  }
+}
+```
+
+通过判断virtualDOM.type原型上是否存在render，存在即是类组件
+
+那么如何处理函数组件，使其返回一个虚拟DOM对象呢？很简单，只需要调用type中的函数即可
+
+```js
+// 
+import isFunctionComponent from './isFunctionComponent'
+import mountNativeElement from './mountNativeElement'
+export default function mountComponent(virtualDOM, container) {
+  let nextVirtualDOM = null
+  if(isFunctionComponent(virtualDOM)) {
+    // 函数组件
+    nextVirtualDOM = buildFunctionComponent(virtualDOM)
+    mountNativeElement(nextVirtualDOM, container)
+  }
+  
+
+  // 获取函数的虚拟DOM
+  function buildFunctionComponent(virtualDOM) {
+    return virtualDOM.type(virtualDOM)
+  }
+}
+```
+
+问题：如果函数组件之中嵌套了函数组件，上边的代码将无法执行
+
+```js
+//多加一层判断
+export default function mountComponent(virtualDOM, container) {
+  let nextVirtualDOM = null
+  if(isFunctionComponent(virtualDOM)) {
+    // 函数组件
+    nextVirtualDOM = buildFunctionComponent(virtualDOM)
+    if(isFunction(nextVirtualDOM)) {
+      mountComponent(nextVirtualDOM, container)
+    } else {
+      mountNativeElement(nextVirtualDOM, container)
+    }
+  }
+  // 获取函数的虚拟DOM
+  function buildFunctionComponent(virtualDOM) {
+    return virtualDOM.type(virtualDOM)
+  }
+}
+```
+
+**为函数组件添加属性**
+
+这一部分比较简单，将在调用type中函数生成虚拟DOM时，将props传递及进去
+
+```js
+  // 获取函数的虚拟DOM
+  function buildFunctionComponent(virtualDOM) {
+    return virtualDOM.type(virtualDOM.props || {})
+  }
+```
+
+
+
+**挂载类组件**
+
+```js
+//index
+class APP extends myReact.Component {
+  render() {
+    return <div>hello React</div>
+  }
+}
+myReact.render(<APP title="hello world"/>, root)
+```
+
+因为类组件继承自Component，所以我们也需要创建该文件
+
+
+
+处理类组件
+
+```js
+//mountComponent
+export default function mountComponent(virtualDOM, container) {
+  let nextVirtualDOM = null
+  if(isFunctionComponent(virtualDOM)) {
+    // 函数组件
+    nextVirtualDOM = buildFunctionComponent(virtualDOM)
+  } else {
+    // 类组件
+    nextVirtualDOM = buildClassComponent(virtualDOM)
+  }
+
+  if(isFunction(nextVirtualDOM)) {
+    mountComponent(nextVirtualDOM, container)
+  } else {
+    mountNativeElement(nextVirtualDOM, container)
+  }
+  // 获取函数的虚拟DOM
+  function buildFunctionComponent(virtualDOM) {
+    return virtualDOM.type(virtualDOM.props || {})
+  }
+
+  // 获取类组件的虚拟DOM
+  function buildClassComponent(virtualDOM) {
+    const component = new virtualDOM.type()
+    const nextVirtualDOM = component.render()
+    return nextVirtualDOM
+  }
+}
+```
 
