@@ -1384,10 +1384,440 @@ export default function mountComponent(virtualDOM, container) {
 
   // 获取类组件的虚拟DOM
   function buildClassComponent(virtualDOM) {
-    const component = new virtualDOM.type()
+    const component = new virtualDOM.type(virtualDOM.props || {})
     const nextVirtualDOM = component.render()
     return nextVirtualDOM
   }
 }
 ```
 
+传递属性
+
+```jsx
+//index
+class APP extends myReact.Component {
+  constructor(props) {
+    super(props)
+  }
+  render() {
+    return <div>hello React, {this.props.title}</div>
+  }
+}
+
+myReact.render(<APP title="hello world"/>, root)
+
+//Component
+export default class Component {
+  constructor(props) {
+    this.props = props
+  }
+}
+```
+
+
+
+### 更新DOM
+
+示例代码
+
+```jsx
+//index
+const virtualDOM = (
+  <div className="container">
+  <h1>你好 myReact</h1>
+  <h2 data-test="test">编码必杀技</h2>
+  <button onClick={() => alert("你好")}>点击我</button>
+  </div>
+)
+
+const modifyDOM = (
+  <div className="container">
+  <h1>你好 newWorld</h1>
+  <h2 data-test="test">newnewnwe</h2>
+  <button onClick={() => alert("你好!!!!!!!!")}>点击我</button>
+  </div>
+)
+
+myReact.render(virtualDOM, root)
+
+setTimeout(() => {
+  myReact.render(modifyDOM, root)
+}, 2000)
+```
+
+
+
+思考：要更新DOM，需要对比新旧DOM，那么同一时刻如何获取这两者呢?
+
+当前页面展示的真实DOM，就是由虚拟DOM转化来的，那么可以将虚拟DOM添加到真实DOM的属性之中，当进行对比时，要获取旧的DOM，可以从当前页面的真实DOM属性之中获取
+
+```js
+//createDOMElement
+
+export default function createDOMElement(virtualDOM) {
+	//....
+
+    // 保存旧的虚拟DOM
+    newElement._virtualDOM = virtualDOM
+
+    // 递归创建子节点
+    //...
+
+    return newElement
+}
+```
+
+获取旧DOM
+
+```js
+// render
+export default function render(virtualDOM, container, oldDOM = container.firstChild) {
+    diff(virtualDOM, container, oldDOM)
+}
+```
+
+
+
+**对比：DOM**
+
+情况一：type类型相同,更新内容
+
+```jsx
+//diff
+export default function diff(virtualDOM, container, oldDOM) {
+    const oldVirtualDOM = oldDOM && oldDOM._virtualDOM
+
+    // 当oldDOM不存在时
+    if(!oldDOM) {
+        mountElement(virtualDOM, container)
+    }
+    // 当oldDOM存在时
+    else if(oldVirtualDOM && virtualDOM.type === oldVirtualDOM.type) {
+        if(virtualDOM.type === 'text') {
+            // 更新内容
+            updateTextNode(virtualDOM, oldVirtualDOM, oldDOM)
+        } else {
+            // 更新属性
+            updateNodeElement(oldDOM, virtualDOM, oldVirtualDOM)
+        }
+        // 递归对比子元素
+        virtualDOM.children.forEach((child, i) => {
+            diff(child, oldDOM, oldDOM.childNodes[i])
+        })
+    }
+}
+```
+
+```js
+export default function updateTextNode(virtualDOM, oldVirtualDOM, oldDOM) {
+  if(virtualDOM.props.textContent !== oldVirtualDOM.props.textContent) {
+    oldDOM.textContent = virtualDOM.props.textContent
+    oldDOM._virtualDOM = virtualDOM
+  }
+}
+```
+
+情况一：type类型相同,更新属性
+
+```js
+export default function updateNodeElement(
+    newElement,
+    virtualDOM,
+    oldVirtualDOM = {}
+  ) {
+    // 获取节点对应的属性对象
+    const newProps = virtualDOM.props || {}
+    const oldProps = oldVirtualDOM.props || {}
+    Object.keys(newProps).forEach(propName => {
+      // 获取属性值
+      const newPropsValue = newProps[propName]
+      const oldPropsValue = oldProps[propName]
+      if (newPropsValue !== oldPropsValue) {
+        // 判断属性是否是否事件属性 onClick -> click
+        if (propName.slice(0, 2) === "on") {
+          // 事件名称
+          const eventName = propName.toLowerCase().slice(2)
+          // 为元素添加事件
+          newElement.addEventListener(eventName, newPropsValue)
+          // 删除原有的事件的事件处理函数
+          if (oldPropsValue) {
+            newElement.removeEventListener(eventName, oldPropsValue)
+          }
+        } else if (propName === "value" || propName === "checked") {
+          newElement[propName] = newPropsValue
+        } else if (propName !== "children") {
+          if (propName === "className") {
+            newElement.setAttribute("class", newPropsValue)
+          } else {
+            newElement.setAttribute(propName, newPropsValue)
+          }
+        }
+      }
+    })
+    // 判断属性被删除的情况
+    Object.keys(oldProps).forEach(propName => {
+      const newPropsValue = newProps[propName]
+      const oldPropsValue = oldProps[propName]
+      if (!newPropsValue) {
+        // 属性被删除了
+        if (propName.slice(0, 2) === "on") {
+          const eventName = propName.toLowerCase().slice(2)
+          newElement.removeEventListener(eventName, oldPropsValue)
+        } else if (propName !== "children") {
+          newElement.removeAttribute(propName)
+        }
+      }
+    })
+  }
+```
+
+
+
+情况二： 类型不同，无需对比
+
+```js
+//diff
+export default function diff(virtualDOM, container, oldDOM) {
+    const oldVirtualDOM = oldDOM && oldDOM._virtualDOM
+    
+    // 当oldDOM不存在时
+    if(!oldDOM) {
+        mountElement(virtualDOM, container)
+    }
+    // 当oldDOM存在时
+    else if(virtualDOM.type !== oldVirtualDOM.type && typeof virtualDOM !== 'function') {
+        const newElement = createDOMElement(virtualDOM)
+        oldDOM.parentNode.replaceChild(newElement, oldDOM)
+    }
+
+    else if(oldVirtualDOM && virtualDOM.type === oldVirtualDOM.type) {
+        //....
+    }
+    
+}
+```
+
+
+
+**删除节点**
+
+```js
+import unmountNode from './unmountNode'
+
+export default function diff(virtualDOM, container, oldDOM) {
+    	//...
+
+        // 递归对比子元素
+        //..
+
+        // 删除节点
+        // 获取旧节点
+        let oldChildNodes = oldDOM.childNodes
+        // 判断旧节点的数量
+        if(oldChildNodes.length > virtualDOM.children.length) {
+            // 有节点需要被删除
+            for(let i = oldChildNodes.length -1; i > virtualDOM.children.length -1; i--) {
+                unmountNode(oldChildNodes[i])
+            }
+        }
+    }
+    
+}
+```
+
+```js
+export default function unmountNode(node) {
+  node.remove()
+}
+```
+
+
+
+### 实现setState
+
+```jsx
+//index
+class APP extends myReact.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      title: 'hello world'
+    }
+    this.changeTitle = this.changeTitle.bind(this)
+  }
+  changeTitle() {
+    this.setState({ title: "had changed" })
+  }
+  render() {
+    return (
+      <div id="container">
+        <div>{this.state.title}</div>
+        <div>
+          <button onClick={this.changeTitle}>changeTitle</button>
+        </div>
+      </div>
+    )
+  }
+}
+myReact.render(<APP/>, root)
+```
+
+需要在Component中定义setState方法
+
+```js
+export default class Component {
+  constructor(props) {
+    this.props = props
+  }
+
+  setState(state) {
+    this.state = Object.assign({}, this.state, state)
+    // 对比新旧DOM，并更新到页面上
+    // 获取最新的要渲染的 virtualDOM 对象
+    let virtualDOM = this.render()
+    // 获取旧的 virtualDOM 对象 
+  }
+
+  setDOM(dom) {
+    this._dom = dom
+  }
+  getDOM() {
+    return this._dom
+  }
+}
+```
+
+获取到这个旧dom的方式比较麻烦些，需要找到当前页面的实例，根据这个实例的virtualDOM，调用setDOM方法传到Component
+
+```js
+// mountConponent
+
+  // 获取类组件的虚拟DOM
+  function buildClassComponent(virtualDOM) {
+    const component = new virtualDOM.type(virtualDOM.props || {})
+    const nextVirtualDOM = component.render()
+    +nextVirtualDOM.component = component
+    return nextVirtualDOM
+  }
+```
+
+```js
+import createDOMElement from './createDOMElement'
+export default function mountNativeElement(virtualDOM, container) {
+    let newElement = createDOMElement(virtualDOM)
+    // 将转化好的真实DOM挂载到根元素上
+    container.appendChild(newElement)
+
+    let component = virtualDOM.component
+    if(component) {
+        component.setDOM(newElement)
+    }
+}
+```
+
+这样一来，在getDOM里就有这个旧的虚拟DOM了
+
+实现效果
+
+```js
+import diff from "./diff"
+
+export default class Component {
+  constructor(props) {
+    this.props = props
+  }
+
+  setState(state) {
+    this.state = Object.assign({}, this.state, state)
+    // 对比新旧DOM，并更新到页面上
+    // 获取最新的要渲染的 virtualDOM 对象
+    let virtualDOM = this.render()
+    // 获取旧的 virtualDOM 对象 
+    let oldDOM = this.getDOM()
+    // console.log(oldDOM)
+    // 获取容器
+    let container = oldDOM.parentNode
+    // 实现对比
+    diff(virtualDOM, container, oldDOM)
+  }
+
+  setDOM(dom) {
+    this._dom = dom
+  }
+  getDOM() {
+    return this._dom
+  }
+}
+```
+
+
+
+### 更新组件
+
+```js
+export default function diff(virtualDOM, container, oldDOM) {
+    const oldVirtualDOM = oldDOM && oldDOM._virtualDOM
+    const oldComponent = oldVirtualDOM && oldVirtualDOM.component
+    // 当oldDOM不存在时
+    if(!oldDOM) {
+        //....
+    }
+    // 当oldDOM存在时
+    else if(virtualDOM.type !== oldVirtualDOM.type && typeof virtualDOM !== 'function') {
+        //....
+    }
+
+    // 对比组件
+    else if(typeof virtualDOM.type === 'function') {
+        diffComponent(virtualDOM, oldComponent, oldDOM, container)
+    }
+
+    else if(oldVirtualDOM && virtualDOM.type === oldVirtualDOM.type) {
+        //...
+    }
+    
+}
+```
+
+情况一：不是同一个组件
+
+```js
+import mountComponent from "./mountComponent"
+
+export default function diffComponent(virtualDOM, oldComponent, oldDOM, container) {
+  if(isSameComponent(virtualDOM, oldComponent)) {
+    // 同一个组件，做组件更新操作
+  } else {
+    mountComponent(virtualDOM, container, oldDOM)
+  }
+}
+
+// 判断是否是同一个组件
+function isSameComponent(virtualDOM, oldComponent) {
+  return oldComponent && virtualDOM.type === oldComponent.constructor
+}
+```
+
+这里更新时，还需要删除页面旧的DOM对象
+
+```js
+export default function mountNativeElement(virtualDOM, container, oldDOM) {
+    let newElement = createDOMElement(virtualDOM)
+
+    // 判断旧的DOM是否存在，存在则删除
+    if(oldDOM) {
+        unmountNode(oldDOM)
+    }
+    // 将转化好的真实DOM挂载到根元素上
+    container.appendChild(newElement)
+
+    let component = virtualDOM.component
+    if(component) {
+        component.setDOM(newElement)
+    }
+}
+```
+
+
+
+略...
