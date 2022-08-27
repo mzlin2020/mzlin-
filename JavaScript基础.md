@@ -1831,8 +1831,6 @@ box3.addEventListener('click', () => {
         console.log(foo(arr));  //输出：1 0 2 9 8 3
 ```
 
-这种方法的缺点：无法去除 {} 空对象
-
 （注：`Array.from() `方法从一个类似数组或可迭代对象创建一个新的，浅拷贝的数组实例）
 
 
@@ -1840,20 +1838,20 @@ box3.addEventListener('click', () => {
 **2、双重for循环+splice方法去重**
 
 ```js
-        var arr = [1, 5, 6, 0, 7, 3, 0, 5, 9,5,5];
+var arr = [1, 5, 6, 0, 7, 3, 0, 5, 9,5,5];
 
-        function unique(arr) {
-            for(let i = 0;i<arr.length;i++) {
-                for(let j = i+1;j<arr.length;j++) {
-                    if(arr[i] === arr[j]) {
-                        arr.splice(j,1); //去除相同的值
-                        j-- //每删除一个数j的值就减1
-                    }
-                }
+function unique(arr) {
+    for(let i = 0;i<arr.length;i++) {
+        for(let j = i+1;j<arr.length;j++) {
+            if(arr[i] === arr[j]) {
+                arr.splice(j,1); //去除相同的值
+                j-- //每删除一个数j的值就减1
             }
-            return arr
         }
-     console.log(unique(arr));
+    }
+    return arr
+}
+console.log(unique(arr));
 ```
 
 

@@ -50,7 +50,7 @@ html5新增的语义化标签：
 
 **缺点：**
 
-1、会阻塞主页面的onload事件
+1、会阻塞主页面的onload事件（ 文档内容完全加载完成会触发该事件 ）
 
 2、搜索引擎无法解读这种页面，不利于SEO
 
@@ -234,7 +234,6 @@ href是`Hypertext Reference`的缩写，指向网络资源所在位置，建立�
 //实例
 <body>
   <div class="box" name="linzm" data-age="18" data-sex="男"></div>
-
   <script>
     const box = document.querySelector('.box')
     console.log(box.dataset)
