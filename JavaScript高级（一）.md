@@ -1731,7 +1731,6 @@ Function.prototype.lmcall = function(thisArg) {
     thisArg.fn = fn
     thisArg.fn()
     delete thisArg.fn
-
 }
 
 function foo() {
@@ -1973,9 +1972,11 @@ newFn(21)
 
 **副作用？**
 
-在计算机科学中，引入了医学的概念副作用，表示在执行一个函数时，除了返回函数值之外，还对调用函数产生了附加的影响，比如修改了全局变量，修改了参数或者改变了外部的存储
+在计算机科学中，引入了医学的概念副作用，表示在执行一个函数时，除了返回函数值之外，还对调用函数产生了附加的影响，比如修改了全局变量，修改了参数或者改变了外部的存储（简单理解:函数依赖于外部的状态）
 
-（副作用往往是产生bug的“温床”）
+例如：用户输入，外部配置，数据库
+
+（副作用往往是产生bug的“温床“）
 
 
 
@@ -2338,6 +2339,105 @@ function composeFn(fn1, fn2) {
 
 var newFn = composeFn(dobule, square)
 ```
+
+
+
+### 8.5 高阶函数
+
+Higher-order function，
+
++ 高阶函数的参数可以是函数
++ 高阶函数额度返回值是一个函数
+
+例如：
+
+`filter 、forEach、every`是高阶函数（参数是函数）
+
+`bind`也是一个高阶函数（返回值是函数）
+
+
+
+意义：高阶函数是用来抽象通用的问题，帮我们屏蔽细节，让我们只关注目标
+
+
+
+**实现forEach**
+
+```js
+Array.prototype.myForEach = function(fn) {
+  const arr = this //隐式调用，this就是调用该函数的数组
+  for(let i in arr) {
+    fn(arr[i], i, arr)
+  }
+}
+
+const arr = [1,23,4,5,6,7]
+arr.myForEach((item) => {
+  console.log(item)
+})
+```
+
+
+
+**实现filter**
+
+```js
+Array.prototype.myFilter = function(fn) {
+  const arr = this
+  let newArr = []
+  for(let key in arr) {
+    if(fn(arr[key])) {
+      newArr.push(arr[key])
+    }
+  }
+  return newArr
+}
+
+const arr = [3,4,5,6,66,2,123,6,77,23,23,32]
+
+const res = arr.filter((item) => {
+  return item > 20
+})
+console.log(res)
+```
+
+
+
+**实现once**
+
+只调用一次的函数，返回值也是一个函数
+
+> 应用场景：支付时，多次点击也只支付一次
+
+```js
+function once(fn) {
+  let done = false
+  return function(arg) {
+      if(!done) {
+          done = true
+          fn(arg)
+      }
+  }
+}
+
+
+const pay = once((monkey) => {
+  console.log(monkey)
+})
+
+pay(888)
+pay(888)
+pay(888)
+pay(888) //只打印一次888
+```
+
+> 注：这里其实应用了闭包
+
+
+
+
+
+
 
 
 
@@ -2733,7 +2833,6 @@ var p1 = createPerson('linming', 22, 1.81, "广州")
 
 console.log(p1.eating);
 console.log(p1.name);
-
 ```
 
 **工厂模式的缺点：**获取不到对象的具体类型，我们在打印对象时，对象的类型都是Obejct类型
@@ -2914,8 +3013,8 @@ function Foo() {
 let f1 = new Foo()
 let f2 = new Foo()
 
-console.log(f1.__proto__ === foo.prototype)
-console.log(f2.__proto__ === foo.prototype)
+console.log(f1.__proto__ === Foo.prototype)
+console.log(f2.__proto__ === Foo.prototype)
 ```
 
 <img src="img/js高级/原型1.jpg" style="zoom:50%;" />
@@ -3058,7 +3157,7 @@ console.log(obj.address) //输出：linming
 
 ### 10.5 Object的原型
 
-Object本质上是一个构造函数，Object也是js所有类的父类
+**Object本质上是一个构造函数**，Object也是js所有类的父类
 
 ```js
 const obj = {}
@@ -3496,6 +3595,27 @@ B、Object函数对象也可以理解成`const Object = new Function()`,所以�
 <img src="img/js高级/原型链5.jpg" style="zoom:50%;" />
 
 
+
+
+
+**总结**
+
+```js
+1、对象
+在js中,每个对象都存在一个隐式原型，默认是一个空对象，可以通过.__proto__访问
+当我们访问js对象中的属性时，如果对象自身没有，则会沿着隐式原型查找，找到则返回，直到顶层对象的显示原型
+
+2、函数
+函数因为本质也是对象，所以也存在隐式原型
+同时函数也存在显示原型，通过prototype访问，显示原型里有一个constructor属性指向函数本身
+
+3、顶层Object
+顶层Object是一个构造函数，它的显示原型中存在很多的方法，例如toString等
+它的隐式原型是null
+
+4、构造函数
+当我们创建一个实例对象时，默认这个实例对象的隐式原型会指向构造函数的显示原型。所以我们可以通过原型链一层层地查找想要的属性，直到顶层Obecjt
+```
 
 
 
