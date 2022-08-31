@@ -659,8 +659,6 @@ fs.writeFile('./abc.txt',content,err=>{
 在文件后面追加
 
 ```javascript
-
-
 // 文件的写入
 const content = "为了更好的明天而战！"
 fs.writeFile('./abc.txt',content,{flag:"a"},err=>{

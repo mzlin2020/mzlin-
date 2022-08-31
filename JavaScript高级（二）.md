@@ -808,9 +808,9 @@ console.log(set.clear())
 
 和Set相似的另外一个数据结构称之为WeakSet，也就是内部元素不能重复的数据结构
 
+
+
 **1、创建weakSet**
-
-
 
 ```js
 const weakSet = new WeakSet()
@@ -1230,12 +1230,6 @@ console.log(msg.padEnd(5, "-"))  //输出：hello-----
 
 
 
-
-
-
-
-
-
 ## 六、ES10小语法
 
 ### 6.1 flat()
@@ -1254,7 +1248,7 @@ const newArr = arr.flat()
 console.log(newArr)
 //输出：[ 10, 20, 2, 4, [ 30, 40 ], [ 20, 12 ], 44, 55 ] 是一个二维数组
 
-//可以再调用一次flat，后者直接在原数组调用flat时，传入一个要遍历的深度
+//可以再调用一次flat，或者直接在原数组调用flat时，传入一个要遍历的深度
 const newArr = arr.flat(2)
 console.log(newArr)
 //输出：[ 10, 20,  2,  4, 30, 40, 20, 12, 44, 55 ]
@@ -2763,7 +2757,7 @@ promise.then(res => {
 
 
 
-应该利用一个能将代码添加进微任务，又能延迟执行的方法——qunueMicrotask
+应该利用一个能将代码添加进微任务，又能延迟执行的方法——queueMicrotask
 
 ```js
 class MzPromise {
@@ -2773,7 +2767,7 @@ class MzPromise {
         const resolve = (value) => {
             if(this.status === PROMISE_STATUS_PEDDING) {
                 this.status = PROMISE_STATUS_FULFILED
-                qunueMicrotask(() => {
+                queueMicrotask(() => {
                     this.value = value //保存传递来的value
                     this.onFulfilled(this.value)
                 })
@@ -3470,15 +3464,3 @@ function* createIterator(arr) {
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
-![]()

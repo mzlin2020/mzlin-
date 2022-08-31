@@ -3607,7 +3607,7 @@ B、Object函数对象也可以理解成`const Object = new Function()`,所以�
 
 2、函数
 函数因为本质也是对象，所以也存在隐式原型
-同时函数也存在显示原型，通过prototype访问，显示原型里有一个constructor属性指向函数本身
+同时函数也存在显示原型，通过prototype访问，显示原型里有一个constructor属性指向函数本身,同时因为显示原型也是一个对象，它也包含了隐式原型，这个隐式原型指向了顶层对象的原型
 
 3、顶层Object
 顶层Object是一个构造函数，它的显示原型中存在很多的方法，例如toString等

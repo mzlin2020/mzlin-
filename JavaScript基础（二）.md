@@ -86,8 +86,6 @@ BOM的核心对象就是window，它代表浏览器的一个实例
 
 
 
-
-
 **2、location对象**
 
 > 注：window.location和document.location引用的是同一个对象。location既是window对象的属性，也是document对象的属性
