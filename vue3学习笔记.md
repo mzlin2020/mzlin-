@@ -50,7 +50,7 @@ Repo : repositiry仓库
 
 ### 1.2 基本使用
 
-```javascript
+```vue
 	
 	<div id="app">
         {{str}}
@@ -102,7 +102,7 @@ Vue.createApp（{ 对象 }）
 表示Vue需要帮助我们渲染的模板信息
 它里边包含很多的HTML标签，这些标签替换掉我们挂载的元素的innerHTML
 
-```javascript
+```vue
 //方法一
 <script type="template" id="tem">
 	//模板内容
@@ -183,7 +183,7 @@ Vue并没有完全遵守MVVM的模型，但是整个设计是受到了它的启�
 
 如果经常需要在编辑器中编写重复的代码，我们可以自定义代码片段，从而达到节省时间，高效编程
 
-```javascript
+```vue
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -246,31 +246,28 @@ Yarn 对你的代码来说是一个软件包管理器， 你可以通过它使�
 
 ```javascript
     <!-- 对象的引用赋值 -->
-    <script>
         const info = {name:'linming',age:20} //保存的是引用地址
         const obj = info //info,obj指向同一个引用地址
         info.name = 'hello world'
         console.log(obj.name) //hellow world
-    </script>
+
 ```
 
 2、浅拷贝
 
 ```javascript
     <!-- 浅拷贝 -->
-    <script>
         const info = {name:'linming',age:20}
         const obj = Object.assign({},info) 
-    </script>
 ```
 
 浅拷贝为obj创建了一个新的引用地址，并将info的内容拷贝了一份。所以当info的内容改变时，并不影响到obj、
 
-![image-20210522161209310](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20210522161209310.png)
+![image-20210522161209310](img/其他img/\image-20210522161209310.png)
 
 但是当info里边保存了一个对象，该对象指向的是一个内存地址。当拷贝到obj时，obj也会指向同一个内存地址
 
-![image-20210522161907601](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20210522161907601.png)
+![image-20210522161907601](img/其他img/\image-20210522161907601.png)
 
 所以改变info里边other的内容，也会反映到obj里的other
 
@@ -278,14 +275,12 @@ Yarn 对你的代码来说是一个软件包管理器， 你可以通过它使�
 
 ```javascript
     <!-- 深拷贝 -->
-    <script>
         const info = {name:'linming',age:20,other:{id:100}}
         const obj = JSON.parse(JSON.stringify(info))
 
         info.other.id = 250
         console.log(obj.other.id) //100 
 		// info怎么变化，都不能影响obj
-    </script>
 ```
 
 
@@ -298,7 +293,7 @@ Yarn 对你的代码来说是一个软件包管理器， 你可以通过它使�
 
 注：vue3允许template有多个根元素
 
-```javascript
+```vue
     <div id="app"></div>
 
     <template id="my-app">
@@ -346,7 +341,7 @@ Yarn 对你的代码来说是一个软件包管理器， 你可以通过它使�
 
 当数据发生变化时，元素或者组件以及所有的子元素将视为静态内容并且跳过（该指令可以用于性能优化）
 
-```javascript
+```vue
     <template id="my-app">
         <div>{{count}}</div>
         <div v-once>{{count}}</div>  //组件渲染后将不会再改变
@@ -360,7 +355,7 @@ Yarn 对你的代码来说是一个软件包管理器， 你可以通过它使�
 
 用于更新元素的 textContent
 
-```javascript
+```vue
     <template id="my-app">
         <div v-text="count"></div>
 		//等价于
@@ -376,7 +371,7 @@ Yarn 对你的代码来说是一个软件包管理器， 你可以通过它使�
 
 如果我们希望这个内容被Vue可以解析出来，那么可以使用 v-html 来展示；
 
-```javascript
+```vue
 <div v-html="info"></div>
 //info的HTML标签会被解析
 //info:"<h2 >hello world</h2>"
@@ -390,7 +385,7 @@ v-pre用于跳过元素和它的子元素的编译过程，显示原始的Mustac
 
 跳过不需要编译的节点，加快编译的速度
 
-```javas
+```vue
     <template id="my-app">
     <div v-pre>{{info}}</div>
     //输出{{info}}
@@ -401,7 +396,7 @@ v-pre用于跳过元素和它的子元素的编译过程，显示原始的Mustac
 
 1、v-bind绑定class（对象语法）
 
-```javascript
+```vue
         <!-- 对象语法：{'类名'：Boolean} -->
             <div :class="{'actvie':true}">
                 我走过你的世界
@@ -410,7 +405,7 @@ v-pre用于跳过元素和它的子元素的编译过程，显示原始的Mustac
 
 也可以有多个键值对
 
-```javascript
+```vue
         <div :class="{'actvie':true,'bgcolor':true}">
             我走过你的世界
 		</div>
@@ -546,7 +541,7 @@ methods:{
 
 **v-if 、v-else 、 v-else-if**
 
-根据条件来渲染某一块的内容，只有当天剑为true时，才会被渲染出来
+根据条件来渲染某一块的内容，只有当条件为true时，才会被渲染出来
 
 ```javascript
     <template id="my-app">
@@ -752,7 +747,7 @@ vue会将template里边的内容进行处理，形成VNode
 
 vNode不只是一个简单的div，而是有一大堆的元素，那么它们应该会形成一个VNode Tree：
 
-![image-20210518203850922](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20210518203850922.png)
+![image-20210518203850922](img/其他img/\image-20210518203850922.png)
 
 
 
@@ -1226,10 +1221,10 @@ watch: {
         <template id="ComponentA">
         <h2>我是标题</h2>
         <div>我是内容</div>
-</template>
+		</template>
 
 <script>
- const ComponentA ={
+const ComponentA ={
      template:'#ComponentA'
      }
 const App ={
@@ -3159,7 +3154,7 @@ const AsyncProfile = defineAsyncComponent({
 
 生命周期函数是一些钩子函数，在某个时间会被Vue源码内部进行回调。
 
-![image-20210611104804630](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20210611104804630.png)
+![image-20210611104804630](img/其他img\image-20210611104804630.png)
 
 
 
