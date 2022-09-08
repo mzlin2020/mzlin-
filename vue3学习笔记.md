@@ -4742,7 +4742,9 @@ web路由的发展主要经历了这样三个阶段：后端路由阶段、前�
 
 URL的hash也就是锚点（#），本质上是改变window.location的href属性；我们可以通过直接赋值location.hash来改变href，但是页面不发生刷新
 
-```javascript
+onHashchange事件可以监听到location.hash的变化，从而进行替换页面内容的DOM操作
+
+```vue
     <div id="app">
         <a href="#/home">home</a>
         <a href="#/about">about</a>
@@ -4752,7 +4754,7 @@ URL的hash也就是锚点（#），本质上是改变window.location的href属�
         <script>
             const content = document.querySelector(".content")
             window.addEventListener("hashchange",()=>{
-                switch(location.hash) {
+                switch(location.hash ) {
                     case "#/home":
                         content.innerHTML = "Home";
                         break;
@@ -4971,7 +4973,9 @@ const routes = [
 
 例如在一个User组件，每一个用户点击显示的是同一个组件，但是部分信息有所不同
 
-方法:动态路由传参
+**动态路由传参**
+
+方式一
 
 ```javascript
 //router/index.js
@@ -4988,7 +4992,41 @@ created () {
 }
 ```
 
-问题：setup中没有this，怎么用获取参数呢？
+方式二：路由规则中开启props传参
+
+```js
+//router/index
+const routes = [
+  //....
+  {
+    path: '/detail/:id',
+    name: 'detail',
+    props: true,
+    component: () => import('../view/Detail.vue')
+  },
+]
+```
+
+```vue
+//detail.vue
+<template>
+  <div>
+    {{id}}
+  </div>
+</template>
+
+<script>
+export default {
+  props: ['id']
+}
+</script>
+```
+
+
+
+
+
+问题：**setup中没有this，怎么用获取参数呢？**
 
 在setup中，可以使用vue-router库给我们提供的hook useRoute
 
