@@ -1,3 +1,7 @@
+
+
+
+
 # Vue进阶
 
 ## 一、router
@@ -998,11 +1002,326 @@ class Watcher {
 
 
 
+## 三、Vuex
+
+![](E:\学习笔记汇总\img\vue\Vuex原理图.png)
+
+### 3.1 基本用法
+
+**state**
+
+ 一般写法
+
+```vue
+  <div id="app">
+    {{$store.state.name}}
+    {{this.$store.state.name}}
+  </div>
+```
+
+
+
+简洁的写法
+
+```js
+<template>
+  <div id="app">
+    <div>简洁的写法</div>
+    <div>{{name}}</div>
+  </div>
+</template>
+
+<script>
+import { mapState } from 'vuex'
+export default {
+  computed: {
+    // name: state => state.name
+    ...mapState(['name', 'count'])
+      
+    // 防止命名冲突，可以传入对象
+    // ...mapState({myName: 'name'})
+  }
+}
+</script>
+```
 
 
 
 
 
+**getters**
+
+```vue
+<template>
+  <div id="app">
+    <!-- 一般写法 -->
+    {{$store.getters.reversename}}
+
+    <!-- 简洁写法 -->
+    {{reversename}}
+
+  </div>
+</template>
+
+<script>
+import { mapState } from 'vuex'
+export default {
+  computed: {
+    ...mapGetters(['reversename'])
+  }
+}
+</script>
+```
 
 
+
+**mutations**
+
+```vue
+<template>
+  <div id="app">
+    {{count}}
+    <!-- 一般写法 -->
+    <button @click="$store.commit('increment', 10)">++</button>
+
+    <!-- 简洁写法 -->
+    <button @click="increment(10)">++</button>
+  </div>
+</template>
+
+<script>
+import { mapState, mapMutations } from 'vuex'
+export default {
+  computed: {
+    // name: state => state.name
+    ...mapState(['name', 'count']),
+  },
+  methods: {
+    ...mapMutations(['increment'])
+  }
+}
+</script>
+```
+
+
+
+
+
+**actions**
+
+定义
+
+```js
+  actions: {
+    incrementAction(content, payload) {
+      setTimeout(() => {
+        content.commit('increment', payload)
+      }, 2000);
+    }
+  }
+```
+
+使用
+
+```vue
+<template>
+  <div id="app">
+    {{count}}
+    <!-- 一般写法 -->
+    <button @click="$store.dispatch('incrementAction', 10)">++</button>
+
+    <!-- 简洁写法 -->
+    <button @click="incrementAction(33)">++</button>
+  </div>
+</template>
+
+<script>
+import { mapState, mapActions } from 'vuex'
+export default {
+  computed: {
+    // name: state => state.name
+    ...mapState(['name', 'count']),
+  },
+  methods: {
+    ...mapActions(['incrementAction'])
+  }
+}
+</script>
+```
+
+
+
+**module**
+
+```js
+// cart
+export default {
+  state: {
+    number: 999
+  },
+  mutations: {
+    decrement(state, payload) {
+      state.number -= payload
+    }
+  },
+  actions: {},
+}
+```
+
+使用
+
+```vue
+<template>
+  <div id="app">
+    <!-- 一般用法 -->
+    {{$store.state.cart.number}}
+    <button @click="$store.commit('decrement',99)">--</button>
+  </div>
+</template>
+```
+
+
+
+如果我们希望使用map映射，使代码更简洁，可以添加命名空间
+
+```js
+//cart
+export default {
+    namespaced : true,
+}
+```
+
+
+
+```js
+<template>
+  <div id="app">
+    <!-- 简洁用法 -->
+    {{number}}
+    <button @click="decrement(99)">--</button>
+  </div>
+</template>
+
+<script>
+import { mapState, mapMutations } from 'vuex'
+export default {
+  computed: {
+    ...mapState('cart', ['number'])
+  },
+  methods: {
+    ...mapMutations('cart', ['decrement'])
+  }
+}
+</script>
+```
+
+
+
+### 3.2 Vuex原理
+
+```js
+new Vuex.Store({...})
+```
+
+可知：Vuex是一个对象，Store是一个类
+
+```js
+Vue.use(Vuex)
+```
+
+Vuex中还需要一个install函数，当注册时会调用该函数
+
+
+
+**基本结构**
+
+```js
+let _Vue = null
+
+class Store {
+
+}
+
+function install (Vue) {
+  _Vue = Vue
+}
+
+export default {
+  Store,
+  install
+}
+```
+
+
+
+**install**
+
+当Vue实例创建时，将传入的store对象，注入到Vue原型中$store
+
+```js
+function install (Vue) {
+  _Vue = Vue
+  _Vue.minin({
+    beforeCreate() {
+      if(this.$options.store) {
+        _Vue.prototype.$store = this.$options.store
+      }
+    }
+  })
+}
+```
+
+
+
+
+
+**完整代码**
+
+```js
+let _Vue = null
+
+class Store {
+  constructor(options) {
+    const {
+      state = {},
+      getters = {},
+      mutations = {},
+      actions = {}
+    } = options
+    this.state = _Vue.observable(state)
+    this.getters = Object.create(null)
+    Object.keys(getters).forEach(key => {
+      Object.defineProperty(this.getters, key, {
+        get: () => getters[key](state)
+      })
+    })
+    this._mutations = mutations
+    this._actions = actions
+  }
+
+  commit(type, payload) {
+    this._mutations[type](this.state, payload)
+  }
+
+  dispatch(type, payload) {
+    this._actions[type](this, payload)
+  }
+}
+
+function install (Vue) {
+  _Vue = Vue
+  _Vue.mixin({
+    beforeCreate() {
+      if(this.$options.store) {
+        _Vue.prototype.$store = this.$options.store
+      }
+    }
+  })
+}
+
+export default {
+  Store,
+  install
+}
+```
 
