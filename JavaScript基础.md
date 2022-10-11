@@ -51,8 +51,6 @@ function.apply(thisObj [, argArray])
     greet.call(obj);
 ```
 
-
-
 **调用构造函数实现继承**
 
 ```js
@@ -77,8 +75,6 @@ function.apply(thisObj [, argArray])
 
 在一个子构造函数中，可以通过调用父构造函数的call方法来实现继承。上方例子中，使用Food和Toy构造函数创建的对象实例都拥有Product构造函数中添加的name属性和price属性，但category属性是在各自的构造函数中定义的。
 
-
-
 **其他用法**
 
 1、求数组的最大/最小值
@@ -97,8 +93,6 @@ console.log(Math.max.apply(null, arr1)); //  19 直接可以用arr1传递进去
 let arr1 = [1, 2, 19, 6];
 console.log(Math.max(...arr1));
 ```
-
-
 
 2、数组拼接
 
@@ -126,10 +120,6 @@ console.log(arr2); // 不变
 console.log(arr1.push(...arr2));
 console.log(arr1);
 ```
-
-
-
-
 
 ### 2、 bind
 
@@ -176,8 +166,6 @@ C、如果构造函数使用return语句，返回一个原始值，或没有返�
 
 D、如果构造函数显示地使用return语句返回一个对象，那么调用表达式的值就是这个对象
 
-
-
 **实例验证**
 
 **this的指向在函数定义的时候是确定不了的，只有函数执行的时候才能确定this到底指向谁**，**实际上this的最终指向的是那个调用它的对象**
@@ -195,8 +183,6 @@ D、如果构造函数显示地使用return语句返回一个对象，那么调�
 
 这里的foo函数，是通过window调用的，所以this指向window
 
-
-
 2、this指向对象
 
 ```js
@@ -211,8 +197,6 @@ D、如果构造函数显示地使用return语句返回一个对象，那么调�
 ```
 
 this指向obj对象，因为通过obj调用了sayName
-
-
 
 3、特殊情况1
 
@@ -233,8 +217,6 @@ this指向obj对象，因为通过obj调用了sayName
 
 这里的this最终指向的是obj2，而不是obj1
 
-
-
 4、特殊情况2
 
 this永远指向最后调用它的对象
@@ -254,8 +236,6 @@ this永远指向最后调用它的对象
         fn() 
 //调用fn()的是window，所以this指向window
 ```
-
-
 
 5、构造函数的this
 
@@ -278,7 +258,7 @@ this永远指向最后调用它的对象
             this.name = "linming";
             return //或者return 1 return 基本数据类型
         }
- 
+
         let aa = new Fn()
         console.log(aa.name);  //输出linming
 ```
@@ -290,7 +270,7 @@ this永远指向最后调用它的对象
             this.name = "linming";
             return {}; //f
         }
- 
+
         let aa = new Fn()
         console.log(aa.name); //
 ```
@@ -300,8 +280,6 @@ this永远指向最后调用它的对象
 **基本数据类型**：Number、String、Boolean、Null、Undefined、Symbol
 
 **引用数据类型**：Object、Array、Date、Function、RegExp
-
-
 
 ### 5、判断数据类型
 
@@ -329,8 +307,6 @@ typeof可以识别出基本数据类型boolean、number、string、undefined、s
 
 不能识别引用数据类型，会把null、array、object统一归为object类型，但是可以识别function
 
-
-
 **2、instanceof**
 
 **instanceof 只能用来判断两个对象是否属于实例关系**， 而不能判断一个对象实例具体属于哪种类型。
@@ -340,8 +316,6 @@ typeof可以识别出基本数据类型boolean、number、string、undefined、s
 instanceof用来判断A是否为B的实例，表达式：A instanceof B，如果A是B的实例，返回true，否则false
 
 注意：`instanceof `后面一定要是**对象类型**，`instanceof`检查的是**原型**
-
-
 
 ```js
 //Boolean包装类
@@ -365,8 +339,6 @@ instanceof不能识别基本数据类型number、string、boolean、undefined、
 
 但是可以检测出引用类型，如array、object、function，同时对于使用new声明的类型，它还可以检测出多层继承关系
 
-
-
 **3、constructor**
 
 ```js
@@ -383,8 +355,6 @@ instanceof不能识别基本数据类型number、string、boolean、undefined、
 1.null 和 undefined 是无效的对象，因此是不会有 constructor 存在的，这两种类型的数据需要通过其他方式来判断。
 
 2。函数的 constructor 是不稳定的，这个主要体现在自定义对象上，当开发者重写 prototype 后，原有的 constructor 引用会丢失，constructor 会默认为 Object
-
-
 
 **4、Object.prototype.toString.call()**
 
@@ -403,13 +373,9 @@ instanceof不能识别基本数据类型number、string、boolean、undefined、
         console.log(Object.prototype.toString.call(arr)); //[object Array]
 ```
 
-
-
 **5、相等和全等**
 
 1、相等运算符== ：先进行类型比较，再比较
-
-
 
 2、全等运算符=== ：不进行类型转换，直接比较
 
@@ -422,8 +388,6 @@ console.log('2' == true); //f
 //===
 console.log(123 === '123'); //false
 ```
-
-
 
 ### 6、闭包
 
@@ -444,8 +408,6 @@ JavaScript语言的特殊之处，**就在于函数内部可以直接读取全�
 
 　　f1(); // 999
 ```
-
-
 
 另一方面，**在函数外部自然无法读取函数内的局部变量**。
 
@@ -476,8 +438,6 @@ JavaScript语言的特殊之处，**就在于函数内部可以直接读取全�
 
 　　}
 ```
-
-
 
 在上面的代码中，函数f2就被包括在函数f1内部，这时f1内部的所有局部变量，对f2都是可见的。但是反过来就不行，f2内部的局部变量，对f1就是不可见的。这就是Javascript语言特有的"链式作用域"结构（chain scope），子对象会一级一级地向上寻找所有父对象的变量。所以，父对象的所有变量，对子对象都是可见的，反之则不成立。
 
@@ -538,8 +498,6 @@ newFn()
 　　result(); // 1000
 ```
 
-
-
 在这段代码中，result实际上就是闭包f2函数。它一共运行了两次，第一次的值是999，第二次的值是1000。这证明了，函数f1中的局部变量n一直保存在内存中，并没有在f1调用后被自动清除。
 
 为什么会这样呢？原因就在于f1是f2的父函数，而f2被赋给了一个全局变量，这导致f2始终在内存中，而f2的存在依赖于f1，因此f1也始终在内存中，不会在调用结束后，被垃圾回收机制（garbage collection）回收。
@@ -576,7 +534,6 @@ newFn()
 　　alert(object.getNameFunc()());
 ```
 
-
 代码片段二。
 
 ```js
@@ -597,8 +554,6 @@ newFn()
 
 　　alert(object.getNameFunc()());
 ```
-
-
 
 ### 7、深拷贝和浅拷贝
 
@@ -648,15 +603,11 @@ newFn()
 
         info.other.id = 250
         console.log(obj.other.id) //100 
-		// info怎么变化，都不能影响obj
+        // info怎么变化，都不能影响obj
     </script>
 ```
 
- 
-
 ### 8、防抖和节流
-
-
 
 ### 9、eval函数
 
@@ -669,8 +620,6 @@ eval(evalString)
 console.log(message)
 ```
 
-
-
 不建议在开发中使用eval：
 
 1、eval代码的可读性十分差
@@ -678,8 +627,6 @@ console.log(message)
 2、eval参数是一个字符串，有可能在执行过程中被篡改
 
 3、eval的执行必须经过js解释器，不能被js引擎优化
-
-
 
 ### 10、js数字精度丢失
 
@@ -693,8 +640,6 @@ console.log(num != 0.3); //true
 
 这里0.3 不等于 0.3 ？？？？
 
-
-
 ```js
 //大整数运算
 let num1 = 9999999999999999
@@ -704,8 +649,6 @@ console.log(num1 == num2); //true
 
 明显不相等的两个数，结果是相等的？？？
 
-
-
 ```js
 //toFixed 不会四舍五入
 let num3 = 1.335
@@ -714,15 +657,11 @@ console.log(num3.toFixed(2)); //输出：1.33
 
 保留两位小数后，本来应该是1.34
 
-
-
 **精度丢失的原因**
 
 计算机无法存储某些数，比如无限循环的小数（1/3 = 0.3333333...），这种数计算机再大的内存也存不下。
 
 所以只能存储一个近似值，当计算机存储后再取出来用时就会出现精度问题
-
-
 
 JavaScript以64位双精度浮点数存储所有Number类型值，即计算机最多存储64位二进制数
 
@@ -740,8 +679,6 @@ JavaScript以64位双精度浮点数存储所有Number类型值，即计算机�
 
 ![](img/前端总结/数字精度丢失.png)
 
-
-
 那么如何存储1.10110 *2^4这个值呢？
 
 对于double型数据（双精度浮点数），其长度是8字节。右边52位用来表示小数点后面的数字，中间11位表示小数点移动的位数，左边一位用来表示正负
@@ -751,8 +688,6 @@ JavaScript以64位双精度浮点数存储所有Number类型值，即计算机�
 **总结**
 
 计算机存储双精度浮点数需要先把十进制数转换成二进制的科学计数法的形式，然后计算机以自己的规则`符号位+ （指数位 + 指数偏移量的二进制）+ 小数部分`存储二进制的科学计数法，因为存储时有位数限制（64位），并且某些十进制浮点数字啊转换为二进制数时会出现无限循环，会造成二进制的舍入操作（0舍1入），当再转换为十进制时就造成了计算误差
-
-
 
 ## 二、ES6
 
@@ -769,8 +704,6 @@ JavaScript以64位双精度浮点数存储所有Number类型值，即计算机�
 4、async用于声明一个function是异步的，await用于等待一个异步方法执行完成的
 
 5、await只能出现在async的函数中
-
-
 
 **async基本使用**
 
@@ -790,7 +723,6 @@ JavaScript以64位双精度浮点数存储所有Number类型值，即计算机�
     // 两者的结果
     console.log(timeout1());  //输出：hello world
     console.log(timeout2());  //输出：promise对象
-
 ```
 
 async的用法很简单，在函数前面加上这一关键字，按着平时使用函数的方式去使用它。
@@ -818,8 +750,6 @@ async function timeout(flag) {
 console.log(timeout(true))  // 调用Promise.resolve() 返回promise 对象。
 console.log(timeout(false)); // 调用Promise.reject() 返回promise 对象。
 ```
-
-
 
 **await基本使用**
 
@@ -850,8 +780,6 @@ await后边可以放任何表达式，不过放的更多的返回一个promise�
 
 注：如果await等到的不是一个promise对象，那么await表达式的运算结果就是它等到的东西；如果等到了promise，它会阻塞后边的代码，等着promise对象resolve，然后得到resolve的值，作为await表达式的运算结果
 
-
-
 就这一个函数，我们可能看不出async/await 的作用，如果我们要计算3个数的值，然后把得到的值进行输出呢？
 
 ```javascript
@@ -866,10 +794,6 @@ await后边可以放任何表达式，不过放的更多的返回一个promise�
 ```
 
 可以想象，如果上边的代码用then链来写，是特别不优雅的。而使用async和await看起来就像在使用同步代码一样
-
-
-
-
 
 ### 2、promise对象
 
@@ -889,8 +813,8 @@ await后边可以放任何表达式，不过放的更多的返回一个promise�
 
 ```js
 let promise = new Promise((resolve,reject) {
-	//...some code
-	if (/*异步操作成功*/) {
+    //...some code
+    if (/*异步操作成功*/) {
     resolve(value)
 } else {
     reject(err)
@@ -925,8 +849,6 @@ console.log('Hi！')
 //Resolved
 ```
 
-
-
 **promise.all()方法**
 
  该方法的作用是将多个`Promise`对象实例包装，生成并返回一个新的`Promise`实例。 
@@ -945,8 +867,6 @@ Promise.all([
 
 //输出：[ 'hello', 'world' ]
 ```
-
-
 
 **promise.race()方法**
 
@@ -975,8 +895,6 @@ Promise.race([
 
 //输出：p1
 ```
-
-
 
 **promise.resolve()**
 
@@ -1014,8 +932,6 @@ console.log("one");
 //输出：one 、two 、three
 ```
 
-
-
 ### 4、let和const
 
 **let特点**
@@ -1049,26 +965,22 @@ if(true) {
     //TDZ开始
     tmp = 'abc'; //报错
     console.log(tmp) //报错
-    
+
     let tmp; //TDZ结束
 }
 ```
 
 上面的代码中，在let声明变量tmp之前，都属于变量tmp的死区
 
-
-
 **补充**：上面的代码中，如果全局中已声明tmp变量，还会报错吗？会
 
 因为只要块级作用域内存在let命令，它所声明的变量就绑定这个区域，不再受外部的影响
-
-
 
 **隐蔽的死区**
 
 ```js
         //没办法在y声明之前，给x赋值
-		function foo (x = y,y = 2) {
+        function foo (x = y,y = 2) {
             return [x,y]
         }
         foo()
@@ -1096,18 +1008,6 @@ function bar() {
 bar()
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
 ### 6、箭头函数
 
 1、函数体内的this对象就是定义时所在的对象，而不是使用时所在的对象
@@ -1117,8 +1017,6 @@ bar()
 3、不能使用arguments对象，该对象在函数体内不存在，可以使用rest参数代替
 
 4、不可以使用yield命令。因此箭头函数不能用作Generator函数
-
-
 
 ### 7、Proxy代理
 
@@ -1154,8 +1052,6 @@ get方法用于拦截某个属性的读取操作
 ```
 
 如果没有这个拦截器，访问不存在的属性只会返回undefined
-
-
 
 **3、set（）方法**
 
@@ -1252,8 +1148,6 @@ let proxy = new Proxy(target, handler)
 console.log(delete proxy._prop);
 ```
 
-
-
 **this问题**
 
 在proxy代理情况下，目标对象内部的this关键字会指向proxy代理
@@ -1270,8 +1164,6 @@ const proxy = new Proxy(target, handler)
 target.m() //false
 proxy.m() //true
 ```
-
-
 
 ### 8、遍历器itertator
 
@@ -1319,8 +1211,6 @@ console.log(example.next()); //{value: "b", done: false}
 console.log(example.next()); //{value: undefined, done: true}
 ```
 
-
-
 **默认Iterator接口**
 
 数据结构只要部署了iterator接口，我们就称这种数据结构为“可遍历”的
@@ -1337,17 +1227,11 @@ ES6规定，默认的iterator接口部署在数据结构的Symbol.iterator属性
 + 函数的argument对象
 + NodeList对象
 
-
-
 **for...of循环**
 
 数据结构只要部署了Symbol.iterator属性，就视为部署了iterator接口，可以使用for...of循环
 
 适用范围：数组、Set、Map、某些类似数组的对象、generator对象、字符串
-
-
-
-
 
 ### 9、Generator函数
 
@@ -1393,8 +1277,6 @@ console.log(hw.next());
 
 注：yield表达式只能在generator中使用
 
-
-
 **与iterator接口的关系**
 
 由于Generator函数就是遍历器生成函数，因此可以把Generator赋值给对象的Symbol.interator属性，从而使该具有iterator接口
@@ -1412,8 +1294,6 @@ console.log([...myIterator]); //[1, 2, 3]
 ```
 
 前面说过对象是不具有iterator接口的，也不可被for..of遍历，但是通过上边的**Generator赋值给对象的Symbol.interator属性**，使得对象变为可遍历的
-
-
 
 **遍历generator函数**
 
@@ -1437,10 +1317,6 @@ console.log(Array.from(numbers()));
 
 为什么没有4呢？因为当遇到return时，done的状态改为true，表示遍历结束
 
-
-
-
-
 ### 10、循环加载
 
 “循环加载”指的是，a脚本执行依赖b脚本，b脚本的执行又依赖a脚本
@@ -1456,8 +1332,6 @@ let a = require('./a.js')
 通常来说，“循环加载”表示强耦合，如果处理不好，还可能导致递归加载，使得程序无法执行，因此应该避免出现这种情况。但是，在大型项目中，这种情况是很难避免的
 
 在JavaScript中，目前最常见的两种格式CommonJS和ES6在处理“循环加载时”的方法是不一样的，返回的结果也不一样
-
-
 
 **1、CommonJS加载原理**
 
@@ -1521,8 +1395,6 @@ let b = require('./b')
 //a.js执行完毕
 ```
 
-
-
 **2、es6模块的循环加载**
 
 ES6模块是动态引用，如果使用import从一个模块中加载变量。那么变量不会被缓存，而是成为一个指向被加载模块的引用，需要开发者保证在真正取值的时候能够取到值
@@ -1557,8 +1429,6 @@ export let bar = 'bar'
 
 3、执行完毕b.js，再去执行a.js
 
-
-
 ### 11、模块加载方案的差异
 
 **CommonJS与ES6模块化的差别**
@@ -1571,23 +1441,11 @@ export let bar = 'bar'
 
 在ES6模块化中，`import { readFile } from "fs"`,像这种是静态加载，可以在编译期间就完成模块加载，效率比Commonjs高
 
-
-
 > 3、commonjs中顶层的this指向这个模块本身，而ES6中顶层this指向undefined
-
-
 
 > 4、ES6在编译期间会将所有import提升到顶部，commonjs不会提升require
 
-
-
 > commonjs导出的是一个值拷贝，会对加载结果进行缓存，一旦内部再修改这个值，则不会同步到外部。ES6是导出一个值的引用，内部修改可以同步到外部
-
-
-
-
-
-
 
 ## 三、DOM
 
@@ -1602,10 +1460,6 @@ JavaScript与HTML的交互是通过事件实现的，事件代表文档或浏览
 事件流描述了页面接收事件的顺序
 
 假设当你点击了一个按钮时，实际上不光点击了这个按钮，还点击了它的容器以及整个页面。
-
-
-
-
 
 **事件冒泡**
 
@@ -1627,8 +1481,6 @@ JavaScript与HTML的交互是通过事件实现的，事件代表文档或浏览
 // 3.<html>
 // 4.document
 ```
-
-
 
 **事件捕获**
 
@@ -1655,15 +1507,11 @@ JavaScript与HTML的交互是通过事件实现的，事件代表文档或浏览
 
 现代浏览器都支持事件捕获，但几乎很少使用。通常建议使用事件冒泡
 
-
-
 **DOM事件流**
 
 事件流分为3个阶段：事件捕获、到达目标、事件冒泡
 
 这意味着，在事件目标上，有两个机会来处理事件
-
-
 
 **事件处理程序**
 
@@ -1708,20 +1556,16 @@ JavaScript与HTML的交互是通过事件实现的，事件代表文档或浏览
         },false)
 ```
 
-
-
 ### 2、事件对象
 
 在DOM中发生事件时，所有的相关信息都会被收集并存储在一个名为event的对象中。
-
-
 
 event对象是传给事件处理程序的唯一参数，不管以哪种方式
 
 ```js
 // 1.
 <input type='button' value="Click me" onclick="console.log(event.type)">
-    
+
 //2.
  btn.onclick = function() {
     console.log(event.type);
@@ -1735,16 +1579,14 @@ btn.addEventListener('click',() => {
 
 event对象中的公共属性和方法
 
-| 属性/方法      | 说明                           |
-| -------------- | ------------------------------ |
-| bubbles        | 表示事件是否冒泡               |
+| 属性/方法          | 说明              |
+| -------------- | --------------- |
+| bubbles        | 表示事件是否冒泡        |
 | cancelable     | 表示是否可以取消事件的默认行为 |
-| currentTarget  | 当前事件处理程序所在的元素     |
-| preventDefault | 用于取消事件的默认行为         |
-| target         | 事件目标                       |
-| type           | 被触发的事件类型               |
-
-
+| currentTarget  | 当前事件处理程序所在的元素   |
+| preventDefault | 用于取消事件的默认行为     |
+| target         | 事件目标            |
+| type           | 被触发的事件类型        |
 
 ### 3、事件委托（代理）
 
@@ -1778,8 +1620,6 @@ box3.addEventListener('click', () => {
 
 这种做法是十分占用性能的
 
-
-
 使用事件委托，只要给所有元素共同的祖先节点添加一个事件处理程序，就可以解决问题
 
 ```js
@@ -1798,8 +1638,6 @@ box3.addEventListener('click', () => {
             }
         })
 ```
-
-
 
 ## 四、其他
 
@@ -1825,8 +1663,6 @@ box3.addEventListener('click', () => {
 
 （注：`Array.from() `方法从一个类似数组或可迭代对象创建一个新的，浅拷贝的数组实例）
 
-
-
 **2、双重for循环+splice方法去重**
 
 ```js
@@ -1846,8 +1682,6 @@ function unique(arr) {
 console.log(unique(arr));
 ```
 
-
-
 **3、利用数组的indexOf方法去重**
 
 ```js
@@ -1865,8 +1699,6 @@ console.log(unique(arr));
 
         console.log(unique(arr));
 ```
-
-
 
 **4、利用数组sort方法去重**
 
@@ -1888,8 +1720,6 @@ console.log(unique(arr));
         console.log(unique(arr));
 ```
 
-
-
 **5、利用数组的includes方法去重**
 
 includes()方法用于判断字符串是否包含指定的子字符串，找到匹配返回true，否则false
@@ -1910,8 +1740,6 @@ includes()方法用于判断字符串是否包含指定的子字符串，找到�
         console.log(unique(arr));
 ```
 
-
-
 **6、利用数组filter方法去重**
 
 filter()会返回数组中每一项运行后结果为true的数组
@@ -1919,9 +1747,8 @@ filter()会返回数组中每一项运行后结果为true的数组
 indexOf只会返回相同结果的第一个结果的索引
 
 ```js
-
         let arr = [1,2,8,9,5,8,4,0,4];
-        
+
         function unique(arr) {
             return arr.filter((item,index) => {
                 return arr.indexOf(item) === index; 
@@ -1932,14 +1759,11 @@ indexOf只会返回相同结果的第一个结果的索引
         console.log(unique(arr));
 ```
 
-
-
 ### 2、数组取重的方法
 
 **1、参考方法一**
 
 ```js
-
 let arr = [1, 2, 4, 4, 3, 3, 1, 5, 3]
 
 function foo(arr) {
@@ -1958,10 +1782,6 @@ let newArr = []
 console.log(foo(arr)); //输出1,3,4
 ```
 
-
-
-
-
 ## 五、axios
 
 ### 1、基本使用
@@ -1978,28 +1798,24 @@ console.log(foo(arr)); //输出1,3,4
 
 - 转换请求和相应数据...
 
-  
-
   **axios请求方式**
 
-  ```javascript
-  axios(config)
-  axios.request(config)
-  axios.get(url[,config])
-  axios.delete(url[,config])
-  axios.head(url[,config])
-  axios.post(url[,data[,config]])
-  axios.put(url[,data[,config]])
-  axios.patch(url[,data[,config]])
-  ```
+```javascript
+axios(config)
+axios.request(config)
+axios.get(url[,config])
+axios.delete(url[,config])
+axios.head(url[,config])
+axios.post(url[,data[,config]])
+axios.put(url[,data[,config]])
+axios.patch(url[,data[,config]])
+```
 
   **安装**
 
   在vue-cli中的安装方式
 
   `npm install axios --save`
-
-  
 
   用于测试网络请求的网站：
 
@@ -2009,8 +1825,6 @@ console.log(foo(arr)); //输出1,3,4
 
   `httpbin.org` 
 
-  
-
   **基本使用**
 
   引入该插件
@@ -2019,26 +1833,26 @@ console.log(foo(arr)); //输出1,3,4
 
   测试
 
-  ```javascript
-  import axios from 'axios' //引用该插件
-  
-  axios({
-    url:'http://123.207.32.32:8000/home/multidata'
-  }).then(res=>{
-    console.log(res);
-  })
-  ```
+```javascript
+import axios from 'axios' //引用该插件
+
+axios({
+  url:'http://123.207.32.32:8000/home/multidata'
+}).then(res=>{
+  console.log(res);
+})
+```
 
   这里的axios({...})返回一个promise，并在内部执行了resolve，所以我们可以使用.then()对结果进行处理
 
   在上述例子中，axios({...})默认发送的是GET请求，如果想要指定请求方式，则需要添加method方法
 
-  ```javascript
-  axios({
-    url:'http://123.207.32.32:8000/home/multidata', //该接口暂时不支持post请求
-    method:'post'
-  })
-  ```
+```javascript
+axios({
+  url:'http://123.207.32.32:8000/home/multidata', //该接口暂时不支持post请求
+  method:'post'
+})
+```
 
   当然，我们也可以通过其他方式发送post或者get请求
 
@@ -2046,21 +1860,19 @@ console.log(foo(arr)); //输出1,3,4
 
   `axios.get(url:'', ...)`
 
-  
-
   有时候url过长，或者需要传入随着参数变化而变化的url，这时候应该这样做
 
-  ```javascript
-  axios({
-    url:'http://152.136.185.210:7878/api/m5/home/data',
-    params:{
-      type:'sell',
-      page:1
-    }
-  }).then(res=>{
-    console.log(res);
-  })
-  ```
+```javascript
+axios({
+  url:'http://152.136.185.210:7878/api/m5/home/data',
+  params:{
+    type:'sell',
+    page:1
+  }
+}).then(res=>{
+  console.log(res);
+})
+```
 
   最终呈现出的url是这样子的：
 
@@ -2068,41 +1880,35 @@ console.log(foo(arr)); //输出1,3,4
 
   axios会将params中的参数拼到url之后
 
-  
-
   **状态信息**
 
   值得一说的是，在我们发送网路请求之后，axios会给服务器返回给我们的数据data中添加一些状态信息，如header,request,status,statusText等
-
-  
 
   **axios发送并发请求**
 
   有时我们需要向服务器发送多个请求，并且需要等这些请求获取到之后才能执行下一步操作
 
-  ```javascript
-  axios.all([
-      axios(), //请求一
-      axios()  //请求二
-  ]).then(result=>{
-      console.log(result)
-  })
-  
-  //该方法最终返回的是一个包含了两个请求数据的数组
-  //访问请求一数据： console.log(result[0])
-  ```
+```javascript
+axios.all([
+    axios(), //请求一
+    axios()  //请求二
+]).then(result=>{
+    console.log(result)
+})
+
+//该方法最终返回的是一个包含了两个请求数据的数组
+//访问请求一数据： console.log(result[0])
+```
 
   也可将返回的包含多个数据的result展开
 
-  ```javascript
-  .then(axios.spread((res1,res2)=>{
-      console.log(res1);
-      console.log(res2);
-  }
-  ))
-  ```
-
-  
+```javascript
+.then(axios.spread((res1,res2)=>{
+    console.log(res1);
+    console.log(res2);
+}
+))
+```
 
 **全局配置**
 
@@ -2165,8 +1971,6 @@ instance1({
 })
 ```
 
-
-
 ### 2、封装
 
 为什么要单独封装发送axios请求的模块?
@@ -2204,10 +2008,6 @@ export function request(config){ //向外导出一个包含发送网络请求的
 }
 ```
 
-
-
-
-
 在其他组件中调用
 
 ```javascript
@@ -2235,8 +2035,6 @@ export function request(config){
     return instance(config) //向外返回一个promise
 }
 ```
-
-
 
 ### 3、拦截器
 
@@ -2267,7 +2065,7 @@ instance.interceptors.request.use(config=>{
 ```
 
 + 响应拦截
-
+  
   对已获取到的网络请求进行操作
 
 ```javascript
@@ -2298,14 +2096,3 @@ export function request(config){
     return instance(config) //向外返回一个promise
 }
 ```
-
-
-
-
-
-
-
-
-
-
-
