@@ -140,3 +140,60 @@ HTML5新增了`pushState/replaceState`,可以用于向URL中添加/替换内容�
 
 
 
+### 3、Ajax
+
+
+
+**get请求**
+
+```js
+var	xmlhttp= new XMLHttpRequest();
+xmlhttp.onreadystatechange=function(){
+    if (xmlhttp.readyState==4 && xmlhttp.status==200){
+        console.log(JSON.parse(xmlhttp.responseText))
+    }
+}
+xmlhttp.open("GET","url",true);
+xmlhttp.send();
+```
+
+
+
+**post请求**
+
+```js
+  var xmlhttp=new XMLHttpRequest();
+  xmlhttp.onreadystatechange=function(){
+    if (xmlhttp.readyState==4 && xmlhttp.status==200){
+      console.log(xmlhttp.responseText)
+    }
+  }
+  xmlhttp.open("POST","url",true);
+  xmlhttp.send();
+}
+```
+
+如果需要提交信息
+
+```js
+xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded"); //setRequestHeader（key, value）
+xmlhttp.send("fname=Henry&lname=Ford"); //提交的信息
+```
+
+
+
+**注意事项：**
+
+1、`xmlhttp.open("POST","url",true);`第三个参数true表示异步，false表示同步
+
+2、`onreadystatechange `事件
+
+当请求发送时，触发此事件。其中`readyState `属性存有 XMLHttpRequest 的状态信息。
+
+- 0: 请求未初始化
+- 1: 服务器连接已建立
+- 2: 请求已接收
+- 3: 请求处理中
+- 4: 请求已完成，且响应已就绪
+
+所以一般都需要进行判断，当`readyState`===4时，获取到的数据才是准确的
