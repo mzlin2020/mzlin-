@@ -750,6 +750,15 @@ fs.rename('./ming','./linming',err=>{
 
 
 
+**其他常用API**
+
++ writeFile 从指定文件中读取数据
++ appendFile 追加的方式向指定文件中写入数据
++ copyFile 将某个文件中的数据拷贝至另一个文件
++ watch File 对指定文件进行监控
+
+
+
 ### 3.3 events模块
 
 Node中的核心API都是基于异步事件驱动的：
@@ -1052,7 +1061,7 @@ createCommands()
 
 ### 6.1buffer与二进制
 
-对于前端开发来说，通常很少会和二进制打交道，但是对于服务器端为了做很多的功能，我们必须直接去操作其二进制额度数据。
+对于前端开发来说，通常很少会和二进制打交道，但是对于服务器端为了做很多的功能，我们必须直接去操作其二进制的数据。
 
 所以，Node为了方便开发者完成更多的功能，提供了一个类Buffer，并且是全局的。
 
@@ -1109,6 +1118,26 @@ buffer4[1] = 0x88;
 console.log(buffer4);
 //输出：<Buffer 58 88 00 00 00 00 00 00>
 ```
+
+
+
+**buffer的实例方法**
+
++ fill 使用数据填充buffer
++ write 向buffer中写入数据
++ toString 从buffer中提取数据
++ slice 截取buffer
++ indexOf 在buffer中查找数据
++ copy 拷贝buffer中的数据
+
+
+
+**静态方法**
+
++ concat 拼接多个buffer
++ isBuffer 判断传入的数据是否是buffer
+
+
 
 
 
