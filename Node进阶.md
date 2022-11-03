@@ -285,6 +285,8 @@ res.setHeader('Content-type', mime.getType(pathname)+';chartset=utf-8')
 
 ### 3、socket.io
 
+#### 3.1 基本使用
+
 Socket.io是基于Websocket封装的一个框架
 
 官方案例：实时通信
@@ -480,6 +482,8 @@ io.on('connection', (socket) => {
 
 
 
+#### 3.2 案例
+
 
 
 **在vue中使用socket.io**
@@ -496,7 +500,6 @@ io.on('connection', (socket) => {
     </form>
   </div>
 </template>
-
 <script setup>
   import { io } from 'socket.io-client'
   const socket = io("http://localhost:8888", {
@@ -596,6 +599,181 @@ const io = new Server(server, {
   }
 });
 ```
+
+
+
+**增加用户登录**
+
+```vue
+<template>
+  <div class="login">
+    <form action="">
+      <div>
+        <label for="name">
+        用户名：
+        <input type="text" id="name" v-model="user.name">
+      </label>
+      </div>
+      <div>      
+        <label for="password">
+        密码：
+        <input type="password" id="password" v-model="user.passsord">
+        </label></div>
+      <div><button @click.prevent="loginbtn">登录/注册</button></div>
+    </form>
+  </div>
+</template>
+
+<script setup>
+import { reactive } from 'vue'
+import axios from 'axios'
+
+const user = reactive({
+  name: '',
+  passsord: ''
+})
+
+const loginbtn = async() => {
+  try {
+    const { data } = await axios.post('http://localhost:8888/api/login', user)
+  } catch (error) {
+    console.log(error.message)
+  }
+}
+</script> 
+<style></style>
+
+```
+
+点击登录时，遇到跨域问题
+
+安装cors库
+
+```js
+//server.js
+const cors = require('cors')
+// http跨域问题处理
+app.use(cors())
+```
+
+
+
+**完整代码**
+
+```js
+//server
+//server.js
+const express = require('express');
+const router = require('./server-login')
+const cors = require('cors')
+const app = express();
+
+const http = require('http');
+const server = http.createServer(app);
+
+//配置解析post请求体
+app.use(express.json())
+// http跨域问题处理
+app.use(cors())
+app.use(router)
+
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: "*" // 允许所有
+  }
+});
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
+io.on('connection', (socket) => {
+  socket.on('chat message', (msg) => {
+  //   console.log(msg)
+  //   io.emit('chat message', msg);
+  // });
+
+    // 群发消息
+    io.emit('chat message', msg)
+    // 发送给不包括当前用户的其他用户
+    // socket.broadcast('chat message', msg)
+  })
+
+  // 刷新或断开连接时，移除对应用户的socket
+  // socket.on("disconnect", () => {
+  //   const index = clients.findIndex(item => item === socket)
+  //   if(index !== -1) {
+  //     clients.splice(index, 1)
+  //   }
+  // })
+
+});
+
+server.listen(8888, () => {
+  console.log('listening on *:8888');
+});
+
+
+//server-login
+const express = require('express')
+const mongoose = require('mongoose')
+
+
+// 创建用户模型
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    require: true
+  },
+  password: {
+    type: String,
+    require: true
+  }
+})
+
+//连接数据库
+mongoose.connect('mongodb://localhost/chat-demo', {
+  useNewUrlParser: true, useUnifiedTopology: true
+})
+const db = mongoose.connection
+db.on('error', err => {
+  console.log('连接失败', err)
+})
+db.once('open', function() {
+  console.log('连接成功')
+})
+const User = mongoose.model('User', userSchema)
+
+
+const router = express.Router()
+
+router.post('/login', async(req, res, next) => {
+  const { username, password } = req.body
+
+  let user = await User.findOne({username})
+  if(user) {
+  //有账号，登录
+  } 
+  else {
+  //无账号，注册
+  user = await new User(req.body).save()
+  }
+
+  res.status(200).send({
+    user: {
+      username: user.username,
+      status: 1
+    }
+  })
+})
+
+module.exports = router
+```
+
+
+
+
 
 
 
