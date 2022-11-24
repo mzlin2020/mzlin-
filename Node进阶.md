@@ -1796,29 +1796,342 @@ action()
 
 
 
+### 7、express
+
+#### 7.1 基础
+
+Express是一个快速，简单，极简的Node.js web应用开发框架，通过它，可以轻松的构建各种web应用
+
+**特性**
+
+1、简单易学
+
+2、丰富的基础API支持，以及常见的HTTP辅助程序
+
+3、强大的路由功能
+
+4、灵活的中间件
+
+5、高性能
+
+6、非常稳定
+
+7、视图系统支持14个以上的主流模版引擎
+
+
+
+**常见应用场景**
+
+1、传统的web网站
+
+2、接口服务
+
+3、服务端渲染中间层
+
+4、开发工具（如webpack-dev-server）
 
 
 
 
 
+**路由**
+
+路由是指确定应用程序如何响应客户端特定端点的请求，该特定端点是URL和特定的HTTP请求方法（get，post等）
+
+```js
+//基本结构
+app.get(path, handler)
+```
+
+
+
+**req / res**
+
+> 注意：express是对node进行二次抽象，并且扩展了一些web所需的基本功能，其内部使用的还是http模块。
+>
+> 请求对象继承自 http.incomongMessage
+>
+> 响应对象继承自http.ServerResponse
+
+
+
+res响应内容的方式
+
+```js
+res.write() //多个，会依次执行，拼接返回，需要res.end()表明结束
+
+res.end(content) //传递内容比较单一
+
+res.send(content) //支持多种格式
+
+res.json()
+```
+
+
+
+路由设计
+
+```js
+//动态路由
+app.get('/path/:id', (req, res) => {
+  res.status(200).send(req.params.id)
+})
+
+//返回json数据
+app.get('/path', (req, res) => {
+  res.status(200).json(data)
+})
+
+//解析json请求体：application/json
+app.use(express.json())
+app.post('/path', (req, res) => {
+  const data = req.body
+  res.end()
+})
+
+//解析表单请求体
+app.use(express.urlencoded())
+app.post('/path', (req, res) => {
+  const data = req.body
+  res.end()
+})
+```
+
+
+
+#### 7.2 中间件
+
+在express中，中间件就是一个可以访问请求对象，响应对象和调用next方法的函数
+
+所有请求都会经过中间件的处理,中间件依次执行
+
+
+
+1、日志
+
+```js
+app.use((req, res, next) => {
+  //请求日志相关处理
+  console.log(req.method, req.url, Data.now())
+  next()
+})
+```
+
+2、错误处理中间件
+
+```js
+router.get('/path', async(req, res, next) => {
+  try{
+    ...
+  }catch(err) {
+    // 任何内容传递给next（字符串‘route’除外），express都将视为错误，直接跳转到错误处理中间件
+    next(err)
+  }
+})
+
+//错误处理中间件需要在所有路由之后使用
+app.use((err, req, res, next) => {
+   //错误处理
+})
+```
+
+3、处理404
+
+通常需要在所有路由之后处理404内容
+
+```js
+app.use('/', ...)
+
+//所有路由都匹配不上，将进入该中间件
+app.use(req, res, next)=> {
+  res.status(404).send("404 Not Found")
+}
+```
+
+4、路由
+
+ 路由可看做是一个mini Express实例
+
+```js 
+const router = express.Router()
+
+//配置路由
+router.get('/foo', (req, res) => {
+  ...
+})
+
+module.exports = router
+  
+//main.js
+app.use(router)
+```
+
+ 5、内置中间件
+
+```js
+express.json() //解析Content-Type为application/json的请求题
+
+express.urlencoded()//Content-Type:application/x-www-form-urlencoded
+
+express.raw //Content-Type:application/octet-stream
+
+express.text()//Content_type:text/plain
+
+express.static() //托管静态资源文件
+```
 
 
 
 
 
+#### 7.3 传统web应用
+
+传统web应用是服务端渲染的，统一由后端返回一个静态页面
+
+```js
+//app.js
+const express = require('express')
+const fs = require('fs')
+const info = require('./data/index')
+const app = express()
+
+app.get('/', (req, res) => {
+  fs.readFile('./views/index.html', 'utf8', (err, data) => {
+    if(err) return res.status(404).send('Not Found')
+
+    // 动态页面渲染：数据 + 模板
+    const str = `my name is ${info.name}, i come from ${info.address}`
+    const ret = data.replace('~_~', str)
+    res.send(ret)
+  })
+})
+
+app.listen(3000, () => {
+  console.log('server is running')
+})
+
+
+//index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <!-- 指定一个特殊标记，用于替换 -->
+  <div>~_~</div>
+</body>
+</html>
+```
+
+但是在开发中，如果手动进行替换会很麻烦，这个时候就需要用到模板引擎
 
 
 
+模板引擎就是根据特定的规则进行字符串解析替换
+
+`npm install art-template`
+
+```js
+const template = require('art-template')
+
+app.get('/', (req, res) => {
+  fs.readFile('./views/index.html', 'utf8', (err, data) => {
+    if(err) return res.status(404).send('Not Found')
+
+    // 动态页面渲染：数据 + 模板
+    const str = `my name is ${info.name}, i come from ${info.address}`
+    const ret = template.render(data, {
+      str
+    })
+    res.send(ret)
+  })
+})
+
+//index.html
+<div>{{ str }}</div>
+```
 
 
 
+art-template也可以和exrpess结合，使得代码更加简洁
+
+```js
+npm install --save art-template
+npm install --save express-art-template
+```
+
+```js
+const express = require('express')
+const info = require('./data/index')
+const path = require('path')
+
+const app = express()
+
+// view engine setup
+app.engine('art', require('express-art-template'));
+app.set('view options', {
+    debug: process.env.NODE_ENV !== 'production'
+});
+app.set('views', path.join(__dirname, 'views')); //模板文件目录
+app.set('view engine', 'art'); //可以省略的模板文件后缀名
+
+
+// routes
+app.get('/', function (req, res) {
+  const str = `my name is ${info.name}, i come from ${info.country}`
+  res.render('index.art', { str });
+});
+
+app.listen(3000, () => {
+  console.log('server is running')
+})
+
+
+//views/index.art
+<div>{{ str }}</div>
+```
 
 
 
+**托管静态资源**
+
+如果在index.html中直接引用css文件js文件等静态资源，客户端会找不到该文件而报错
+
+```html
+<body>
+  <link rel="stylesheet" href="./assets/base.css">
+  <div>{{ str }}</div>
+</body>
+```
 
 
 
+express内置了一个中间件解决这个问题
 
+```js
+app.use(express.static('./assets'))
+//这样子访问资源可以不用加目录
+<body>
+  <link rel="stylesheet" href="base.css">
+  <div>{{ str }}</div>
+</body>
+```
+
+
+
+最好的方式，并且可以加上资源目录
+
+```js
+app.use('/assets',express.static(path.join(__dirname, './assets')))
+<body>
+  <link rel="stylesheet" href="./assets/base.css">
+  <div>{{ str }}</div>
+</body>
+```
 
 
 
