@@ -2135,5 +2135,15 @@ app.use('/assets',express.static(path.join(__dirname, './assets')))
 
 
 
+托管静态资源也可以托管多个
+
+```js
+app.use(express.static('./node_modules'))
+app.use(express.static('.//assets'))
+//这样可以在客户端访问这些资源
+```
+
+
+
 
 
