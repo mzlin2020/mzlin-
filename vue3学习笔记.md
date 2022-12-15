@@ -3911,7 +3911,13 @@ Vue3提供了另一个API，ref会返回一个可变的响应式的对象，该�
     }
 ```
 
-注：在模板中引入ref的值时，vue会自动帮助我们进行解包操作，所以我们并不需要在模板中通过ref.va;ue的方式来使用；但是在setup函数内部，它依然是一个ref引用，所以对其进行操作时，我们依然需要使用ref.value的方式
+注：在模板中引入ref的值时，vue会自动帮助我们进行解包操作，所以我们并不需要在模板中通过ref.value的方式来使用；但是在setup函数内部，它依然是一个ref引用，所以对其进行操作时，我们依然需要使用ref.value的方式
+
+```js
+ref传入的数据是基本数据类型时，使用的是Object.defineProperty,如果是对象则调用了proxy。相当于如果传入的是对象类型，则会自动调用reactive
+```
+
+
 
 ### 9.4 其他API
 
@@ -4033,6 +4039,11 @@ export default {
 }
 </script>
 
+//或者
+setup() {
+  ...refs(obj)
+}
+
 ```
 
 
@@ -4061,6 +4072,13 @@ export default {
   }
 }
 </script>
+
+//或者
+setup() {
+  return {
+    age: toRef(obj, 'age')
+  }
+}
 ```
 
 **provide函数 与inject函数**
@@ -4184,9 +4202,11 @@ export default {
 
 **watchEffect**
 
+watchEffect具有和`watch`是一样的功能
+
 watchEffect用于自动收集响应式数据的依赖；
 
-watchEffect传入的函数会被立即执行一次，并且在执行的过程中会收集依赖.
+watchEffect传入的函数会被立即执行一次，并且在执行的过程中会收集依赖(自动默认开启了`immediate:true`)
 
 其次，只有收集的依赖发生变化时，watchEffect传入的函数才会再次执行
 
@@ -4323,7 +4343,9 @@ watch侦听数据源有**两种类型**
   }
 ```
 
-
+> 注意：watch如果直接监听一个reactive或者ref对象，是不能够获取到oldValue的，默认两个参数都是newValue
+>
+> 可以通过数组的方式监听多个值：watch([()=> obj.name, ()=>obj.age], ...)
 
 2、直接写入一个可响应的对象，reactive或者ref
 
@@ -5726,5 +5748,35 @@ const store = createStore({
       this.$store.commit('home/increment')
     }
   }
+```
+
+## 十三、其他
+
+### 13.1 全局变量
+
+```js
+//main.js
+const app = createApp(App)
+app.config.globalProperties.$formatTime = FormatDate
+```
+
+在template中可以直接使用
+
+```vue
+<template>
+	{{$formatTime(args)}}
+</template>
+```
+
+如果在script中使用
+
+```js
+import { ref, getCurrentInstance } from 'vue'
+
+// proxy相当于 vue2的this，从getCurrentInstance 实例中获取，proxy对象
+const { proxy } = getCurrentInstance()
+const format = () => {
+  proxy.$formatTime()
+}
 ```
 
