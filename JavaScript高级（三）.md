@@ -1556,6 +1556,40 @@ inputEl.oninput = newFn
 
 
 
+**节流的实现方式二**
+
+```html
+<body>
+  <input type="text" id="input">
+</body>
+<script>
+
+  const throttle = function(fn, delay) {
+      let flag = true
+      return function(...args) {
+        if(flag) {
+          setTimeout(() => {
+            console.log(this)
+            fn.apply(this, args)
+            flag = true
+          }, delay)
+          flag = false
+        }else {
+          return false
+        }
+      }
+    }
+  const inputDom = document.getElementById("input")
+  inputDom.oninput = throttle(function(e) {
+    console.log(e.target.value)
+  }, 500)
+
+
+</script>
+```
+
+
+
 
 
 ## 六、深拷贝和浅拷贝
@@ -1820,4 +1854,124 @@ function deepClone(originValue, map = new WeakMap()) {
 ```
 
 
+
+## 七、设计模式
+
+### 7.1 发布订阅
+
+![发布订阅](./img/js高级/发布订阅.png)
+
+基本代码结构
+
+```js
+//消息中心
+let eventMap = {};
+
+// 发布者
+function pub(msg, ...rest) {
+  eventMap[msg] && eventMap[msg].forEach((cb) => {
+    cb(...rest)
+  })
+}
+
+//订阅者
+function sub(msg, cb) {
+  eventMap[msg] = eventMap[msg] || []
+  eventMap[msg].push(cb)
+}
+```
+
+简单理解：以日常点外卖为例，消费者（订阅者）向美团平台（消息中心）订阅一种美食，商家（发布者）发布了该美食
+
+
+
+应用：解决回调地狱的问题
+
+```js
+const pubSub = new PubSub();
+
+request('url1', (err, res) => {
+  // 处理逻辑
+  // 发布请求1成功的消息
+  pubSub.publish('request1Success')
+})
+
+//订阅请求1成功的消息，然后发起请求2
+pubSub.subscribe('request1Success', () => {
+  request('url2', (err, res) => {
+    //逻辑处理...
+    //发布请求2成功的消息
+    pubSub.publish('request2Success')
+  })
+})
+```
+
+
+
+### 7.2 观察者模式
+
+发布订阅和观察者有一定的区别：
+
+1、发布订阅低耦合，通过消息中心连接发布者和订阅着，发布者和订阅者之间没有直接的联系
+
+2、在观察者模式里就是被观察者（Subject），它只需要维护一套观察者的集合（Observer），将有关状态的任何变更自动通知给他们watcher（观察者），这个设计的松耦合的
+
+
+
+应用：Vue的响应式
+
+
+
+## 八、webWorker
+
+webworker是JavaScript的一种多线程机制
+
+包括了dedicatedWorker和sharedWorker（兼容性不好）两大部分
+
+
+
+应用：创建新的线程与主线程并行执行，减少卡顿，提升性能
+
+弊端：存在通信开销
+
+<img src="./img/js高级/webworder通信开销.png" style="zoom:67%;" />
+
+所以真正的性能提升：并行的时间消耗 - 通信开销的时间开销
+
+
+
+webWorker与主线程的相同点
+
+![](./img/js高级/webWorker与主线程的相同点.png)
+
+
+
+不同点
+
+![](./img/js高级/webWorker与主线程的不同点.png)
+
+```js
+//创建DedicatedWorker
+const worker = new Worker("worker.js")
+
+//创建sharedWorker
+var myWorker = new SharedWorker("worker.js")
+```
+
+
+
+```js
+//index.js
+const worker = new Worker('./worker.js')
+worker.postMessage('hello')
+worker.onmessage = (event) => {
+  console.log(event.data) //world
+}
+
+//worker.js
+self.onmessage = (event) => {
+  console.log(event.data)
+  postMessage('world')
+}
+```
 

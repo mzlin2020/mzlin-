@@ -1952,6 +1952,28 @@ newFn(21)
 
 ## 八、函数式编程
 
+**函数式编程与面向对象**
+
+1、函数式编程具备高扩展性和复用性。缺点是函数过多难以管理，逻辑不清晰
+
+2、涉及到业务逻辑的代码，最好使用面向对象。面向对象非常擅长组织逻辑
+
+3、绝大部分前端框架都使用了函数式，很大原因是函数式编程可以使用Tree-shaking
+
+> Tree-shaking的本质是通过文档流的引入判断是否使用了某个方法，但是面向对象方案无法记录
+
+```js
+function Class1() {}
+Class1.prototype.f1 = () => {  }
+Class1.prototype.f2 = () => {  }
+new Class1().fn1()
+//但是通过webpack打包后，f2也被打包进去了
+```
+
+
+
+
+
 ### 8.1 纯函数
 
 函数式编程中有一个非常重要的概念叫纯函数，JavaScript符合函数式编程的范式，所以也有纯函数的概念
@@ -2347,7 +2369,7 @@ var newFn = composeFn(dobule, square)
 Higher-order function，
 
 + 高阶函数的参数可以是函数
-+ 高阶函数额度返回值是一个函数
++ 高阶函数的返回值是一个函数
 
 例如：
 
@@ -2435,7 +2457,151 @@ pay(888) //只打印一次888
 
 
 
+**实现reduce**
 
+```js
+arr.reduce((pre, current, index, arr) => {return pre + current}, init)
+```
+
+可以接收第二个参数作为第一个pre，不传则将arr的第一个参数作为pre
+
+案例分析
+
+```js
+需求一：将routes转化为对象
+const routes = [
+  {
+    path: '/',
+    component: 'home',
+  },
+  {
+    path: '/about',
+    component: 'about'
+  }
+]
+//即{'/' :'home'}的格式
+
+routes.reduce((pre, current) => {
+  pre[current.path] = current.component
+  return pre //pre将作为下一次的pre
+}, {})
+
+需求二：累加金额
+const goods = [
+  {
+    type: 'good',
+    price: 10
+  },
+    {
+    type: 'good',
+    price: 20
+  },
+    {
+    type: 'good',
+    price: 30
+  },
+]
+goods.reduce((pre, current) => {
+ if(current.type === 'good') {
+   pre += current.price
+ }
+  return pre
+}, 0)
+```
+
+
+
+手写实现
+
+```js
+Array.prototype.myreduce = function(fn, init) {
+  let i = 0
+  let len = this.length
+  if(init === 'undefined') {
+    init = fn[0]
+    i = 1
+  }
+  for(i; i < len; i++) {
+    pre = fn.call(this, pre, this[i], i, this)
+  }
+  return pre
+}
+```
+
+
+
+
+
+### 8.6 compose和pipe
+
+**背景**
+
+假设有这样的需求：需要连续利用几个函数最终求得结果
+
+```js
+const fn1 = (arg) => {
+  //handle result
+  return result
+}
+const fn2 = (arg) => {
+  //handle result
+  return result
+}
+const fn3 = (arg) => {
+  //handle result
+  return result
+}
+
+let result = 10
+result = fn1(result)
+result = fn2(result)
+result = fn3(result)
+```
+
+这样子求值未免太过于麻烦了
+
+
+
+**compose函数**可以理解为为了方便我们连续执行方法，把自己调用传值的过程封装了起来，我们只需要给compose函数我们要执行哪些方法，它就会自动执行
+
+```js
+function compose() {
+  //arguments，注意箭头函数没有arguments，要使用...args
+  const args = [].slice.apply(arguments)
+  return function (num) {
+    var _result = num
+    for (var i = args.length - 1; i >= 0; i--) {
+      _result = args[i](_result)
+    }
+    return _result
+  }
+}
+
+//或者
+function compose() {
+  //arguments
+  const args = [].slice.apply(arguments)
+  return function (num) {
+    var _result = num
+    return atgs.reduceRight((res, cb) => cb(res), num)
+  }
+}
+
+//调用
+compose(fn4, fn3, fn2, fn1)(10) //10初始值
+```
+
+> pipe函数与compose函数功能相同，只不过pipe函数是从左往右执行
+
+
+
+针对上边的需求，还有另外的处理方式promise
+
+```js
+Promise.resolve(10).then(fn1).then(fn2).then(fn3).then((res) => {
+  console.log(res)
+})
+```
 
 
 
