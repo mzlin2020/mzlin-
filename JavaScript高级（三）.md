@@ -32,8 +32,6 @@ request('mall').then(res =>{
 //输出：mall/home/detail
 ```
 
-
-
 **方式二：promise返回值**
 
 ```js
@@ -46,8 +44,6 @@ request('mall').then(res => {
 })
 //输出：mall/home/detail
 ```
-
-
 
 **方式三：promise + generator**
 
@@ -113,8 +109,6 @@ function *getData() {
 }
 ```
 
-
-
 **方式四：async与await**
 
 而async与await就是上方的语法糖(`*` -> async，yield -> await )
@@ -129,8 +123,6 @@ async function getData() {
 getData()
 //输出：mall/home/detail
 ```
-
-
 
 ### 1.2 基本语法
 
@@ -148,8 +140,6 @@ console.log('end~')
 ```
 
 答案：同步执行
-
-
 
 **与普通函数的区别一**
 
@@ -200,8 +190,6 @@ foo().then(res => {
 }) //111
 ```
 
-
-
 **与普通函数的区别二（抛出异常）**
 
 异步函数中的异常，会被作为异步函数返回的promise的reject值
@@ -218,11 +206,7 @@ foo().catch(err => {
 //输出：代码执行，发生了不可描述的错误,.....(错误说明)
 ```
 
-
-
 ## 二、JavaScript的模块化
-
-
 
 **什么是模块化？**
 
@@ -239,8 +223,6 @@ foo().catch(err => {
 
 4、高可维护性
 
-
-
 ### 2.1 CommonJS规范
 
 CommonJS是一个规范，最初提出来是在浏览器以外的地方使用，并且当时被命名为ServerJS，后来为了体现它的广泛性，修改为CommonJS。
@@ -251,15 +233,11 @@ Node是CommonJS在服务器端的一个具有代表性的实现。
 
 2、这个模块中包括CommonJS规范的核心变量：exports、module.exports、require
 
-
-
 **exports与require**
 
 案例理解
 
 创建main.js 与bar.js ，在main.js中导入bar.js模块
-
-
 
 ```javascript
 //main.js
@@ -293,11 +271,7 @@ exports.age = age;
 exports.fn = fn;
 ```
 
-
-
 从上面的例子我们可以知道，exports是一个默认存在的空的对象，我们向外导出的变量变成了exports的属性（方法），用require导入的其实就是exports这个对象。
-
-
 
 **module.exports**
 
@@ -312,8 +286,6 @@ exports.fn = fn;
 在Node源码中规定`module.exports = exports`，所以二者指向同一个引用。即**module.exports = exports=require（）**
 
 所以，在开发中，尽量使用`module.exports`进行导出
-
-
 
 **require细节**
 
@@ -343,8 +315,6 @@ X是以 ./ 或 ../ 或 / 开头的
 
 查找规则：会循着文件路径，依次去每个文件夹下的node_modules文件夹下查找。
 
-
-
 **模块的加载过程**
 
 结论一：模块在被第一次引入时，模块中的js代码会被运行一次
@@ -355,8 +325,6 @@ X是以 ./ 或 ../ 或 / 开头的
 
 结论三：存在循环引用、也只加载一次。而且按照的是图结构的深度优先搜索的顺序
 
-
-
 **CommonJS规范的缺点**
 
 1、CommonJS加载模块是同步的。
@@ -364,8 +332,6 @@ X是以 ./ 或 ../ 或 / 开头的
 这意味着只有等到对应的模块加载完毕，后续的内容才能被运行（从上往下），这在服务器中不会有什么问题，因为服务器加载的js文件都是本地文件，加载速度非常快。
 
 但是如果它应用于浏览器。因为浏览器需要从服务器中将文件下载下来，再运行。采用同步的方式则意味着之后的js代码无法正常运行。
-
-
 
 ### 2.2 ES Module
 
@@ -378,8 +344,6 @@ ES Module与CommonJS的模块化有一些不同之处
 3、采用ES Module将**自动**采用严格模式： use strict
 
 4、ES Module加载模块是异步的
-
-
 
 **导入导出的三种方式**
 
@@ -413,8 +377,6 @@ console.log(age);
 sayHello('lin')
 ```
 
-
-
 2、方式二
 
 ```javascript
@@ -436,15 +398,13 @@ console.log(wAge);
 Wfn('linming')
 ```
 
-
-
 3、方式三
 
 ```javascript
 //foo.js
 //导出时给标识符起一个别名
 export {
-	name as fName,
+    name as fName,
     age as fAge,
     sayHello as fFn
 }
@@ -456,8 +416,6 @@ console.log(obj.fName);
 console.log(obj.fAge);
 obj.fFn('linming')
 ```
-
-
 
 **default用法**
 
@@ -478,8 +436,6 @@ export default function () {}
 
 注：在一个模块中，只能有一个默认导出
 
-
-
 **Node对ES Module的支持**
 
 在Node的current版本（v14.13.1）中，支持es module。
@@ -488,8 +444,6 @@ export default function () {}
 
 方式二：文件以.mjs结尾，表示使用的是ES Module
 
-
-
 ```javascript
 //演示方式二
 //js/bar.mjs
@@ -497,7 +451,7 @@ const name = 'ming';
 const sayHello = function (name) {    
     console.log("你好" + name);}
 export {
-	name,
+    name,
     sayHello
 }
 
@@ -507,8 +461,6 @@ console.log(name);
 sayHello("明明");
 ```
 
-
-
 ### 2.3 ES Module原理
 
 **ES Module的解析流程**
@@ -516,9 +468,8 @@ sayHello("明明");
 + 阶段一：构建（constructor）,根据地址查找js文件，并且下载，将其解析成模块记录（module record）
 
 + 阶段二：实例化(instantiation)，对模块记录进行实例化，并且分配内存空间（其中的属性为undefined，未赋值），解析模块的导入和导出语句，把模块指向对应的内存地址
+
 + 阶段三：运行（Evaluation），运行代码，计算值，并且将值填充到内存地址中
-
-
 
 **阶段一：构建**
 
@@ -530,13 +481,9 @@ sayHello("明明");
 
 当执行上方代码时，浏览器会把main.js中的代码下载下来，并生成一个`Module Record`（数据结构），它有一个属性`RequestedModules`，这个属性记录着main.js中依赖的其他js文件
 
-
-
 是否存在同一个文件被多次引用的情况呢？
 
 不存在，因为每一个JS文件都会被映射到了`Module Map`表中，该映射表不允许存在相同的文件地址
-
-
 
 ES Module有个特点：静态分析。也就是说js文件被下载好了，但是并不会执行其中的代码
 
@@ -550,8 +497,6 @@ if(isFlag) {
     import bar from 'bar.js'
 }
 ```
-
-
 
 **阶段二、阶段三**
 
@@ -573,8 +518,6 @@ import { render } from 'display.js'
 
 2、在webpack环境下，允许CommonJS与ESModule相互引用
 
-
-
 ### 2.4 对比
 
 1、导入导出语法不同，commonJS是`module.exports、exports、require`，es模块是`export、import`
@@ -588,8 +531,6 @@ import { render } from 'display.js'
 4、CommonJS中顶层的this指向这个模块本身，而ES6中顶层this指向undefined
 
 5、ES6在编译期间会将所有import提升到顶部，CommonJS不会提升require
-
-
 
 ## 三、包管理工具npm
 
@@ -623,8 +564,6 @@ Node package Manager
 
 我们安装的版本依赖：^2.0.3 或者 ~2.0.3 这是什么意思呢？
 
-
-
 npm的包通常需要遵从semver版本规范
 
 1、X主版本号：当发布了不兼容之前版本的API修改（如webpack4升级到webpack5）
@@ -633,21 +572,13 @@ npm的包通常需要遵从semver版本规范
 
 3、Z修订号：当做了向下兼容的问题修正（没有新功能，修复之前版本的bug）
 
-
-
 ^ 和 ~ 的区别
 
 1、^x.y.z：表示x是保持不变的，y和z永远安装最新的版本；
 
 2、~x.y.z：表示x和y保持不变的，z永远安装最新的版本
 
-
-
 所以，在package.json中，安装的依赖都是大致的版本，并不是精确的版本。真正精确的版本信息保存在**package-lock.json**中
-
-
-
-
 
 ### 4.2 npm install
 
@@ -667,17 +598,13 @@ npm的包通常需要遵从semver版本规范
 
 npm install会检测是有package-lock.json文件。
 
-
-
 **其他命令**
 
 卸载某个依赖包：`npm uninstall <package>`
 
 强制重新build ：`npm rebuild`
 
-清除缓存：`npm cache clean	 `
-
-
+清除缓存：`npm cache clean     `
 
 ### 4.3 其他工具
 
@@ -693,8 +620,6 @@ yarn是为了弥补npm的一些缺陷而出现的
 
 移除包 ：`yarn remove <package>`
 
-
-
 **cnpm**
 
 查看当前npm镜像
@@ -708,8 +633,6 @@ yarn是为了弥补npm的一些缺陷而出现的
 我们可以直接将npm命令设置为淘宝镜像（不推荐）
 
 `npm config set registry https://registry.npm.taobao.org`
-
-
 
 比较推荐将镜像绑定在cnpm上，并且将cnpm设置为淘宝的镜像，这样子不会影响原来npm命令的使用。
 
@@ -728,8 +651,6 @@ JSON是一种非常重要的数据格式，它并不是编程语言，而是一�
 2、项目的某些配置文件
 
 3、非关系型数据库（NoSQL）将json作为存储格式
-
-
 
 其他传输格式：
 
@@ -771,10 +692,6 @@ true,
 ]
 ```
 
-
-
-
-
 **localStorage的问题**
 
 当我们将一个对象进行本地缓存的时候，这个对象会被转为字符串
@@ -802,8 +719,6 @@ let res = JSON.parse(localStorage.getItem("obj"))
 console.log(res)
 //输出： {name: 'linming', age: 23}
 ```
-
-
 
 ### 4.3 序列化与解析
 
@@ -867,8 +782,6 @@ console.log(JSON.stringify(obj));
 //输出：格式由我决定
 ```
 
-
-
 **JSON解析**
 
 `JSON.parse()`也可以将一个JSON对象转换成js数据结构
@@ -892,8 +805,6 @@ let res = JSON.parse(JSONString, (key, value) => {
 console.log(res)
 //{name: 'lin', age: 21, isFlag: true}
 ```
-
-
 
 ### 4.4 实现深拷贝
 
@@ -946,13 +857,9 @@ indexedDB是一种数据库。一般而言，存储大量数据是需要使用�
 
 indexedDB是一种底层的API，用于在客户端存储大量的结构化数据。它是一种事务型数据库系统，是一种基于JavaScript面向对象数据库。我们需要指定数据库模式，打开与数据库的连接，然后检索和更新一系列事务即可
 
-
-
 为什么不适用web storage来保存大量数据呢？
 
 因为首先是web storage的存储大小有限，另一个是不利于搜索，效率不高
-
-
 
 基本使用
 
@@ -981,8 +888,6 @@ dbRequest.onsuccess = function(event) {
 }
 ```
 
-
-
 2、第一次打开数据库时，触发以下回调
 
 ```js
@@ -994,8 +899,6 @@ dbRequest.onupgradeneeded = function(event) {
 ```
 
 上面的操作中，数据库第一次被打开后，我们创建了db对象，后续可以通过db这个对象操作数据库。
-
-
 
 3、往表中添加数据
 
@@ -1037,8 +940,6 @@ setTimeout(() => {
 }, 300)
 ```
 
-
-
 4、查询数据
 
 ```js
@@ -1050,15 +951,11 @@ request.onsuccess = function(event) {
 //输出：{id: 200, name: 'linming', age: '14'}
 ```
 
-
-
 ## 五、防抖节流
 
 **防抖节流**的概念其实最早并不是出现在软件工程中，防抖是出现在电子元件中，节流出现在流体流动中。
 
 JavaScript是事件驱动的，大量的操作会触发事件，加入到事件队列中处理。而对于某些频繁的事件处理会造成性能的损耗，我们就可以**通过防抖和节流来限制事件频繁的发生**。
-
-
 
 ### 5.1 防抖基本理解
 
@@ -1082,8 +979,6 @@ btn.onclick = newFn
 解决思路：规定一个时间（如500ms），用户每输入一个单词后延迟500ms后才触发处理程序。
 
 注：（每次输入一个新单词，都会刷新这个500ms的延迟时间）
-
-
 
 **防抖的应用场景**
 
@@ -1113,7 +1008,7 @@ btn.onclick = newFn
 
 在输入框中输入`12345`，结果触发了5次事件`发生了第1、2、3、4、5次网络请求`
 
-````html
+```html
 <!--借助第三方库进行防抖-->
 <body>
   搜索：<input type="text">
@@ -1129,11 +1024,9 @@ btn.onclick = newFn
     inputEl.addEventListener('input', newFn)
   </script>
 </body>
-````
+```
 
 1秒内输入内容`12345`，最后只有发送一次网络请求。实现了防抖的效果
-
-
 
 ### 5.2 节流的基本理解
 
@@ -1145,15 +1038,11 @@ btn.onclick = newFn
 
 情况二：一分钟内，如果有同学提问那么回答问题。超过一分钟无人提问，那么答疑环节结束（防抖）
 
-
-
 **节流案例理解**：
 
 1、当事件被触发时，会执行这个事件的响应函数。如果事件被频繁触发，那么节流函数会按照一定的频率来执行函数；不管这中间有多少次触发这个事件，执行函数的频率总是固定的
 
 2、在飞机大战游戏中，假设按一次空格键发射一颗子弹。但是用户在1s内按了10次空格键发射10颗子弹，显然不正常。所以一般会使用节流函数来进行处理，不论1s内按了多少次空格键，都只发射一颗
-
-
 
 **节流的应用场景**
 
@@ -1164,8 +1053,6 @@ btn.onclick = newFn
 3、用户频繁点击按钮的操作
 
 4、游戏中的一些设计
-
-
 
 **节流的案例**
 
@@ -1187,8 +1074,6 @@ btn.onclick = newFn
 ```
 
 在输入框中持续输入内容，每1.5秒会发送一次网络请求
-
-
 
 ### 5.3 手写防抖函数
 
@@ -1218,7 +1103,7 @@ function debounce(fn, delay) {}
 ```js
 function debounce(fn, delay) {
     const _debounce = function() {
-        
+
     }
     reutrn _debounce
 }
@@ -1335,8 +1220,6 @@ function debounce(fn, delay) {
     input.oninput = newFn
 ```
 
-
-
 **3、第三个参数：立即执行**
 
 我们想要实现这么一个功能，往`debounce`中输入一个布尔值，来决定是否立刻触发一次事件处理程序
@@ -1349,8 +1232,6 @@ function debounce(fn, delay) {
 ```
 
 后面用户可能持续在输入，但一直都不会触发第二次程序。那么第一次已触发的事件处理程序可以提升一点用户的体验
-
-
 
 所以，我们可以为`debounce`函数增加第三个参数，当这个参数为true时，用户第一次输入立马执行事件处理程序，而不进行防抖
 
@@ -1376,8 +1257,6 @@ input.addEventListener('input', newFn)
 //当用户输入第一个字母时，就会立即触发一次
 ```
 
-
-
 以上的防抖函数已经可以解决大部分的应用场景。
 
 如果想要用户输入一段内容后，停顿了一些时间。用户在输入第二段内容的时候，第二段内容的第一个字母也能实现立即执行事件处理程序，可以对代码进行如下改变
@@ -1402,8 +1281,6 @@ function debounce(fn, delay, immediate = false) {
 }
 ```
 
-
-
 **4、取消功能**
 
 把本次的防抖功能取消掉
@@ -1426,7 +1303,7 @@ function debounce(fn, delay, immediate = false) {
         }, delay)
         }
     }
-    
+
     //取消功能
     //_debounce本身也是一个对象，往其上添加一个方法
     _debounce.cancel = function() {  
@@ -1441,8 +1318,6 @@ function debounce(fn, delay, immediate = false) {
 const btn = document.querySelector("button")
 btn.onclick = newFn.cancel
 ```
-
-
 
 ### 5.4 手写节流函数
 
@@ -1466,8 +1341,6 @@ if(remainTime <= 0) {
 } 
 ```
 
-
-
 **1、基本结构**
 
 ```js
@@ -1490,8 +1363,6 @@ function throttle(fn, interval) {
 ```
 
 这个也是实现了第一次输入时，会立即触发一次
-
-
 
 **2、控制开始与结尾**
 
@@ -1554,8 +1425,6 @@ let newFn = throttle(fn, 2000, { leading: false })
 inputEl.oninput = newFn
 ```
 
-
-
 **节流的实现方式二**
 
 ```html
@@ -1588,10 +1457,6 @@ inputEl.oninput = newFn
 </script>
 ```
 
-
-
-
-
 ## 六、深拷贝和浅拷贝
 
 ### 6.1 简单实现浅拷贝
@@ -1622,9 +1487,9 @@ function clone(obj) {
 const obj = {
     name: 'linming',
     friends: {
-    	name: 'lihao',
-    	hobbies: ["吃饭", "睡觉"]
-	}
+        name: 'lihao',
+        hobbies: ["吃饭", "睡觉"]
+    }
 }
 const newObj = clone(obj)
 obj.friends.hobbies.push("看小说")
@@ -1632,8 +1497,6 @@ console.log(newObj)
 
 //newObj也随之改变了
 ```
-
-
 
 **首层深拷贝**
 
@@ -1664,11 +1527,7 @@ console.log(orignArr) //[1,2,3,4,5, {a: 'yy'}]
 
 可以看到包含引用类型时，便又可以被修改了
 
-
-
 结论：这些方法仅对第一层的数据进行了深拷贝，如果其中包含了其他引用类型，就是浅拷贝了
-
-
 
 ### 6.2  手写深拷贝
 
@@ -1681,8 +1540,6 @@ console.log(orignArr) //[1,2,3,4,5, {a: 'yy'}]
 3、如果拷贝的对象里存放了其他对象，也需要创建新的对象进行存放。所以需要递归调用
 
 4、如果要拷贝的类型似乎数组、函数、set、map等，需要进行判断再特殊处理
-
-
 
 **1、基本实现**
 
@@ -1705,8 +1562,6 @@ function deepClone(originValue) {
 }
 ```
 
-
-
 **2、类型**
 
 上方简单的拷贝不能拷贝数组等类型的值，所以我们需要进一步处理优化
@@ -1723,15 +1578,13 @@ function deepClone(originValue) {
 }
 ```
 
-
-
 ```js
 //拷贝函数类型
 function deepClone(originValue) {
     if(typeof originValue === "function") {
         return originValue
     }
-    
+
     if(!isObejct(originValue)) {
         return originValue
     }
@@ -1742,8 +1595,6 @@ function deepClone(originValue) {
     return newObj
 }
 ```
-
-
 
 ```js
 //判断拷贝的是否是set结构/map结构
@@ -1792,8 +1643,6 @@ const obj = {
   console.log(newObj)
 ```
 
-
-
 **3、循环引用**
 
 如果被拷贝的对象里边有一个属性自己引用自己，能拷贝成功吗
@@ -1818,8 +1667,6 @@ const obj = {
 怎么解决呢？
 
 `obj.info = obj`本来的逻辑是需要一个key为info的属性，保存的值是obj这个对象。那么其实我们完全可以将deepClone函数中的创建出来的newObj赋值给这个info
-
-
 
 通过一个map来保存newObj这个对象，递归时判断一下map中是否有值，有值即直接返回即可
 
@@ -1853,11 +1700,116 @@ function deepClone(originValue, map = new WeakMap()) {
 }
 ```
 
-
-
 ## 七、设计模式
 
-### 7.1 发布订阅
+### 7.1 概述
+
+**分类**
+
+1、创建型
+
+工厂模式---大量创建对象
+
+> 应用场景：当某一个对象需要经常创建的时候
+> 
+> 设计方式：写一个方法，只需要调用该方法，就能拿到想要的对象
+
+```js
+function fn(type) {
+  switch (type) {
+    case:'type1':
+      return new Type1()
+    //...
+  }
+}
+```
+
+单例模式---全局只有一个实例
+
+> 目的：需要确保全局只有一个对象 
+> 
+> 应用场景：为了避免重复新建，避免多个对象存在互相干扰
+> 
+> 设计方式：通过定义一个方法：使用时只允许通过此方法拿到存在内部的同一实例化对象
+
+```js
+let Singletin = function(name) {
+  this.name = name
+}
+Singlenton.genInstance = function(name) {
+  if(this.instance) return this.instance
+  
+  return this.instance = new Singleton(name)
+}
+```
+
+建造者模式---精细化组合对象
+
+> 目的：需要组合出一个全局对象
+> 
+> 应用场景：当要创建单个、庞大的组合对象时
+> 
+> 设计方式：把一个复杂的类各个部分，拆分成独立的类，然后再在最终类里组合到一块
+
+```js
+//模块1
+function Mode1() {}
+//模块2
+function Mode2() {}
+//组合
+function fn() {
+  this.mode1 = new Mode1()
+  this.mode2 = new Mode2()
+}
+```
+
+原型模式
+
+
+
+2、结构型
+
+外观模式
+
+适配器模式---用适配代替更改
+
+享元模式---共享减少数量
+
+桥接模式
+
+装饰器模式---更好地扩展需求
+
+
+
+3、行为型
+
+观察者模式
+
+职责链模式---像生产线一样组织模块
+
+状态模式
+
+命令模式
+
+策略模式
+
+迭代器模式
+
+
+
+4、技巧性
+
+链模式---链式调用
+
+惰性模式
+
+委托模式
+
+等待着模式
+
+数据访问模式
+
+### 7.2 发布订阅
 
 ![发布订阅](./img/js高级/发布订阅.png)
 
@@ -1883,8 +1835,6 @@ function sub(msg, cb) {
 
 简单理解：以日常点外卖为例，消费者（订阅者）向美团平台（消息中心）订阅一种美食，商家（发布者）发布了该美食
 
-
-
 应用：解决回调地狱的问题
 
 ```js
@@ -1906,9 +1856,7 @@ pubSub.subscribe('request1Success', () => {
 })
 ```
 
-
-
-### 7.2 观察者模式
+### 7.3 观察者模式
 
 发布订阅和观察者有一定的区别：
 
@@ -1916,19 +1864,13 @@ pubSub.subscribe('request1Success', () => {
 
 2、在观察者模式里就是被观察者（Subject），它只需要维护一套观察者的集合（Observer），将有关状态的任何变更自动通知给他们watcher（观察者），这个设计的松耦合的
 
-
-
 应用：Vue的响应式
-
-
 
 ## 八、webWorker
 
 webworker是JavaScript的一种多线程机制
 
 包括了dedicatedWorker和sharedWorker（兼容性不好）两大部分
-
-
 
 应用：创建新的线程与主线程并行执行，减少卡顿，提升性能
 
@@ -1938,13 +1880,9 @@ webworker是JavaScript的一种多线程机制
 
 所以真正的性能提升：并行的时间消耗 - 通信开销的时间开销
 
-
-
 webWorker与主线程的相同点
 
 ![](./img/js高级/webWorker与主线程的相同点.png)
-
-
 
 不同点
 
@@ -1957,8 +1895,6 @@ const worker = new Worker("worker.js")
 //创建sharedWorker
 var myWorker = new SharedWorker("worker.js")
 ```
-
-
 
 ```js
 //index.js
@@ -1974,4 +1910,3 @@ self.onmessage = (event) => {
   postMessage('world')
 }
 ```
-

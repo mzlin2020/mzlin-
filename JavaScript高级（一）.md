@@ -1,4 +1,4 @@
-#  JavaScript高级（一）
+# JavaScript高级（一）
 
 ## 一、浏览器工作原理
 
@@ -18,8 +18,6 @@
 
 我们常说的浏览器内核一般是指浏览器的排版引擎（浏览器引擎、页面渲染引擎）
 
-
-
 浏览器内核，或者说浏览器引擎解析代码的过程如下：
 
 <img src="img/js高级/浏览器引擎解析页面.jpg" style="zoom:50%;" />
@@ -32,18 +30,12 @@
 
 4、布局Render Tree对每个节点进行布局处理，确定在屏幕上的位置。最后通过遍历渲染树将每个节点绘制出来
 
-
-
 **补充：浏览器内核**
 
 + Gocko：早期被Netscape 和Firefox浏览器使用
 + Trident：微软开发，被应用于IE4-IE11浏览器使用，但是Edge浏览器已经转向Blink
 + Webkit：苹果基于KHTML开发、开源，用于Safari、Google Chrome往前的版本也在使用
 + Blink : Webkit的一个分支，Google开发，目前应用于Google Chrome、Edge、Opera
-
-
-
-
 
 ## 二、v8引擎的工作原理
 
@@ -57,19 +49,13 @@
 
 **V8**：  Google开发的强大JavaScript引擎，也帮助Chrome从众多浏览器中脱颖而出；
 
-
-
 在浏览器渲染页面的过程中，解析js代码是需要依靠js引擎的
 
 这是因为，高级编程语言都是需要转成最终的机器指令来执行的（最终要能够被CPU所识别）
 
-
-
 v8引擎解析js代码的过程如下：
 
 <img src="img/js高级/v8引擎工作原理.jpg" style="zoom:50%;" />
-
-
 
 1、首先js代码会被解析（parse，经过词法分析、语法分析），形成AST树（抽象语法树）
 
@@ -77,19 +63,13 @@ v8引擎解析js代码的过程如下：
 
 3、字节码转换为2进制代码，最终能够被CPU执行
 
-
-
 **js代码在v8引擎中的执行流程**（理解作用域提升）
 
 注：浏览器包含v8引擎，node也包含了v8引擎，所以两者都能执行js代码
 
-
-
 结合上方的v8引擎解析js代码的过程，我们详细来看代码的执行过程:
 
 1、在js代码被解析成AST树时，会创建一个**GlobalObject对象**(也被称为**GO**)
-
-
 
 2、这个GlobalObject对象包含了常见的一些全局变量/函数/对象
 
@@ -104,8 +84,6 @@ var GlobalObject = {
 ```
 
 window对象在这里相当于GlobalObject对象，拥有与其相同的属性
-
-
 
 3、在这个阶段（即js代码被解析成AST树过程中），我们下方的代码也会被解析。因为是全局代码，所以会被加入到GlobalObject对象中
 
@@ -135,8 +113,6 @@ var GlobalObject = {
 }
 ```
 
-
-
 4、当到了运行代码阶段，v8引擎为了执行代码，会创建一个执行上下文栈（ECStack）（函数调用栈）
 
 但是ECStack是用来执行函数的，这里我们并没有函数，只有全局的变量。
@@ -144,8 +120,6 @@ var GlobalObject = {
 为了全局的代码能够正常的执行，需要创建全局执行上下文(Global Execution Context GEC)(全局代码需要被执行时才会创建)
 
 注：全局执行上下文维护着一个VO对象（Variable Object），指向GO
-
-
 
 5、开始执行代码，`name、num1、num2、result`的值undefined会被依次替换掉
 
@@ -166,8 +140,6 @@ var GlobalObject = {
 6、于是不难得出，在num1执行前，如果打印num1，`console.log(num1)`,那么VO找到GO，GO找到的num1肯定是undefined
 
 上边的代码只有变量的定义，如果要执行函数了，具体的过程是怎么样的呢？
-
-
 
 **v8引擎执行函数的过程**（涉及函数作用域）
 
@@ -220,7 +192,7 @@ var GlobalObject = {
 {
     num: undefined,
     m: undefined,
-	n: undefined
+    n: undefined
 }
 ```
 
@@ -238,13 +210,9 @@ var GlobalObject = {
 
 执行`console.log('v8执行函数')`,输出v8执行函数
 
-
-
 4、函数执行完成后，函数执行上下文（FEC）会弹出调用栈，并自行销毁
 
 此时VO没有谁引用它，也被销毁了
-
-
 
 ## 三、作用域链
 
@@ -255,7 +223,7 @@ var GlobalObject = {
 ```js
 var num = 100
 function foo() {
-	function bar() {
+    function bar() {
         console.log(num)
     }
     bar()
@@ -266,8 +234,6 @@ foo()
 bar函数中并没有定义num，但最终会输出100
 
 原因就是有作用域链的存在
-
-
 
 **案例一**
 
@@ -301,8 +267,6 @@ function foo() {
 
 执行`console.log(name)`,在AO中查找name，没有找到，则寻找上一级父级作用域（这里是GO），在GO中找到了name，输出‘linming’
 
-
-
 **案例二**
 
 我们让代码变得更复杂一点
@@ -323,8 +287,6 @@ function foo(num) {
 
 上边的foo函数里边返回了bar函数，并在bar函数中打印了name
 
-
-
 具体执行过程
 
 1、编译阶段
@@ -332,8 +294,6 @@ function foo(num) {
 创建全局对象GO
 
 创建foo、bar的函数存储空间
-
-
 
 2、即将执行阶段
 
@@ -353,8 +313,6 @@ c、执行`var m = 10 var n = 20`，为VO中的m、n赋值
 
 d、执行bar，创建一个bar的函数执行上下文
 
-
-
 4、执行bar，沿着作用域链逐层查找
 
 <img src="img/js高级/作用域链3.jpg" style="zoom:50%;" />
@@ -364,8 +322,6 @@ d、执行bar，创建一个bar的函数执行上下文
 它会沿着`space chain`找到foo的VO，找到foo的AO，依然没有找到，
 
 继续沿着`space chain`找到全局对象的VO，找到GO，最终在里边找到了name
-
-
 
 **面试题一**
 
@@ -425,8 +381,6 @@ var GO = {
 
 所以，答案为`hello global`
 
-
-
 **面试题二**
 
 ```js
@@ -443,8 +397,6 @@ console.log(n)
 ```js
 GO:{ n: undefined, foo: 0x100 }
 ```
-
-
 
 ```js
 //0x100
@@ -470,8 +422,6 @@ GO:{ n: 100, foo: 0x100 }
 找到父级作用域GO，找到n，并将n改为200
 
 执行`console.log(n)`,输出200
-
-
 
 **面试题三**
 
@@ -502,8 +452,6 @@ GO: { foo:0x100, n: undefined }
 n: undefined
 ```
 
-
-
 2、执行过程
 
 执行`var n = 100`
@@ -519,8 +467,6 @@ GO: { foo:0x100, n: 100 }
 执行`var n = 200`,为AO中的n赋值200 `AO: { n: 200 }`
 
 执行`console.log(n),`根据AO，输出200
-
-
 
 **面试题四**
 
@@ -561,8 +507,6 @@ GO: { a: 100, foo: 0x100 }
 执行foo（）
 
 执行`console.log(a)`,在自身的AO中查找，找到了undefined
-
-
 
 **面试题五**
 
@@ -614,8 +558,6 @@ AO: { a: 100 }
 
 执行`console.log(b)`,在GO中找到，输出100
 
-
-
 ## 四、内存管理
 
 不管是什么样的编程语言，在代码的执行过程中都是需要给它分配内存的，不同的是某些编程语言需要手动的管理内存，某些编程语言可以自动管理内存
@@ -630,8 +572,6 @@ JavaScript通常情况下是不需要手动来管理的
 
 3、不需要引用时，进行释放
 
-
-
 **js的内存管理**
 
 JavaScript会在定义变量时为我们分配内存
@@ -639,8 +579,6 @@ JavaScript会在定义变量时为我们分配内存
 1、对于基本数据类型的分配会在执行时，直接在**栈空间**进行分配
 
 2、js对于复杂数据类型内存的分配会在**堆内存**中开辟一块空间，并且将这块空间的指针返回值变量引用
-
-
 
 **js的垃圾回收**
 
@@ -650,8 +588,6 @@ JavaScript的运行环境js引擎内置了内存垃圾回收器（简称GC）
 
 常见的GC算法有：引用计数、标记清除
 
-
-
 ## 五、理解闭包
 
 ### 5.1 闭包的形成
@@ -660,11 +596,11 @@ JavaScript的运行环境js引擎内置了内存垃圾回收器（简称GC）
 
 ```js
 function foo() {
-	var name = 'foo'
-	function bar() {
-		console.log("bar", name)
-	}
-	return bar
+    var name = 'foo'
+    function bar() {
+        console.log("bar", name)
+    }
+    return bar
 }
 var fn = foo()
 fn()
@@ -675,7 +611,7 @@ fn()
 ```js
 GO: {
     window:GO,
-	foo: 0xa00,
+    foo: 0xa00,
     fn: undefined
 }
 ```
@@ -731,7 +667,7 @@ AO: {
 ```js
 GO: {
     window:GO,
-	foo: 0xa00,
+    foo: 0xa00,
     fn: 0xb00
 }
 ```
@@ -766,8 +702,6 @@ bar的上层作用域是foo的AO对象，找到了`name: foo`，输出foo
 
 闭包：bar函数+name自由变量的组合
 
-
-
 ### 5.2 闭包的定义
 
  维基百科的定义：
@@ -792,15 +726,11 @@ JavaScript语言的特殊之处，**就在于函数内部可以直接读取全�
 
 **理解1：**，闭包就是能够读取其他函数内部变量的函数。在本质上，闭包就是将函数内部和函数外部连接起来的一座桥梁。
 
-
-
 **理解2：**一个函数和对其周围状态的引用捆绑在一起，这样的组合就是闭包（closure）
 
 也就是说，闭包让你可以在一个内层函数中访问到其外层函数的作用域
 
 所以，函数+自由变量name的组合，就是闭包
-
-
 
 闭包的作用：柯里化、函数外或在其他函数中访问某一函数内部的参数
 
@@ -815,8 +745,6 @@ JavaScript语言的特殊之处，**就在于函数内部可以直接读取全�
 3、意外定义的全局变量
 
 4、for循环出现死循环
-
-
 
 下方的代码形成了一个闭包：`bar`函数 + 自由变量`name 、age`
 
@@ -839,8 +767,6 @@ fn()
 
 当执行完`var fn = foo`后，`foo执行栈`应该是弹出栈，其AO也应该销毁了，为什么还能访问到？
 
-
-
 我们更加详细地来剖析整个过程
 
 **1、编译阶段**
@@ -861,8 +787,6 @@ GO: {
 代码块
 ```
 
-
-
 **2、执行阶段： 执行`var fn = foo()`**
 
 <img src="img/js高级/闭包-内存泄露2.jpg" style="zoom:50%;" />
@@ -873,8 +797,8 @@ GO: {
 //foo的AO（0x100）
 AO: {
     name: undefined,
-	age: undefined,
-	bar: 0xb00
+    age: undefined,
+    bar: 0xb00
 }
 ```
 
@@ -900,8 +824,8 @@ GO: {
 //foo的AO（0x100）
 AO: {
     name: "foo",
-	age: 18,
-	bar: 0xb00
+    age: 18,
+    bar: 0xb00
 }
 ```
 
@@ -923,17 +847,11 @@ AO: {
 
 执行`console.log(age)`，从自身AO找，没找到沿着访问上层作用域`foo的AO对象`，找到并输出
 
-
-
 如果后续不再使用`fn()`函数调用，则存在**内存泄露**
 
 因为`foo的AO对象`会一直在内存中存在着，但是不再使用就失去了它存在的意义
 
-
-
 设置`fn = null`则可以避免内存泄露
-
-
 
 **极端情况的内存泄露**
 
@@ -969,15 +887,13 @@ setTimeout(() => {
 
 在控制台的内存占用曲线可以看到明显的断层
 
-
-
 **js引擎会销毁不使用的变量**
 
 ```js
 function foo() {
     var name = 'why'
     var age = 18
-    
+
     function bar() {
         console.log(name)
     }
@@ -1003,8 +919,6 @@ AO = {
 
 所以在浏览器执行该代码的过程中，v8引擎会删除掉这个age
 
-
-
 ## 六、理解this指向
 
 在全局作用域下，浏览器环境下，this指向window
@@ -1028,8 +942,6 @@ foo()
 //输出：undefined
 ```
 
-
-
 **this的指向在函数定义的时候是确定不了的，只有函数执行的时候才能确定this到底指向谁**
 
 1、规则一：默认绑定
@@ -1039,8 +951,6 @@ foo()
 3、规则三：显示绑定
 
 4、规则四：new绑定
-
-
 
 ### 6.1 默认绑定
 
@@ -1053,8 +963,6 @@ function foo() {
 
 foo() //window
 ```
-
-
 
 **案例二**
 
@@ -1078,8 +986,6 @@ foo3()
 
 这个案例中，调用`foo3`，直接输出三个`window`
 
-
-
 **案例三**
 
 this永远指向最后调用它的对象
@@ -1097,8 +1003,6 @@ fn()
 
 这个案例输出的是`window`
 
-
-
 **案例四**
 
 ```js
@@ -1113,8 +1017,6 @@ fn()
 ```
 
 这个案例输出的也是`window`
-
-
 
 ### 6.2 隐式绑定
 
@@ -1137,8 +1039,6 @@ var obj = {
 obj.foo()  //obj对象
 ```
 
-
-
 **案例二**
 
 ```js
@@ -1154,8 +1054,6 @@ fn() // 在吃东西
 ```
 
 这种情况下，this指向window
-
-
 
 **案例三**
 
@@ -1177,13 +1075,9 @@ obj2.bar()
 
 this指向obj2
 
-
-
 ### 6.3 显示绑定
 
 显示绑定一般指 `call、apply、bind`
-
-
 
 一般情况下，我们可以通过以下的方式调用一个函数
 
@@ -1203,8 +1097,6 @@ foo.apply()
 那么，正常调用跟`call`、`apply`调用有什么区别呢
 
 直接调用跟`call`、`apply`调用的不同在于this绑定的不同
-
-
 
 比如我们不希望this指向window，而是指向obj对象
 
@@ -1234,8 +1126,6 @@ sum.apply("apply", [20, 30, 40])
 
 其实区就是传参的区别
 
-
-
 **bind**
 
 ```js
@@ -1251,8 +1141,6 @@ newFoo()
 这里调用`newFoo()`是在全局作用域下调用的，this却指向`aaa`
 
 原因：默认绑定和显示绑定bind冲突：显示绑定的优先级高
-
-
 
 ### 6.4 new绑定
 
@@ -1293,8 +1181,6 @@ console.log(p1.name); //输出obj
 
 返回一个`{ name: 'obj' }`,实例最终指向这个对象
 
-
-
 ### 6.5 其他案例分析
 
 **1、setTimeout中的this**
@@ -1310,8 +1196,6 @@ setTimeout(function() {
 
 箭头函数this将指向上层作用域
 
-
-
 **2、监听点击**
 
 ```js
@@ -1324,10 +1208,6 @@ box.onclick = function() {
 
 事件点击的this绑定相当于隐式绑定,上边的案例中，this最终绑定在box上
 
-
-
-
-
 **3、高阶函数中的this**
 
 ```js
@@ -1337,8 +1217,6 @@ arr.forEach(function(item) {
 })
 //输出：window
 ```
-
-
 
 ### 6.6 规则优先级
 
@@ -1369,8 +1247,6 @@ obj.foo.apply('cna') //输出：String {"cna"}
 
 可以看到，同时存在着隐式绑定和显示绑定，最终结果是绑定了显示绑定
 
-
-
 bind
 
 ```js
@@ -1386,8 +1262,6 @@ obj.foo()  //输出：aaa
 ```
 
 bind的优先级依然高于隐式绑定
-
-
 
 **3、new绑定优先级高于隐式绑定**
 
@@ -1417,21 +1291,15 @@ var bar = foo.bind('aaa')
 var obj = new bar() //输出：foo {}
 ```
 
-
-
 **总结：**
 
 new绑定  >  显示绑定(call/apply/bind)  >  隐式绑定  >  默认绑定（独立函数调用）
-
-
 
 ### 6.7 规则之外
 
 上边所涉及的规则已基本足以应付平时的开发，但是总还是有一些语法，超出了规则
 
 当涉及这些语法时，一般是函数内部做出了特殊处理
-
-
 
 **1、忽略显示绑定**
 
@@ -1449,8 +1317,6 @@ fn() //window
 按照显示绑定的规则，本来应该this指向null/undefined
 
 但是这些方法内部做了特殊的处理，将this指向了window
-
-
 
 **2、箭头函数**
 
@@ -1479,8 +1345,6 @@ foo.call('str') //linming
 foo.apply({}) //linming
 ```
 
-
-
 **箭头函数应用场景**
 
 1、发送网络请求，并把结果放在data属性中
@@ -1506,12 +1370,9 @@ setTimeout(() => {
 },1500)
 ```
 
-
-
 使用箭头函数，可以让定时器更方便的使用this
 
 ```js
-
 var obj = {
     data: [],
     getData: function() {
@@ -1523,8 +1384,6 @@ var obj = {
 }
 obj.getData()
 ```
-
-
 
 ### 6.8 this面试题
 
@@ -1546,8 +1405,6 @@ person.sayName(); //person 隐式调用
 (person.sayName)(); //person：隐式调用
 (b = person.sayName)(); //window:赋值表达式（独立函数调用）
 ```
-
-
 
 **面试题二**
 
@@ -1584,8 +1441,6 @@ person1.foo1() //隐式调用：person1
 person1.foo1.call(person2) //显示调用比隐式调用优先级高，person2
 ```
 
-
-
 ```js
 person1.foo2() //箭头函数不存在this，this指向全局，window
 person1.foo2.call(person2) //window
@@ -1593,23 +1448,17 @@ person1.foo2.call(person2) //window
 
 注：`foo2`的箭头函数的this会指向全局作用域，而不是指向`person1对象，因为person1不存在作用域`
 
-
-
 ```js
 person1.foo3()() //最终返回一个独立函数，指向全局window
 person1.foo3.call(person2)()//最终返回一个独立函数，指向全局window
 person1.foo3().call(person2) //最终调用返回函数式，使用的是显示绑定
 ```
 
-
-
 ```js
 person1.foo4()() //返回一个箭头函数，去上层作用域foo4中寻找person1
 person1.foo4.call(person2)() //person2
 person1.foo4().call(person2) //person1
 ```
-
-
 
 **面试题三**
 
@@ -1648,14 +1497,10 @@ person1.foo1() //person1
 person1.foo1.call(person2) //person2
 ```
 
-
-
 ```js
 person1.foo2() //箭头函数，寻找上层作用域（Person构造函数） person1
 person1.foo2.call(person2) //寻找上层作用域（Person构造函数） person1
 ```
-
-
 
 ## 七、实现call/apply/bind
 
@@ -1676,8 +1521,6 @@ function foo() {}
 
 foo.lmcall() //调用成功
 ```
-
-
 
 2、当某个函数调用`lmcall`时，执行该函数
 
@@ -1703,7 +1546,7 @@ foo.lmcall()
 Function.prototype.lmcall = function(thisArg) {
 
     var fn = this //this就是调用了lmcall的那个函数（这里是foo）
-    
+
     thisArg.fn = fn
     thisArg.fn() //隐式函数调用，所以fn的this = thisArg（即foo的this指向thisArg）
     //问题：这里的thisArg里边有一个多余的函数属性，不过并不影响
@@ -1747,8 +1590,6 @@ foo.lmcall(true)
 
 注：Object（）可以将对应的非对象类型转换为对象类型，比如数值，就会转换成数值包装类对象
 
-
-
 5、如果参数传入的是null或者undefined，要怎么处理
 
 根据系统的call，如果在call中传入null/undefined，那么this会被指向window
@@ -1763,7 +1604,7 @@ Function.prototype.lmcall = function(thisArg) {
     thisArg.fn = fn
     thisArg.fn()
     delete thisArg.fn
-}	
+}    
 
 function foo() {
     console.log("我被执行了", this);
@@ -1771,8 +1612,6 @@ function foo() {
 foo.lmcall({})
 //输出：我被执行了 Window{...}
 ```
-
-
 
 6、传入其他的参数
 
@@ -1798,10 +1637,6 @@ sum.lmcall({ name: 'linming' }, 10, 20)
 //输出：10 20 {name: "linming", fn: ƒ}
 ```
 
-
-
-
-
 ### 7.2 手写apply
 
 创建一个与系统apply相似的函数`lmapply`
@@ -1810,10 +1645,10 @@ sum.lmcall({ name: 'linming' }, 10, 20)
 Function.prototype.lmapply = function(thisArg, argArray) {
     //获取要执行的函数
     var fn = this
-    
+
     //对传入的参数进行判断
     thisArg = (thisArg !== null && thisArg !== undefined)? thisArg : window
-    
+
     //执行函数
     thisArg.fn = fn
     thisArg.fn(...argArray)
@@ -1834,10 +1669,10 @@ sum.lmapply({ name: 'linming' }, [1,2])
 Function.prototype.lmapply = function(thisArg, argArray) {
     //获取要执行的函数
     var fn = this
-    
+
     //对传入的参数进行判断
     thisArg = (thisArg !== null && thisArg !== undefined)? thisArg : window
-    
+
     //执行函数
     thisArg.fn = fn
     argArray = argArray ? argArray : []  //如果没有值，直接返回一个空
@@ -1850,8 +1685,6 @@ function foo () {
 }
 foo.lmapply({ name: 'linming' })
 ```
-
-
 
 ### 7.3 手写bind
 
@@ -1881,8 +1714,6 @@ fn3(num1, num2, num3, num4)
 var fn3 = sum.bind('abc', num1, num2)
 fn3(num3, num4)
 ```
-
-
 
 具体实现步骤
 
@@ -1943,12 +1774,7 @@ function add(num1, num2) {
 }
 let newFn = add.lmbind({}, 32)
 newFn(21)
-
 ```
-
-
-
-
 
 ## 八、函数式编程
 
@@ -1969,10 +1795,6 @@ Class1.prototype.f2 = () => {  }
 new Class1().fn1()
 //但是通过webpack打包后，f2也被打包进去了
 ```
-
-
-
-
 
 ### 8.1 纯函数
 
@@ -2000,8 +1822,6 @@ new Class1().fn1()
 
 （副作用往往是产生bug的“温床“）
 
-
-
 **案例**
 
 **1、slice和splice**
@@ -2019,8 +1839,6 @@ var newName1 = names.slice(0, 3)
 var newName2 = names.splice(2)
 console.log(names)
 ```
-
-
 
 **2、foo和bar**
 
@@ -2040,13 +1858,9 @@ function bar() {
 bar()
 ```
 
-
-
 **纯函数的优势**
 
 保证了函数的纯度，只是单纯实现了自己的业务逻辑，需要关心传入的内容是如何获得的或者依赖其他的外部变量是否已经发生了修改
-
-
 
 ### 8.2 柯里化
 
@@ -2084,8 +1898,6 @@ bar(20)(30)(40)(50)
 
 最终，我们将foo函数（本来需要接收四个参数），变成只接收一个参数的函数
 
-
-
 是否觉得上方的柯里化太过繁琐，其实也是可以简写的
 
 ```js
@@ -2094,8 +1906,6 @@ var baz = m => n => x => y => m + n + x + y
 var res = baz(20)(30)(40)(50)
 console.log(res) //输出140
 ```
-
-
 
 **为什么要有柯里化？**
 
@@ -2134,8 +1944,6 @@ function foo(x) {
 console.log(foo(20)(30)(40)); //1682
 ```
 
-
-
 **2、柯里化的复用**
 
 我们来看下边的两个案例
@@ -2159,8 +1967,6 @@ add5(10)
 add10(100) 
 ```
 
-
-
 **案例二**
 
 日志打印：当前时间 + 类型 + 说明
@@ -2175,7 +1981,6 @@ function log(date, type, message) {
 log(new Date(), "DEBUG", "查询到轮播图的bug")
 log(new Date(), "DEBUG", "查询到菜单的bug")
 log(new Date(), "DEBUG", "查询到数据的bug")
-
 ```
 
 这样的写法未免太过繁琐，存在大量重复的代码
@@ -2199,22 +2004,16 @@ newAndDebug("查询到轮播图的bug")
 newAndDebug("查询到轮播图的bug")
 ```
 
-
-
-
-
 ### 8.3 手写柯里化
 
 实现功能：传入一个普通函数，将其转化成柯里化函数
-
-
 
 1、基本结构：传入一个函数，返回一个函数
 
 ```js
 function lmCurrying(fn) {
     function curried() {
-        
+
     }
     return curried
 }
@@ -2227,8 +2026,6 @@ function add(x, y, z) {
 var curryAdd = lmCurrying(add)
 curryAdd(20)(30)(40)
 ```
-
-
 
 2、curried参数处理
 
@@ -2256,8 +2053,6 @@ function lmCurrying(fn) {
 }
 ```
 
-
-
 3、当已接收参数个数，与传入的函数需要的参数个数一致时，直接调用即可
 
 ```js
@@ -2272,8 +2067,6 @@ function lmCurrying(fn) {
 ```
 
 注：`fn.length`可以获取函数本身的参数个数
-
-
 
 4、考虑调用方式的不同
 
@@ -2295,8 +2088,6 @@ function lmCurrying(fn) {
     return curried
 }
 ```
-
-
 
 5、测试代码
 
@@ -2326,8 +2117,6 @@ console.log(newFn(20, 30)(40)); //90
 console.log(newFn(20, 30, 40)); //90
 ```
 
-
-
 ### 8.4 组合函数
 
 组合（Compose）函数是在js开发过程中一种对函数的使用技巧、模式：
@@ -2347,7 +2136,6 @@ function square(y) {
 var count = 10
 //需求：对count进行乘以2，再进行平方
 var res = square(dobule(count))
-
 ```
 
 组合函数的写法
@@ -2362,8 +2150,6 @@ function composeFn(fn1, fn2) {
 var newFn = composeFn(dobule, square)
 ```
 
-
-
 ### 8.5 高阶函数
 
 Higher-order function，
@@ -2377,11 +2163,7 @@ Higher-order function，
 
 `bind`也是一个高阶函数（返回值是函数）
 
-
-
 意义：高阶函数是用来抽象通用的问题，帮我们屏蔽细节，让我们只关注目标
-
-
 
 **实现forEach**
 
@@ -2398,8 +2180,6 @@ arr.myForEach((item) => {
   console.log(item)
 })
 ```
-
-
 
 **实现filter**
 
@@ -2422,8 +2202,6 @@ const res = arr.filter((item) => {
 })
 console.log(res)
 ```
-
-
 
 **实现once**
 
@@ -2454,8 +2232,6 @@ pay(888) //只打印一次888
 ```
 
 > 注：这里其实应用了闭包
-
-
 
 **实现reduce**
 
@@ -2509,8 +2285,6 @@ goods.reduce((pre, current) => {
 }, 0)
 ```
 
-
-
 手写实现
 
 ```js
@@ -2527,10 +2301,6 @@ Array.prototype.myreduce = function(fn, init) {
   return pre
 }
 ```
-
-
-
-
 
 ### 8.6 compose和pipe
 
@@ -2559,8 +2329,6 @@ result = fn3(result)
 ```
 
 这样子求值未免太过于麻烦了
-
-
 
 **compose函数**可以理解为为了方便我们连续执行方法，把自己调用传值的过程封装了起来，我们只需要给compose函数我们要执行哪些方法，它就会自动执行
 
@@ -2593,8 +2361,6 @@ compose(fn4, fn3, fn2, fn1)(10) //10初始值
 
 > pipe函数与compose函数功能相同，只不过pipe函数是从左往右执行
 
-
-
 针对上边的需求，还有另外的处理方式promise
 
 ```js
@@ -2602,10 +2368,6 @@ Promise.resolve(10).then(fn1).then(fn2).then(fn3).then((res) => {
   console.log(res)
 })
 ```
-
-
-
-
 
 ## 九、严格模式
 
@@ -2615,15 +2377,11 @@ Promise.resolve(10).then(fn1).then(fn2).then(fn3).then((res) => {
 
 支持严格模式的浏览器在检测到代码中有严格模式时，会以更加严格的方式对代码进行检测和执行
 
-
-
 为什么使用严格模式？
 
 + 消除代码运行的一些不合理、不严谨之处，减少一些怪异行为
 + 提高编译器效率，提高运行速度
 + 为未来新版本的JavaScript做好铺垫
-
-
 
 **开启严格模式**
 
@@ -2644,8 +2402,6 @@ function myFunction() {
 }
 ```
 
-
-
 **严格模式的限制**
 
 1、禁止意外创建的全局变量
@@ -2654,8 +2410,6 @@ function myFunction() {
 message = "hello world"
 console.log(message) //报错
 ```
-
-
 
 2、不允许函数有相同的参数名称
 
@@ -2667,8 +2421,6 @@ foo(10, 30, 20)
 //非严格模式下，后边的参数值覆盖前边的：20，30， 20
 //严格模式：报错
 ```
-
-
 
 3、禁止严格模式下试图删除不可删除的属性
 
@@ -2689,8 +2441,6 @@ foo()
 //严格模式：undefined
 ```
 
-
-
 ## 十、面向对象
 
 JavaScript其实支持多种编程范式的，包括**函数式编程和面向对象编程**： 
@@ -2701,8 +2451,6 @@ JavaScript其实支持多种编程范式的，包括**函数式编程和面向�
 
 3、如果值是一个函数，那么我们可以称之为是对象的方法
 
-
-
 **创建对象**
 
 ```js
@@ -2712,8 +2460,6 @@ var obj = new Object()
 //方式二: 字面量
 var obj = {}
 ```
-
-
 
 **操作对象**
 
@@ -2728,11 +2474,7 @@ obj.name
 delete obj.name
 ```
 
-
-
 有时候我们也希望对一个属性进行比较精准的操作控制，比如不允许对象的某个值被删除、被赋值、不允许哪一个值被遍历等等，这个时候，就可以使用`Object.defineProperty`
-
-
 
 ### 10.1 defineProperty
 
@@ -2747,8 +2489,6 @@ delete obj.name
 3、descriptor要定义或修改的**属性描述符**
 
 返回值：被修改的对象obj
-
-
 
 ```js
 var obj = {
@@ -2765,8 +2505,6 @@ console.log(obj) //输出：{ name: 'linmnig', age: 19 }
 
 注：通过该函数添加的新属性，默认不可被遍历
 
-
-
 **属性描述符分类**
 
 属性描述符的类型有两种：
@@ -2775,10 +2513,10 @@ console.log(obj) //输出：{ name: 'linmnig', age: 19 }
 
 2、存取属性(访问器)描述符
 
-| 分类       | configurabel | enumerable | value  | writable | get    | set    |
-| ---------- | ------------ | ---------- | ------ | -------- | ------ | ------ |
-| 数据描述符 | 可以         | 可以       | 可以   | 可以     | 不可以 | 不可以 |
-| 存取描述符 | 可以         | 可以       | 不可以 | 不可以   | 可以   | 可以   |
+| 分类    | configurabel | enumerable | value | writable | get | set |
+| ----- | ------------ | ---------- | ----- | -------- | --- | --- |
+| 数据描述符 | 可以           | 可以         | 可以    | 可以       | 不可以 | 不可以 |
+| 存取描述符 | 可以           | 可以         | 不可以   | 不可以      | 可以  | 可以  |
 
 如何区分：当存在get、set时，不能有value和writable（不能共存），反之同理
 
@@ -2790,23 +2528,17 @@ A、直接在一个对象上定义某个属性时，这个属性的[[Configurabl
 
 B、通过属性描述符定义一个属性时，这个属性的[[Configurable]]默认为false
 
-
-
 2、[[Enumerable]]：表示是否可以通过遍历获得该属性
 
 A、直接在一个对象上定义某个属性时，这个属性的[[Enumerable]]为true
 
 B、通过属性描述符定义一个属性时，这个属性的[[Enumerable]]默认为false
 
-
-
 3、[[Writable]]：表示是否可以修改属性的值
 
 A、直接在一个对象上定义某个属性时，这个属性的[[Writable]]为true
 
 B、通过属性描述符定义一个属性时，这个属性的[[Writable]]默认为false
-
-
 
 4、[[value]]：属性的value值，读取属性时会返回该值，修改属性时，会对其进行修改
 
@@ -2825,8 +2557,6 @@ Object.defineProperty(obj, 'age', {
 })
 ```
 
-
-
 **存取属性描述符**
 
 1、[[Configurable]]——与数据属性描述符一致
@@ -2836,8 +2566,6 @@ Object.defineProperty(obj, 'age', {
 3、**[[get]]**：获取属性时会执行的函数，默认为undefined
 
 4、**[[set]]:**设置属性时会执行的函数，默认为undefined
-
-
 
 ```js
 let obj = {
@@ -2855,18 +2583,13 @@ Object.defineProperty(obj, "address", {
         this._address = value
     }
 })
-
 ```
-
-
 
 **get、set**的应用
 
 1、隐藏一个私有属性，不希望直接被外界使用和赋值
 
 2、希望截获某一个属性访问时，设置值时的过程
-
-
 
 ```js
 Object.defineProperty(obj, "address", {
@@ -2894,8 +2617,6 @@ function bar() {
 console.log(obj.address);
 console.log(obj.address = "深圳");
 ```
-
-
 
 **Object.defineProperties()**
 
@@ -2928,8 +2649,6 @@ Object.defineProperties(obj, {
 })
 ```
 
-
-
 **获取某一个属性的属性描述符**
 
 `getOwnPropertyDescriptor()`
@@ -2946,8 +2665,6 @@ console.log(Object.getOwnPropertyDescriptor(obj, "age"));
 //}
 ```
 
-
-
 **获取对象的所有属性描述符**
 
 `Object.getOwnPropertyDescriptors()`
@@ -2955,8 +2672,6 @@ console.log(Object.getOwnPropertyDescriptor(obj, "age"));
 ```js
 console.log(Object.getOwnPropertyDescriptors(obj));
 ```
-
-
 
 ### 10.2 批量创建对象
 
@@ -3003,8 +2718,6 @@ console.log(p1.name);
 
 **工厂模式的缺点：**获取不到对象的具体类型，我们在打印对象时，对象的类型都是Obejct类型
 
-
-
 **2、构造函数**
 
 构造函数也称之为构造器（constructor），通常是我们在创建对象时会调用的函数
@@ -3039,14 +2752,12 @@ new foo()  //输出：foo~
 
 ```js
 function Person() {
-    
+
 }
 var p1 =  new Person() //创建一个{}，this = {} ，执行函数体代码，返回新对象
 
 console.log(p1) //输出：Person {}
 ```
-
-
 
 完整的案例代码
 
@@ -3080,8 +2791,6 @@ console.log(p1.eating === p2.eating) //false
 
 **构造函数的缺点：**从上边的案例中，`console.log(p1.eating === p2.eating) //false` 我们可以得出，创建出来的实例的函数地址是不同的（即内部创建了不同的内存空间来保存这个函数），但是完成没有必要。但这样子的创建实例多了，就浪费了很多的内存空间
 
-
-
 ### 10.2 对象的原型
 
 **隐式原型**
@@ -3091,8 +2800,6 @@ JavaScript当中每个对象都有一个特殊的**内置属性[[prototype]]**,�
 ```js
 let obj = { name: 'linming' }  //[[prototype]]
 ```
-
-
 
 如何查看这个属性？
 
@@ -3106,8 +2813,6 @@ console.log(obj.__proto__)
 //输出：[Object: null prototype] {}
 ```
 
-
-
 2、方式二：`Object.getPrototypeOf()`
 
 ```js
@@ -3115,8 +2820,6 @@ let obj = {}
 console.log(Object.getPrototypeOf(obj))
 //输出：[Object: null prototype] {}
 ```
-
-
 
 从上边的代码中，都获取到了一个空对象，这个对象有什么用呢？
 
@@ -3128,8 +2831,6 @@ obj.__proto__.name = "linming"
 
 console.log(obj.name) //linming
 ```
-
-
 
 ### 10.3 函数的原型
 
@@ -3154,8 +2855,6 @@ console.log(foo.prototype.__proto__)
 ```
 
 答案：Object的原型对象
-
-
 
 3、当函数作为构造函数被调用时，其内部创造出来的对象的隐式原型会指向显示原型
 
@@ -3200,8 +2899,6 @@ f2.__proto__.age = 18
 console.log(f1.age) //输出：18
 ```
 
-
-
 **4、constructor属性**
 
 ```js
@@ -3213,8 +2910,6 @@ console.log(Foo.prototype) //输出：{}
 从上边可以知道，Foo的显示原型对象是空的。
 
 实际上，它不是空的，只是这个原型对象的**enumerable**属性被设置为false，所以我们不能遍历出其中的属性
-
-
 
 原型对象上有一个**constructor属性**，指向Foo函数本身
 
@@ -3233,8 +2928,6 @@ console.log(Foo.prototype.constructor.name)  //输出：Foo
 console.log(Foo.prototype.constructor.prototype.constructor.prototype.constructor)
 //输出：[Function: Foo]
 ```
-
-
 
 5、修改原型对象
 
@@ -3263,11 +2956,10 @@ Foo.prototype = {
 ```js
 Object.defineProperty(Foo.prototype, "constructor", {
     enumerable: false,  //原来的原型对象的constructor是不能被遍历的
-	writable: true,
+    writable: true,
     configurable: true,
     value: Foo //指向本身
 })
-
 ```
 
 测试代码
@@ -3279,12 +2971,7 @@ let f2 = new Foo()
 console.log(f1.name, f2.age, f2.height);
 
 console.log(Foo.prototype.constructor.name); //Foo
-
 ```
-
-
-
-
 
 ### 10.4 原型链
 
@@ -3311,15 +2998,11 @@ obj.__proto__.__proto__.__proto__ = {
 console.log(obj.address) //输出：linming
 ```
 
-​	<img src="img/js高级/原型链1.jpg" style="zoom:50%;" />
-
-
+​    <img src="img/js高级/原型链1.jpg" style="zoom:50%;" />
 
 但是原型链不是无限的，最终会止于最顶层原型
 
 那么最顶层的原型是是谁呢？就是Object的原型对象
-
-
 
 ### 10.5 Object的原型
 
@@ -3334,8 +3017,6 @@ console.log(obj.__proto__)
 这里输出的obj的隐式原型就是Object的显式原型对象`[Object: null prototype] {}`
 
 为什么呢？为什么obj的隐式原型可以打印出来的就是顶层原型？
-
-
 
 **重点理解**
 
@@ -3362,8 +3043,6 @@ const obj = new Object()
 
 <img src="img/js高级/原型链2.jpg" style="zoom:50%;" />
 
-
-
 那么Object的原型对象里边都有什么呢？
 
 有很多默认的属性和方法
@@ -3383,16 +3062,12 @@ console.log(Object.getOwnPropertyDescriptors(Object.prototype))
 //...
 ```
 
-
-
 注意：其中，顶层显式原型对象是一个对象，它的隐式原型是null
 
 ```js
 const obj = new Object()
 console.log(obj.__proto__.__proto__) //输出：null
 ```
-
-
 
 **构造函数的顶层原型对象**
 
@@ -3412,8 +3087,6 @@ console.log(People.prototype.__proto__)
 <img src="img/js高级/原型链3.jpg" style="zoom:50%;" />
 
 所以，可以说People构造函数继承自Object
-
-
 
 ### 10.6 继承
 
@@ -3479,8 +3152,6 @@ console.log(stu2.name);
 
 3、传递参数不方便
 
-
-
 **2、借用构造函数的继承方案**
 
 对上边的案例进行简单的改造，就可以很好的解决出现的三个弊端
@@ -3518,8 +3189,6 @@ console.log(stu2.name)
 1、Person函数至少被调用了两次
 
 2、stu的原型对象上会多出一些属性，但是这些属性是没有存在的必要
-
-
 
 **3、原型式继承**
 
@@ -3580,8 +3249,6 @@ console.log(stuObj)
 //输出：{ name: 'why', studying: [Function (anonymous)] }
 ```
 
-
-
 **5、寄生组合式继承**
 
 ```js
@@ -3626,8 +3293,6 @@ stu.running() //running~
 stu.eating() //eating~
 ```
 
-
-
 ### 10.7 原型内容补充
 
 **1、hasOwnProperty**
@@ -3653,8 +3318,6 @@ console.log(obj.hasOwnProperty("address")) //true
 console.log(obj.hasOwnProperty("name")) //false
 ```
 
-
-
 **2、in操作符**
 
 判断某个属性是否在某个对象或者对象的原型上
@@ -3663,8 +3326,6 @@ console.log(obj.hasOwnProperty("name")) //false
 console.log("address" in info) //true
 console.log("name" in info) //true
 ```
-
-
 
 **3、for...in**
 
@@ -3676,8 +3337,6 @@ for (let key in info) {
 }
 // address name age
 ```
-
-
 
 **4、instanceof**
 
@@ -3693,8 +3352,6 @@ console.log(stu instanceof People)  //true
 console.log(stu instanceof Object)  //true
 ```
 
-
-
 ### 10.8 对象-函数-原型的联系
 
 1、对象存在**隐式原型**
@@ -3709,8 +3366,6 @@ console.log(obj.__proto__) //顶层Object的显示原型：[Object: null prototy
 console.log(obj.__proto__ === Object.prototype) //true
 ```
 
-
-
 2、函数存在**隐式原型**、也存在**显式原型**
 
 隐式原型(对象)：`Foo.__proto__`
@@ -3723,8 +3378,6 @@ let Foo = new Function()
 ```
 
 Funtion是Foo的父类（同时，Function本身也是一个对象、也是一个构造函数）
-
-
 
 函数的显式原型与隐式原型是不相等的
 
@@ -3744,8 +3397,6 @@ Foo.prototype = { constructor: Foo }
 // Foo.__proto__ === Function.prototype
 ```
 
-
-
 3、关系图
 
 特别注意：
@@ -3759,10 +3410,6 @@ B、Object函数对象也可以理解成`const Object = new Function()`,所以�
 创建一些实例，其指向关系如何
 
 <img src="img/js高级/原型链5.jpg" style="zoom:50%;" />
-
-
-
-
 
 **总结**
 
@@ -3782,8 +3429,3 @@ B、Object函数对象也可以理解成`const Object = new Function()`,所以�
 4、构造函数
 当我们创建一个实例对象时，默认这个实例对象的隐式原型会指向构造函数的显示原型。所以我们可以通过原型链一层层地查找想要的属性，直到顶层Obecjt
 ```
-
-
-
-
-

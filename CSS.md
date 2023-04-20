@@ -653,10 +653,15 @@ ul li:nth-child(2n) {
 **4、其他结构伪类**
 
 + first-child，等同于nth-child(1)
+
 + last-child，等同于nth-last-child(1)
+
 + first-of-type，等同于nth-of-type(1)
+
 + last-of-type，等同于nth-last-of-type(1)
+
 + only-child，父元素中唯一的子元素（仅对父元素存在一个子元素时生效）
+
 + only-of-type，是父元素中唯一的这种类型的子元素
 
 + :root，根元素，就是HTML元素
@@ -1304,8 +1309,6 @@ vw、wh是相对于视口的单位，一般开发中我们仅用vw即可。
     margin-left: -0.5*宽度
 }
 ```
-
-
 
 ### 2、垂直居中
 

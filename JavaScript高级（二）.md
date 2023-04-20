@@ -1,4 +1,4 @@
-​	
+​    
 
 ## 一、class类
 
@@ -36,8 +36,6 @@ console.log(People.prototype.constructor) //输出：[class People]
 console.log(typeof People); //输出：function
 ```
 
-
-
 **3、类的构造函数**
 
 每个类都有一个构造函数`constructor`，当使用new操作符时，就会调用这个构造函数
@@ -64,8 +62,6 @@ const p1 = new People("linming", 22)
 //4.执行函数体
 //5.如果构造函数没有返回非空对象，则返回创建出来的新对象
 ```
-
-
 
 **4、类定义方法**
 
@@ -98,8 +94,6 @@ p2.eating()
 
 注：`Object.getOwnPropertyDescriptors()`方法用来获取一个对象的所有自身属性的描述符
 
-
-
 **5、类的访问器方法**？
 
 在类中也可以创建访问器方法（get、set），对获取属性、修改属性做一层拦截
@@ -116,12 +110,10 @@ class People {
     }
     set address(newValue) {
         console.log("拦截设置操作")
-		this._address = newValue
+        this._address = newValue
     }
 }
 ```
-
-
 
 **6、类的静态方法**
 
@@ -162,8 +154,6 @@ for(let i = 0; i < 50; i++) {
 ```
 
 静态方法与普通方法的另外一个区别：静态方法存放在类上（所以可以直接调用），普通方法存放在类的显示原型上
-
-
 
 ### 1.2 class的继承
 
@@ -235,8 +225,6 @@ var stu = new Student()
 stu.personMethod() //输出：逻辑1、逻辑2、逻辑3、逻辑4、逻辑5
 ```
 
-
-
 ### 1.3 ES5代码转化
 
 前面提到，class本质上是构造函数的语法糖。最终会被babel转化为浏览器能够认识的低版本代码（一般是ES5代码）
@@ -267,17 +255,13 @@ var Person = function Person() {
 
 这种情况下，会调用`_classCallCheck(this, Person)`，此时this为window/undefined，那么会直接抛出错误
 
-
-
 假设去掉这一层判断，class转换后的代码跟一个正常的构造函数没有区别
 
 ```js
 function Person() {
-    
+
 }
 ```
-
-
 
 2、对属性方法的转换
 
@@ -324,11 +308,11 @@ function _createClass(Constructor, protoProps, staticProps) {
 var Person = /*#__PURE__*/ (function () {
   function Person(name, age) {
     _classCallCheck(this, Person);
-	//属性直接添加即可
+    //属性直接添加即可
     this.name = name;
     this.age = age;
   }
-	//调用_createClass，添加方法
+    //调用_createClass，添加方法
   (Person, [ 
     {
       key: "eating",
@@ -340,22 +324,17 @@ var Person = /*#__PURE__*/ (function () {
 
   return Person;
 })();
-
 ```
 
 以前我们需要在`Person.prototype`上添加eating方法，这里同样是这样做，只不过换了写法
 
 调用`_createClass`,判断是普通方法，调用`_defineProperties(person原型，需要添加的方法)`，并使用`Object.defineProperty`定义了这个方法
 
-
-
 3、继承的转换
 
 由于babel转换后，代码量过多，这里不直接展示
 
 结论：class继承的实现，转换为ES5，实际上利用了寄生组合式继承的方法
-
-
 
 ## 二、ES6小语法
 
@@ -396,8 +375,6 @@ var obj = {
 console.log(obj) //输出：{ ming321: 'hello' }
 ```
 
-
-
 ### 2.2 let和const
 
 之前学习var声明时，我们知道var一个变量，会在GO中进行保存，值一开始为undefined
@@ -405,8 +382,6 @@ console.log(obj) //输出：{ ming321: 'hello' }
 但是这是ECMA规范早期版本的说法，最新的说法是保存在VE变量环境中（VariableEnvironment）
 
 每一个执行上下文都会关联到一个变量环境，当我们用`let const var`声明一个变量或者函数，它们会被作为环境记录添加到环境变量中。对于函数来说，参数也会被作为环境记录添加到变量环境中
-
-
 
 **块级作用域**
 
@@ -430,7 +405,7 @@ function foo() {
 在ES6中，存在块级作用域。但是这个块级作用域对`let / const / function / class`声明的类型是有效的，对`var`声明的类型无效
 
 ```js
-{	
+{    
     var baz= "linming"
     let foo = "ming"
     const bar = "lin"
@@ -439,8 +414,8 @@ function foo() {
 }
 console.log(baz);  //能访问，说明块级作用域无效
 console.log(foo);  //访问不了，报错
-console.log(bar);	//访问不了，报错
-console.log(demo);	//函数可以访问
+console.log(bar);    //访问不了，报错
+console.log(demo);    //函数可以访问
 console.log(People); //访问不了，报错
 ```
 
@@ -453,8 +428,6 @@ var obj = {
     //不存在块级作用域
 }
 ```
-
-
 
 if语句、switch语句、for循环语句也有块级作用域
 
@@ -496,8 +469,6 @@ for (var i = 0; i < btn.length; i++) {
 
 这种用var的for循环，当点击按钮后，会去访问全局的i，而此时全局的i已固定为4，所以不论点击哪个按钮，都显示`第4个按钮的点击`，用let可以很好的解决这个问题
 
-
-
 特别注意，在普通的for循环中不能使用const，但在`for...of`循环中可以
 
 ```js
@@ -505,8 +476,6 @@ for (const i = 0; i < 10; i++) {...} //报错
 
 for(const i of arr) {...} //b
 ```
-
-
 
 ### 2.3 标签模板字符串
 
@@ -521,8 +490,6 @@ foo()
 //通过模板字符串调用
 foo``
 ```
-
-
 
 如果有字符串的参数，第一个参数是模板字符串中的的全部字符串（放在数组中）
 
@@ -552,8 +519,6 @@ foo`hello${name}world${18}`
 
 第二、三个参数，依次是模板字符串中的变量
 
-
-
 ### 2.4 参数的默认值
 
 ES5以及之前给参数默认值的写法
@@ -578,8 +543,6 @@ foo(0,"")
 //输出：aaa、bbb（本应该是0或者“”才对）
 ```
 
-
-
 ### 2.5 展开语法的浅拷贝
 
 ```js
@@ -589,7 +552,6 @@ var info = {
 }
 
 const obj = {...info} //浅拷贝
-
 ```
 
 改变obj的friend，info中的friend也会被改变
@@ -711,21 +673,15 @@ for(const sKey of sKeys) {
 }
 ```
 
-
-
 ## 三、Set和Map
 
 ES6之前，存储数据结构的主要有两种方式：数组、对象
 
 ES6新增了另外的两种数据结构：Set、Map，以及它们的另外形式WeakSet、WeakMap
 
-
-
 ### 3.1 Set的基本使用
 
 Set（集合），可以用来保存数据，类似于数组，但是和数组的区别是元素不能重复
-
-
 
 1、创建Set
 
@@ -764,11 +720,9 @@ console.log(set) //输出：Set(5) { 10, 20, 30, {}, {} }
 const arr = [10,20,30,10,20]
 const newArr = Array.from(new Set(arr)) //方式一
 const newArr2 = [...new Set(arr)] //方式二
- 
+
 console.log(newArr2);  //输出：[ 10, 20, 30 ]
 ```
-
-
 
 4、size属性
 
@@ -800,23 +754,15 @@ console.log(set.clear())
 //清空
 ```
 
-
-
-
-
 ### 3.2 weakSet
 
 和Set相似的另外一个数据结构称之为WeakSet，也就是内部元素不能重复的数据结构
-
-
 
 **1、创建weakSet**
 
 ```js
 const weakSet = new WeakSet()
 ```
-
-
 
 **2、只能存放对象类型**
 
@@ -826,15 +772,11 @@ weakSet.add(10) //报错
 weakSet.add([10]) //ok
 ```
 
-
-
 **3、对对象是一个弱引用**
 
 Set中对象的引用都是强引用并不会允许垃圾回收；它能存储任意类型的数据；
 
 WeakSet中的对象的引用是弱引用，也就是说，即使WeakSet引用了某个对象，但垃圾回收不把这种引用计为“引用”，只要其他地方没有强引用引用这个对象，该对象就不可达，任何时候都可能被回收；
-
-
 
 **强引用与弱引用**
 
@@ -846,8 +788,6 @@ WeakSet中的对象的引用是弱引用，也就是说，即使WeakSet引用了
 
 上图的情况为weakSet时，当obj为null时，GC不认为0x200对0x100的连接有效，所以垃圾回收会将其回收
 
-
-
 **4、weakSet的应用**
 
 因为weakSet只是对对象的弱引用，如果我们遍历获取到其中的元素，那么有可能造成对象不能正常的销毁。
@@ -855,8 +795,6 @@ WeakSet中的对象的引用是弱引用，也就是说，即使WeakSet引用了
 所以存储到weakSet中的对象是没办法获取的
 
 （weakSet应用比较少，一般在构建大型框架的时候可能会使用）
-
-
 
 ### 3.3 Map的基本使用
 
@@ -866,13 +804,11 @@ Map是ES6新增的数据结构，用于存储映射关系
 
 某些情况下我们可能希望通过其他类型作为key，比如对象，这个时候会自动将对象成字符串来作为key
 
-
-
 **1、允许使用对象类型作为key**
 
 ```js
 const obj = {
-	name: 'lin'
+    name: 'lin'
 }
 const map = new Map()
 map.set(obj, "ming") //key为obj
@@ -890,11 +826,9 @@ console.log(map)
 //输出：Map(2) { { name: 'lin' } => 'ming', 1 => 'hi' }
 ```
 
-
-
 **2、创建的属性和方法**
 
-``` js
+```js
 //size属性
 console.log(map.size)
 
@@ -914,8 +848,6 @@ map.delete("ming")  // true
 map.clear()
 ```
 
-
-
 **3、遍历**
 
 ```js
@@ -927,8 +859,6 @@ for(const [key, value] of map2) {
     console.log(key, value)
 }
 ```
-
-
 
 ### 3.4 weakMap
 
@@ -944,8 +874,6 @@ weakmap.set(obj, "aaa")  //ok
 weakmap.set(1, "bbb") //报错
 ```
 
-
-
 区别二：weakmap的key对象的引用是弱引用，如果没有其他对象引用这个对象，那么GC可以回收该对象
 
 ```js
@@ -958,8 +886,6 @@ weakmap.set(obj, "aaa")
 
 当obj被设置为null时，虽然weakmap的元素中有一个obj指向了obj的内存地址，但是GC不认为该指向有效，依旧将obj回收
 
-
-
 **2、weakMap常见的方法**
 
 1、set（key，value）：在Map中添加key、value，并且返回整个Map对象
@@ -969,8 +895,6 @@ weakmap.set(obj, "aaa")
 3、has（key）：判断是否包括某一个key，返回布尔值
 
 4、delete（key）：根据key删除一个键值对，返回布尔值
-
-
 
 **3、weakMap的应用场景**
 
@@ -992,7 +916,7 @@ const data = {
 ```html
 <template>
     <div>
-	<div>{{name}}</div>
+    <div>{{name}}</div>
     <div>{{age}}</div>
     </div>
 </template>
@@ -1001,8 +925,6 @@ const data = {
 当data中的name或者age属性发生变化时，template中的对这两个属性有依赖的地方要进行相应的变化
 
 事实上，template会被编译成render()函数，数据变化时，重新调用render函数即可
-
-
 
 所以，类似于如下的场景
 
@@ -1075,33 +997,31 @@ map.get(name) //找到了[obj1NameChange1, obj1NameChange2]两个函数
 forEach(item => item())
 ```
 
-
-
 **3、具体的代码逻辑**
 
 ```js
 const obj1 = {
-	name: "小林",
-	age: 22
+    name: "小林",
+    age: 22
 }
 function linNameChange1() {
-	console.log("小林改了名，后续发生的故事1...");
+    console.log("小林改了名，后续发生的故事1...");
 }
 function linNameChange2() {
-	console.log("小林改了名，后续发生的故事2...");
+    console.log("小林改了名，后续发生的故事2...");
 }
 function linAgechange() {
-	console.log("小林的年龄增长了，这一年发生的故事...");
+    console.log("小林的年龄增长了，这一年发生的故事...");
 }
 const obj2 = {
-	name: "小明",
-	age: 20
+    name: "小明",
+    age: 20
 }
 function mingNameChange() {
-	console.log("小明改了名，后续操作...");
+    console.log("小明改了名，后续操作...");
 }
 function mingAgeChange() {
-	console.log("小明年龄增长了，后续操作...");
+    console.log("小明年龄增长了，后续操作...");
 }
 
 //1.创建weakMap
@@ -1130,12 +1050,6 @@ fns.forEach(item => item())
 小林改了名，后续发生的故事2...
 ```
 
-
-
-
-
-
-
 ## 四、ES7小语法
 
 ### 4.1 includes
@@ -1155,8 +1069,6 @@ console.log(arr.includes(10)) //true
 
 注：**includes**的第二个参数可以指定从什么位置开始查找
 
-
-
 ### 4.2 指数运算符
 
 ```js
@@ -1172,8 +1084,6 @@ ES7新增了 `**`运算符，适用于指数运算
 const result2 = 3 ** 3
 console.log(result2) //输出 27
 ```
-
-
 
 ## 五、ES8小语法
 
@@ -1199,8 +1109,6 @@ console.log(Object.values(["abc", "cba", "nba"]))
 console.log(Object.values("abc")) //输出： ["a", "b", "c"]
 ```
 
-
-
 **Object.entries**
 
 获取键值对（结果放入数组中）
@@ -1214,8 +1122,6 @@ console.log(Object.entries(obj))
 //输出：[ [ 'name', 'linming' ], [ 'age', 22 ] ]
 ```
 
-
-
 ### 5.2 填充pad
 
 `padStart`:从开头位置开始填充
@@ -1227,8 +1133,6 @@ const msg = "hello"
 console.log(msg.padStart(5, "*")) //输出；*****hello
 console.log(msg.padEnd(5, "-"))  //输出：hello-----
 ```
-
-
 
 ## 六、ES10小语法
 
@@ -1254,11 +1158,7 @@ console.log(newArr)
 //输出：[ 10, 20,  2,  4, 30, 40, 20, 12, 44, 55 ]
 ```
 
-
-
 手动实现该flat函数的方法：遍历数组中的每一个元素，如果元素还是一个数组，递归调用
-
-
 
 ### 6.2 flatMap
 
@@ -1288,8 +1188,6 @@ const message = ["hello world", "hi linming", "good morning"]
 //map不会自动将其进行降维
 ```
 
-
-
 ### 6.3 数组扁平化
 
 数组扁平化其实就是将多维数组转换为一维数组
@@ -1317,13 +1215,9 @@ function myFlat(arr) {
 }
 ```
 
-
-
 **2、考虑多种情况**
 
 后续补充....
-
-
 
 ### 6.4 trimStart、trimEnd
 
@@ -1346,8 +1240,6 @@ const str2 = "    hello     "
 console.log(str.trimEnd) //输出：     hello
 ```
 
-
-
 ## 七、ES11小语法
 
 ### 7.1 bigInt
@@ -1360,8 +1252,6 @@ console.log(maxInt)
 //输出：9007199254740991
 ```
 
-
-
 如果想要获取更大的数，就要使用bigInt了
 
 ```js
@@ -1372,8 +1262,6 @@ const bigInt = 900719925474099100n //n是必要的
 const num = 100
 console.log(bigInt + BigInt(num))
 ```
-
-
 
 ### 7.2 空值合并运算??
 
@@ -1404,8 +1292,6 @@ console.log(num || "default value") //期望输出：""
 
 结果都输出：default value
 
-
-
 所以ES11增加了空值运算符来解决这个问题
 
 ```js
@@ -1415,8 +1301,6 @@ console.log(num ?? "default value") //输出：0
 num = ""
 console.log(num ?? "default value") //输出：""
 ```
-
-
 
 ### 7.3 可选链
 
@@ -1435,11 +1319,7 @@ const obj = {
 console.log(obj.friend?.girlfriend?.name)
 ```
 
-
-
 这样写会使得代码更加严谨，不会因为其中的某个值为undefined时，而报错，从而造成后续代码不能执行
-
-
 
 ## 八、Proxy与Reflect
 
@@ -1453,15 +1333,11 @@ console.log(obj.friend?.girlfriend?.name)
 
 如果是新增属性，没办法进行响应式设置，（vue中可以通过$set方法）
 
-
-
 **Proxy的优点**
 
 1、Proxy可以直接监听数组的变化
 
 2、proxy可以监听对象而非属性，它在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。Proxy直接可以劫持整个对象，并返回一个新对象
-
-
 
 ### 8.2 Proxy基本使用
 
@@ -1498,8 +1374,6 @@ get方法用于拦截某个属性的读取操作
 
 如果没有这个拦截器，访问不存在的属性只会返回undefined
 
-
-
 **3、set（）方法**
 
 set（）方法用于拦截某个属性的赋值操作
@@ -1524,8 +1398,6 @@ set（）方法用于拦截某个属性的赋值操作
         console.log(proxy.age = 100); //100
         console.log(proxy.age = 151); //报错 the age seems invalid
 ```
-
-
 
 **4、has方法**
 
@@ -1570,11 +1442,7 @@ let proxy = new Proxy(target, handler)
 console.log(delete proxy._prop);
 ```
 
-
-
 注：proxy一共有13中捕获器，不过最长用的就是以上四种
-
-
 
 ### 8.3Reflect的作用
 
@@ -1582,17 +1450,9 @@ Reflect是ES6新增的一个API，它是一个**对象**，字面的意思是**�
 
 它主要提供了很多操作JavaScript对象的方法，在某种程度上跟Object构造函数相同
 
-
-
-
-
-
-
 既然有了Object，为什么要有Reflect呢？
 
 Obejct作为一个构造函数，有一些操作放在它身上并不合适。所以ES6增加了Reflect对象，让一些操作都集中到了这个对象上
-
-
 
 ```js
 const obj = {
@@ -1637,35 +1497,27 @@ const Boolean = Reflect.get(target, key) //Boolean反映了获取值成功与否
 const Boolean = Reflect.set(target, key, newValue) //Boolean反映了设置值成功与否
 ```
 
-
-
 目前Reflect最多的应用场景就是跟Proxy配合使用
-
-
 
 ### 8.4 Reflect的常见方法
 
 Reflect中的常见方法与Proxy是一一对应的，也是13个
 
-| 方法                                                    | 说明                                                         |
-| ------------------------------------------------------- | ------------------------------------------------------------ |
-| Reflect.getPrototypeOf(target)                          | 类似于 Object.getPrototypeOf()                               |
-| Reflect.setPrototypeOf(target, prototype)               | 设置对象原型的函数. 返回一个 Boolean                         |
-| Reflect.isExtensible(target)                            | 类似于 Object.isExtensible()                                 |
-| Reflect.preventExtensions(target)                       | 类似于 Object.preventExtensions()                            |
-| Reflect.getOwnPropertyDescriptor(target, propertyKey)   | 类似于 Object.getOwnPropertyDescriptor()                     |
-| Reflect.defineProperty(target, propertyKey, attributes) | 和 Object.defineProperty() 类似，如果设置成功就会返回 true   |
-| Reflect.ownKeys(target)                                 | 返回一个包含所有自身属性（不包含继承属性）的数组             |
-| Reflect.has(target, propertyKey)                        | 判断一个对象是否存在某个属性，和 in 运算符 的功能完全相同    |
-| Reflect.get(target, propertyKey[, receiver])            | 获取对象身上某个属性的值                                     |
-| Reflect.set(target, propertyKey, value[, receiver])     | 将值分配给属性的函数。返回一个Boolean，如果更新成功，则返回true |
-| Reflect.deleteProperty(target, propertyKey)             | 作为函数的delete操作符，相当于执行 delete target[name]       |
+| 方法                                                      | 说明                                                            |
+| ------------------------------------------------------- | ------------------------------------------------------------- |
+| Reflect.getPrototypeOf(target)                          | 类似于 Object.getPrototypeOf()                                   |
+| Reflect.setPrototypeOf(target, prototype)               | 设置对象原型的函数. 返回一个 Boolean                                       |
+| Reflect.isExtensible(target)                            | 类似于 Object.isExtensible()                                     |
+| Reflect.preventExtensions(target)                       | 类似于 Object.preventExtensions()                                |
+| Reflect.getOwnPropertyDescriptor(target, propertyKey)   | 类似于 Object.getOwnPropertyDescriptor()                         |
+| Reflect.defineProperty(target, propertyKey, attributes) | 和 Object.defineProperty() 类似，如果设置成功就会返回 true                  |
+| Reflect.ownKeys(target)                                 | 返回一个包含所有自身属性（不包含继承属性）的数组                                      |
+| Reflect.has(target, propertyKey)                        | 判断一个对象是否存在某个属性，和 in 运算符 的功能完全相同                               |
+| Reflect.get(target, propertyKey[, receiver])            | 获取对象身上某个属性的值                                                  |
+| Reflect.set(target, propertyKey, value[, receiver])     | 将值分配给属性的函数。返回一个Boolean，如果更新成功，则返回true                         |
+| Reflect.deleteProperty(target, propertyKey)             | 作为函数的delete操作符，相当于执行 delete target[name]                      |
 | Reflect.apply(target, thisArgument, argumentsList)      | 对一个函数进行调用操作，同时可以传入一个数组作为调用参数。和Function.prototype.apply() 功能类似 |
-| Reflect.construct(target, argumentsList[, newTarget])   | 对构造函数进行 new 操作，相当于执行 new target(...args)      |
-
-
-
-
+| Reflect.construct(target, argumentsList[, newTarget])   | 对构造函数进行 new 操作，相当于执行 new target(...args)                      |
 
 ### 8.5 响应式原理
 
@@ -1683,8 +1535,6 @@ console.log("hello world")
 
 当num变化时，这么一段代码可以**自动执行**一次。那么就可以说，这段代码是可以自动响应num的变化的
 
-
-
 在开发中，最常见的是对象的响应式
 
 ```js
@@ -1701,10 +1551,6 @@ console.log(age) //200行代码
 当对象中的name发生变化时，`console.log(name)`等100行代码自动执行一次
 
 当对象中的age发生变化时，`console.log(age)`等200行代码自动执行一次
-
-
-
-
 
 **2、封装一个响应式函数**
 
@@ -1738,8 +1584,6 @@ watchFn(function bar() {
 
 这样依赖，数组`reactiveFns`中就有foo和bar两个函数了
 
-
-
 当obj的name发生变化时，只要遍历出数组中的函数，并进行调用即可
 
 ```js
@@ -1749,8 +1593,6 @@ reactiveFns.forEach((item) => {
 })
 ```
 
-
-
 **小总结**
 
 上面的代码中，实现了：
@@ -1759,8 +1601,6 @@ reactiveFns.forEach((item) => {
 
 2、当name值变化时，遍历出数组中的函数并执行
 
-
-
 但是，仍然不是我们想要的响应式。需要进行一些改进：
 
 1、开发中，有很多的数据(data)，以及对各个数据(data)有依赖的函数代码。不能将所有的代码都装进一个`reactiveFns`数组中。而是需要一种数据结构，来存储不同数据的依赖
@@ -1768,8 +1608,6 @@ reactiveFns.forEach((item) => {
 2、实现依赖的自动收集，而不是手动收集
 
 3、数据(data)变化时，自动执行依赖，而不是手动执行
-
-
 
 **4、创建depend类管理依赖**
 
@@ -1781,12 +1619,12 @@ class depend {
     constructor() {
         this.reactiveFns = [] //其实使用set来装依赖会更好
     }
-    
+
     //添加依赖
     addDepend(fn) {
         this.reactiveFns.push(fn)
     }
-    
+
     //通知执行
     notify() {
         this.reactiveFns.forEach(item => {
@@ -1800,7 +1638,7 @@ class depend {
 const depend = new Depend()
 //重写watchFn函数
 function watchFn(fn) {
-	depend.addDepend(fn)
+    depend.addDepend(fn)
 }
 
 //利用watchFn找到数据name的依赖函数foo、bar
@@ -1811,13 +1649,9 @@ watchFn(bar) //两者都被添加进了reactiveFn数组中
 depend.notify()
 ```
 
-
-
 **5、自动监听对象变化，执行依赖**
 
 这一步要解决的就是每次手动执行`depend.notify()`的弊端
-
-
 
 是时候用到Proxy了。利用Proxy对obj对象进行代理
 
@@ -1837,46 +1671,46 @@ const objProxy = new Proxy(obj, {
 
 ```js
 class Depend {
-	//订阅者
-	constructor() {
-		this.reactiveFn = []
-	}
-	//添加依赖
-	addDepend(fn) {
-		this.reactiveFn.push(fn)
-	}
-	//通知执行
-	notify() {
-		this.reactiveFn.forEach(item => {
-			item()
-		})
-	}
+    //订阅者
+    constructor() {
+        this.reactiveFn = []
+    }
+    //添加依赖
+    addDepend(fn) {
+        this.reactiveFn.push(fn)
+    }
+    //通知执行
+    notify() {
+        this.reactiveFn.forEach(item => {
+            item()
+        })
+    }
 }
 
 const depend = new Depend()
 
 //收集依赖的函数
 function watchFn(fn) {
-	depend.addDepend(fn)
+    depend.addDepend(fn)
 }
 const obj = {
-	name: 'linming'
+    name: 'linming'
 }
 //代理
 const objProxy = new Proxy(obj, {
-	get(target, key) {
-		return target[key]
-	},
-	set(target, key, newValue) {
-		target[key] = newValue
-		depend.notify() //弊端，执行的是所有data的依赖
-	}
+    get(target, key) {
+        return target[key]
+    },
+    set(target, key, newValue) {
+        target[key] = newValue
+        depend.notify() //弊端，执行的是所有data的依赖
+    }
 })
 watchFn(function foo() {
-	console.log("foo,obj的name变化了:" , objProxy.name);
+    console.log("foo,obj的name变化了:" , objProxy.name);
 })
 watchFn(function bar() {
-	console.log("bar,obj的name变化了:" , objProxy.name);
+    console.log("bar,obj的name变化了:" , objProxy.name);
 })
 //改变数值
 objProxy.name = "lin"
@@ -1890,19 +1724,19 @@ objProxy.name = "lin"
 
 **6、封装获取depend的函数**
 
-​	一个数据应该对应一个depend
+​    一个数据应该对应一个depend
 
 ```js
 const objProxy = new Proxy(obj, {
-	get(target, key) {
-		return target[key]
-	},
-	set(target, key, newValue) {
-		target[key] = newValue
+    get(target, key) {
+        return target[key]
+    },
+    set(target, key, newValue) {
+        target[key] = newValue
         //最好是能够根据这个obj对象，及其key：name，获取到其依赖收集的类
-		const depend = getDepend(target, key)
+        const depend = getDepend(target, key)
         depend.notify()
-	}
+    }
 })
 ```
 
@@ -1918,7 +1752,7 @@ function getDepend(target, key) {
         map = new Map()
         weakMap.set(target, map) //添加
     }
-    
+
     //根据key获取depend对象
     let depend = map.get(key)
     if(!depend) {
@@ -1928,8 +1762,6 @@ function getDepend(target, key) {
     r
 }
 ```
-
-
 
 **7、自动收集依赖**
 
@@ -1944,7 +1776,7 @@ function watchFn(fn) {
 }
 
 watchFn(function foo() {
-	console.log("foo,obj的name变化了:" , objProxy.name);  //自动执行了一次
+    console.log("foo,obj的name变化了:" , objProxy.name);  //自动执行了一次
 })
 ```
 
@@ -1952,13 +1784,13 @@ get是什么样的情况呢？
 
 ```js
 const objProxy = new Proxy(obj, {
-	get(target, key) {
+    get(target, key) {
         //创建只属于target[key]的dep实例
         const dep = getDepend(target, key)
         //添加依赖
         dep("需要添加依赖的那个函数")
-		return target[key]
-	},
+        return target[key]
+    },
 })
 ```
 
@@ -1977,17 +1809,15 @@ function watchFn(fn) {
 
 ```js
 const objProxy = new Proxy(obj, {
-	get(target, key) {
+    get(target, key) {
         //创建只属于target[key]的dep实例
         const dep = getDepend(target, key)
         //添加依赖
         dep(activeReactiveFn)
-		return target[key]
-	},
+        return target[key]
+    },
 })
 ```
-
-
 
 **8、优化**
 
@@ -1995,31 +1825,29 @@ const objProxy = new Proxy(obj, {
 
 ```js
 class Depend {
-	//订阅者
-	constructor() {
-		this.reactiveFn = new Set()
-	}
+    //订阅者
+    constructor() {
+        this.reactiveFn = new Set()
+    }
 }
 ```
-
-
 
 2、假设我们现在又有一个obj2对象，想要变成响应式，难道要去重新创建一个proxy对象吗？能否将proxy对象变得更加通用写
 
 ```js
 function reactive(obj) {
-	return new Proxy(obj, {
-	get(target, key) {
+    return new Proxy(obj, {
+    get(target, key) {
         //创建只属于target[key]的dep实例
         const dep = getDepend(target, key)
         //添加依赖
         dep(activeReactiveFn)
-		return target[key]
-	},
-	set(target, key, newValue) {
-		target[key] = newValue
-		depend.notify() //弊端，执行的是所有data的依赖
-	}
+        return target[key]
+    },
+    set(target, key, newValue) {
+        target[key] = newValue
+        depend.notify() //弊端，执行的是所有data的依赖
+    }
 }
 ```
 
@@ -2031,8 +1859,6 @@ const obj2 = {
 }
 reactive(o)
 ```
-
-
 
 ## 九、Promise
 
@@ -2088,15 +1914,13 @@ new Promise((resolve, reject) => {
     //reject(err)
 }).then(res => {
     console.log(res)
-  
+
 }).catch(err => {
     console.log(err)
 }) 
 ```
 
 注：resolve或reject传递参数时，如果参数也是一个promise，那么最终Promise的状态由这个参数promise决定
-
-
 
 **2、promise的三种状态**
 
@@ -2119,8 +1943,6 @@ new Promise((resolve, reject) => {
 ```
 
 注：状态一旦确定，便不可更改。但不意味着后面的其他代码不能被执行
-
-
 
 **3、resolve的参数**
 
@@ -2164,8 +1986,6 @@ new Promise((resolve, reject) => {
 //输出：我是inSidePromise
 ```
 
-
-
 3、thenable
 
 如果传入一个对象，并且这个对象有实现then方法，那么也会执行then方法，并且由该then方法决定后续状态
@@ -2187,8 +2007,6 @@ new Promise((resolve, reject) => {
 //结果输出：err: reject message
 ```
 
-
-
 ### 9.2 promise的对象方法
 
 promise的对象方法是放在Promise的原型上的，我们可以打印一下上面都有什么方法
@@ -2201,8 +2019,6 @@ console.log(Promise.prototype)
 console.log(Object.getOwnPropertyDescriptors(Promise.prototype));
 //输出：constructor、then、catch、finally等
 ```
-
-
 
 **1、then方法**
 
@@ -2228,8 +2044,6 @@ promise.then(res => {
 //res2: linlinlin~
 //res3: linlinlin~
 ```
-
-
 
 特点2：then方法传入的“回调函数”，可以有返回值
 
@@ -2290,8 +2104,6 @@ promise.then(res => {
 
 里边还是会使用一个Promise包裹return的promise，但是最终状态由里边的promise决定
 
-
-
 当然，还有第三种，如果返回的是对象，并且对象实现了thenable
 
 ```js
@@ -2306,8 +2118,6 @@ promise.then(res => {
 })
 //输出：res:
 ```
-
-
 
 **2、catch方法**
 
@@ -2335,8 +2145,6 @@ promise.then(undefined, err => {
 })
 ```
 
-
-
 但是利用then方法的第二个参数捕获异常，会使得代码十分臃肿。所以更推荐使用catch方法捕获异常
 
 ```js
@@ -2348,8 +2156,6 @@ promise.catch(err => {
     console.log("err:", err)
 })
 ```
-
-
 
 思考：下方的链式调用中，catch捕获的是谁的异常
 
@@ -2369,8 +2175,6 @@ promise.then(res => {
 //上面的代码中有两个promise，err默认先捕获了外层的错误
 ```
 
-
-
 **2、finally方法**
 
 表示无论Promise对象无论变成fulfilled还是reject状态，最终都会被执行的代码
@@ -2389,10 +2193,6 @@ promise.then(res => {
 })
 ```
 
-
-
-
-
 ### 9.3 promise的类方法
 
 前面学习的then、catch、finally方法都属于Promise的实例方法，都是存放在Promise的prototype上。
@@ -2403,7 +2203,7 @@ promise.then(res => {
 
 思考：如何将一个对象转换成promise对象，传给其他人调用
 
-```js 
+```js
 //一般方法
 function foo() {
     let obj = {
@@ -2446,8 +2246,6 @@ promise.then(res => {
 })
 ```
 
-
-
 **3、all方法**
 
 promise.all方法，可以将多个Promise包裹在一起形成一个新的Promise
@@ -2484,8 +2282,6 @@ Promise.all([p1, p2]).then(res => {
 //输出：error
 ```
 
-
-
 **4、race方法**
 
 只要有一个promise变成了fulfilled状态，即停止执行返回结果
@@ -2510,10 +2306,6 @@ Promise.race([p1, p2]).then(res => {
 //输出：1111
 ```
 
-
-
-
-
 ### 9.4 promise的实现
 
 #### 1、基本结构
@@ -2532,8 +2324,6 @@ const promise = new MzPromise(() => {
 })
 //输出：传进来的函数被执行了
 ```
-
-
 
 2、加入resolve，reject函数
 
@@ -2572,7 +2362,7 @@ class MzPromise {
     constructor(executor) {
         //默认状态是pending
         this.status = PROMISE_STATUS_PEDDING
-        
+
         const resolve = () => {
             if(this.status === PROMISE_STATUS_PEDDING) {
                 //改变状态
@@ -2603,8 +2393,6 @@ const promise = new MzPromise((resolve, reject) => {
 
 率先执行了resolve函数，状态变为满足状态，之后的reject便不会执行了
 
-
-
 4、在resolve、reject中传入参数
 
 ```js
@@ -2614,7 +2402,7 @@ class MzPromise {
         this.status = PROMISE_STATUS_PEDDING
         this.value = undefined
         this.reason = undefined
-        
+
         const resolve = (value) => {
             if(this.status === PROMISE_STATUS_PEDDING) {
                 this.status = PROMISE_STATUS_FULFILED
@@ -2634,8 +2422,6 @@ class MzPromise {
 }
 ```
 
-
-
 #### 2、对象方法then的实现
 
 我们知道，当Promise执行resolve()时，会调用then方法
@@ -2644,9 +2430,9 @@ class MzPromise {
 new Promies(resolve => {
     resolve() //执行
 }).then(res => {
-    
+
 }, err => {
-    
+
 })
 ```
 
@@ -2756,8 +2542,6 @@ promise.then(res => {
 
 上方的代码，基本实现了then方法。但是Promise是微任务队列的任务，而setTimeout属于宏任务，使用setTimeout显然不合适
 
-
-
 应该利用一个能将代码添加进微任务，又能延迟执行的方法——queueMicrotask
 
 ```js
@@ -2779,8 +2563,6 @@ class MzPromise {
 
 }
 ```
-
-
 
 #### 3、then方法的优化
 
@@ -2814,7 +2596,6 @@ class MzPromise {
         this.onRejectFns.push(onReject)
     }
 }
-
 ```
 
 这样一来就可以多次调用了
@@ -2832,8 +2613,6 @@ promise.then(res => {
     console.log('err2:', err);
 })
 ```
-
-
 
 问题2：在确定Promise状态后，再次调用then将不会执行
 
@@ -2954,7 +2733,7 @@ const promise = new MzPromise((resolve, reject) => {
     console.log("executor");
     reject('err')
     // resolve('res')
-    
+
 })
 
 promise.then(res => {
@@ -2963,12 +2742,6 @@ promise.then(res => {
     console.log('err:', err);
 })
 ```
-
-
-
-
-
-
 
 #### 4、类方法的实现
 
@@ -2989,8 +2762,6 @@ MzPromise.resolve("hello woeld") //把该字符串转成了promise
 //输出：res：hello world
 ```
 
-
-
 2、实现reject方法
 
 ```js
@@ -3006,8 +2777,6 @@ MzPromise.reject("error").then(undefined, err => {
 })
 //输出：err: error
 ```
-
-
 
 3、实现all方法
 
@@ -3052,8 +2821,6 @@ MzPromise.all([p1, p2, p3]).then(res => {
 })
 //输出：res: [ '10', '20', '30' ]
 ```
-
-
 
 4、实现race方法
 
@@ -3108,8 +2875,6 @@ MzPromise.race([p1, p2, p3]).then(res => {
 
 迭代器协议定义了产生一系列值（无论是有限个还是无限个）的标准方式，在js中这个标准就是next方法
 
-
-
 **next函数**
 
 next函数是一个无参数函数，返回一个应当拥有以下两个属性的对象：
@@ -3119,8 +2884,6 @@ next函数是一个无参数函数，返回一个应当拥有以下两个属性�
 如果迭代器可以产生序列中的下一个值，则为false；如果迭代器已经将序列迭代完毕，则为true
 
 迭代器返回的任何JavaScript值，done为true时一般为undefined
-
-
 
 ```js
 //创建迭代器
@@ -3169,11 +2932,9 @@ const names = ['xiaolin', 'xiaohong']
 const namesIterator = createIterator(names)
 
 console.log(namesIterator.next());
-console.log(namesIterator.next());	
+console.log(namesIterator.next());    
 console.log(namesIterator.next());
 ```
-
-
 
 ### 10.2 可迭代对象Iterable
 
@@ -3221,19 +2982,15 @@ console.log(iterator2.next())
 
 每次调用，生成都是一个新的迭代器
 
-
-
 可迭代对象除了每次调用生成一个新的迭代器，还能使对象可以被for...of遍历
 
 ```js
 for(let value of obj) // 报错：TypeError: obj is not iterable
-    
+
 for(let value of iterableObj) //输出：'abc', 'cba', 'nba'
 ```
 
 所以`for...of`的原理是遍历出其中的value值
-
-
 
 **原生可迭代对象**
 
@@ -3253,8 +3010,6 @@ console.log(arrIterator.next())
 console.log(arrIterator.next())
 ```
 
-
-
 **可迭代对象的应用**
 
 1、除了for...of外，展开语法、yield、解构赋值也都用到了可迭代对象
@@ -3265,8 +3020,6 @@ console.log(arrIterator.next())
 
 如：`Promise.all(iterable)  Promise.race(iterable)  Array.from(iterable)`
 
-
-
 ### 10.3 生成器Generator
 
 生成器函数是ES6中新增的一种函数控制、使用方案，它可以让我们更加灵活地控制函数什么时候继续执行、暂停执行
@@ -3276,7 +3029,7 @@ function foo () {
     代码块1
     //需求：暂停执行
     代码块2
-    
+
     代码块3
 }
 ```
@@ -3295,22 +3048,20 @@ function foo () {
 
 3、生成器函数的返回值是一个Generator（生成器）
 
-
-
 **基本使用**
 
 ```js
 function* foo() {
     console.log('生成器函数开始执行~')
-    
+
     const value1 = '100'
     console.log('第一段代码', value1)
     yield
-    
+
     const value2 = '200'
     console.log('第二段代码', value2)
     yield
-    
+
     const value3 = '300'
     console.log('第三段代码', value3)
     console.log("生成器函数结束")
@@ -3326,8 +3077,6 @@ generator.next() //第二段代码 200
 generator.next() //第三段代码 300 生成器函数结束
 ```
 
-
-
 **返回值**
 
 如果想要每一小段有返回值，可以在yield后边跟上返回值
@@ -3335,7 +3084,7 @@ generator.next() //第三段代码 300 生成器函数结束
 ```js
 function* foo() {
     console.log('生成器函数开始执行~')
-    
+
     const value1 = '100'
     console.log('第一段代码', value1)
     yield '返回值'
@@ -3348,13 +3097,9 @@ console.log(generator.next());
 //{ value: '返回值', done: false }
 ```
 
-
-
 **参数**
 
 如果想要每块代码有独有的参数，例如第一段代码有自己的参数m，第二段代码有自己的参数n....
-
-
 
 ```js
 //第二段代码的参数，是第一段代码yield的返回值
@@ -3377,7 +3122,6 @@ function* foo() {
 const generator = foo()
 console.log(generator.next());
 console.log(generator.next(20)); // 第二段代码 4000  { value: 4000, done: false }
-
 ```
 
 如果是想要给第一段代码传进一些参数
@@ -3385,7 +3129,7 @@ console.log(generator.next(20)); // 第二段代码 4000  { value: 4000, done: f
 ```js
 function* foo(x) {
     console.log('生成器函数开始执行~')
-    
+
     const value1 = 100 * x
     console.log('第一段代码', value1)
     yield value1
@@ -3399,17 +3143,11 @@ console.log(generator.next());
 // { value: 3300, done: false }
 ```
 
-
-
 **终止执行**
 
 ```js
 console.log(generator.return(10));
 ```
-
-
-
-
 
 ### 10.4 生成器替代迭代器
 
@@ -3463,4 +3201,3 @@ function* createIterator(arr) {
     yield* arr
 }
 ```
-
