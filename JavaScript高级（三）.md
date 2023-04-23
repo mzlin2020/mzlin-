@@ -1724,6 +1724,41 @@ function fn(type) {
 }
 ```
 
+```js
+//案例:创建多个不同的弹窗
+(function() {
+function infoPop() {}
+function confirmPop() {}
+
+function pop(type, content, color) {
+  switch (type) {
+    case: 'infoPop':
+      return new infoPop(content, color)
+    case 'confirmPop':
+      return new confirmPop(content, color)
+  }
+}
+}){}
+
+
+pop('infoPorp', 'hello','red')
+
+
+//改进
+(function() {
+
+function pop(type, content, color) {
+  if(this instanceof pop) {
+    var s = new this[type](content, color)
+  }else {
+    return new pop(type, content, color)
+  }
+  pop.prototype.infoPop = function() {}
+  pop.prototype.confirmPop= function() {}
+}
+}){}
+```
+
 单例模式---全局只有一个实例
 
 > 目的：需要确保全局只有一个对象 
@@ -1738,9 +1773,40 @@ let Singletin = function(name) {
 }
 Singlenton.genInstance = function(name) {
   if(this.instance) return this.instance
-  
+
   return this.instance = new Singleton(name)
 }
+```
+
+```js
+//例子
+function store() {
+  this.store = {};
+  if (store.install) {
+    return store.install;
+  }
+  store.install = this;
+}
+var s1 = new store();
+var s2 = new store();
+s1.store.name = "lin";
+console.log(s2);
+
+//输出：{store:{ name:'lin' } }
+// 这样以来，只要创建实例，都会指向同一个对象
+```
+
+```js
+//例子2：vue-router保障全局有且只有一个，否则会错乱
+
+let _Vue
+function install(Vue) {
+  if(install.installed && _Vue === vue) return
+  install.installed = true
+
+   _Vue = Vue
+}
+vue.use(router) //每次执行都会指向同一个对象
 ```
 
 建造者模式---精细化组合对象
@@ -1763,9 +1829,31 @@ function fn() {
 }
 ```
 
+```js
+//例子：编辑器与插件
+
+//最终类
+function Editor() {
+  this.initer = new initHTML()
+  this.fontControll = new fontControll( )
+}
+
+
+//子
+function initHTML() {}
+initHTML.prototype.initStyle = function() {}
+
+//子
+function fontControll() {}
+fontControll.prototype.changeColor = function() {}
+
+
+window.Editor = Editor
+```
+
+
+
 原型模式
-
-
 
 2、结构型
 
@@ -1778,8 +1866,6 @@ function fn() {
 桥接模式
 
 装饰器模式---更好地扩展需求
-
-
 
 3、行为型
 
@@ -1794,8 +1880,6 @@ function fn() {
 策略模式
 
 迭代器模式
-
-
 
 4、技巧性
 
