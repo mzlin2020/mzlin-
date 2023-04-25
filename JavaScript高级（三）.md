@@ -1710,148 +1710,9 @@ function deepClone(originValue, map = new WeakMap()) {
 
 工厂模式---大量创建对象
 
-> 应用场景：当某一个对象需要经常创建的时候
-> 
-> 设计方式：写一个方法，只需要调用该方法，就能拿到想要的对象
-
-```js
-function fn(type) {
-  switch (type) {
-    case:'type1':
-      return new Type1()
-    //...
-  }
-}
-```
-
-```js
-//案例:创建多个不同的弹窗
-(function() {
-function infoPop() {}
-function confirmPop() {}
-
-function pop(type, content, color) {
-  switch (type) {
-    case: 'infoPop':
-      return new infoPop(content, color)
-    case 'confirmPop':
-      return new confirmPop(content, color)
-  }
-}
-}){}
-
-
-pop('infoPorp', 'hello','red')
-
-
-//改进
-(function() {
-
-function pop(type, content, color) {
-  if(this instanceof pop) {
-    var s = new this[type](content, color)
-  }else {
-    return new pop(type, content, color)
-  }
-  pop.prototype.infoPop = function() {}
-  pop.prototype.confirmPop= function() {}
-}
-}){}
-```
-
 单例模式---全局只有一个实例
 
-> 目的：需要确保全局只有一个对象 
-> 
-> 应用场景：为了避免重复新建，避免多个对象存在互相干扰
-> 
-> 设计方式：通过定义一个方法：使用时只允许通过此方法拿到存在内部的同一实例化对象
-
-```js
-let Singletin = function(name) {
-  this.name = name
-}
-Singlenton.genInstance = function(name) {
-  if(this.instance) return this.instance
-
-  return this.instance = new Singleton(name)
-}
-```
-
-```js
-//例子
-function store() {
-  this.store = {};
-  if (store.install) {
-    return store.install;
-  }
-  store.install = this;
-}
-var s1 = new store();
-var s2 = new store();
-s1.store.name = "lin";
-console.log(s2);
-
-//输出：{store:{ name:'lin' } }
-// 这样以来，只要创建实例，都会指向同一个对象
-```
-
-```js
-//例子2：vue-router保障全局有且只有一个，否则会错乱
-
-let _Vue
-function install(Vue) {
-  if(install.installed && _Vue === vue) return
-  install.installed = true
-
-   _Vue = Vue
-}
-vue.use(router) //每次执行都会指向同一个对象
-```
-
 建造者模式---精细化组合对象
-
-> 目的：需要组合出一个全局对象
-> 
-> 应用场景：当要创建单个、庞大的组合对象时
-> 
-> 设计方式：把一个复杂的类各个部分，拆分成独立的类，然后再在最终类里组合到一块
-
-```js
-//模块1
-function Mode1() {}
-//模块2
-function Mode2() {}
-//组合
-function fn() {
-  this.mode1 = new Mode1()
-  this.mode2 = new Mode2()
-}
-```
-
-```js
-//例子：编辑器与插件
-
-//最终类
-function Editor() {
-  this.initer = new initHTML()
-  this.fontControll = new fontControll( )
-}
-
-
-//子
-function initHTML() {}
-initHTML.prototype.initStyle = function() {}
-
-//子
-function fontControll() {}
-fontControll.prototype.changeColor = function() {}
-
-
-window.Editor = Editor
-```
-
-
 
 原型模式
 
@@ -1949,6 +1810,286 @@ pubSub.subscribe('request1Success', () => {
 2、在观察者模式里就是被观察者（Subject），它只需要维护一套观察者的集合（Observer），将有关状态的任何变更自动通知给他们watcher（观察者），这个设计的松耦合的
 
 应用：Vue的响应式
+
+### 7.3 创建型设计模式
+
+**工厂模式**---大量创建对象
+
+> 应用场景：当某一个对象需要经常创建的时候
+> 
+> 设计方式：写一个方法，只需要调用该方法，就能拿到想要的对象
+
+```js
+function fn(type) {
+  switch (type) {
+    case:'type1':
+      return new Type1()
+    //...
+  }
+}
+```
+
+```js
+//案例:创建多个不同的弹窗
+(function() {
+function infoPop() {}
+function confirmPop() {}
+
+function pop(type, content, color) {
+  switch (type) {
+    case: 'infoPop':
+      return new infoPop(content, color)
+    case 'confirmPop':
+      return new confirmPop(content, color)
+  }
+}
+}){}
+
+
+pop('infoPorp', 'hello','red')
+
+
+//改进
+(function() {
+
+function pop(type, content, color) {
+  if(this instanceof pop) {
+    var s = new this[type](content, color)
+  }else {
+    return new pop(type, content, color)
+  }
+  pop.prototype.infoPop = function() {}
+  pop.prototype.confirmPop= function() {}
+}
+}){}
+```
+
+**单例模式**---全局只有一个实例
+
+> 目的：需要确保全局只有一个对象
+> 
+> 应用场景：为了避免重复新建，避免多个对象存在互相干扰
+> 
+> 设计方式：通过定义一个方法：使用时只允许通过此方法拿到存在内部的同一实例化对象
+
+```js
+let Singletin = function(name) {
+  this.name = name
+}
+Singlenton.genInstance = function(name) {
+  if(this.instance) return this.instance
+
+  return this.instance = new Singleton(name)
+}
+```
+
+```js
+//例子
+function store() {
+  this.store = {};
+  if (store.install) {
+    return store.install;
+  }
+  store.install = this;
+}
+var s1 = new store();
+var s2 = new store();
+s1.store.name = "lin";
+console.log(s2);
+
+//输出：{store:{ name:'lin' } }
+// 这样以来，只要创建实例，都会指向同一个对象
+```
+
+```js
+//例子2：vue-router保障全局有且只有一个，否则会错乱
+
+let _Vue
+function install(Vue) {
+  if(install.installed && _Vue === vue) return
+  install.installed = true
+
+   _Vue = Vue
+}
+vue.use(router) //每次执行都会指向同一个对象
+```
+
+**建造者模式**---精细化组合对象
+
+> 目的：需要组合出一个全局对象
+> 
+> 应用场景：当要创建单个、庞大的组合对象时
+> 
+> 设计方式：把一个复杂的类各个部分，拆分成独立的类，然后再在最终类里组合到一块
+
+```js
+//模块1
+function Mode1() {}
+//模块2
+function Mode2() {}
+//组合
+function fn() {
+  this.mode1 = new Mode1()
+  this.mode2 = new Mode2()
+}
+```
+
+```js
+//例子：编辑器与插件
+
+//最终类
+function Editor() {
+  this.initer = new initHTML()
+  this.fontControll = new fontControll( )
+}
+
+
+//子
+function initHTML() {}
+initHTML.prototype.initStyle = function() {}
+
+//子
+function fontControll() {}
+fontControll.prototype.changeColor = function() {}
+
+
+window.Editor = Editor 
+```
+
+### 7.4 提高复用性的设计模式
+
+**桥接模式**
+
+> 目的：通过桥接代替耦合
+> 
+> 应用场景：减少模块之间的耦合
+
+```js
+//例子：有三种形状，每种形状有不同的颜色
+function rect(color) {
+  showColor(color)
+}
+function circle(color) {
+  showColor(color)
+}
+function delta(color) {
+  showColor(color)
+}
+function showColor(color) {} 
+```
+
+**享元模式**
+
+> 目的： 减少对象/代码数量
+> 
+> 应用场景：当代码中创建了大量类似对象和类似的代码块
+
+```js
+//例子：有一百种不同的弹窗，除了文字样式不同，其他内容相同
+
+function Pop() {} 
+Pop.prototype.action = function () {}
+Pop.prototype.show = function() {}
+
+//提取不同
+var = popArr = [
+  {text: 'hello111111', style: {} },
+  {text: 'hello22222', style: {} },
+]
+let poper = new Pop()
+for (let i = 0; i < 100; i++) {
+  pop.show(popArr(i))
+}
+//思想：创建一个类保存弹窗共有的，不同的部分作为一个公共的享元
+```
+
+**模板方法模式**
+
+> 目的：定义一系列操作的骨架，简化后面类似的操作内容
+> 
+> 应用场景：当项目中出现很多类似操作内容
+
+```js
+//例子：编译个导航组件，可能其中包含很多类型。先定下一个基础的组件类，后续的需求延迟到具体使用时再决定
+
+
+function banseNav() {}
+
+baseNav.prototype.action = function(fn) {}
+```
+
+### 7.5 提高扩展性的设计模式
+
+**适配器模式**
+
+> 目的：通过写一个适配器，来代替替换
+> 
+> 应用场景：面临接口不通用的问题
+
+```js
+//例子：后端返回了数据格式不符合，我们需要在获取数据时，实现适配
+  data: [
+  {
+    path: "/home",
+    components: home
+  },
+  {
+     path: "/about",
+     components: about
+  }
+]
+
+
+function handle () {
+  return {
+    "/home": home,
+    "/about": about
+  }
+}
+```
+
+```js
+//例子2：例如你有一个自研框架，其中有很多方法跟jquery相似
+//那么完全可以不用再写一次该方法
+
+myMethods.deepClone = function() {
+  return $.cloneDeep.call(this, arguments)
+}
+```
+
+**装饰者模式**
+
+> 目的：不重写方法的扩展方法 
+> 
+> 应用场景：当一个方法需要扩展，但是又不好去修改方法
+
+```js
+//例子：当需要去改动他人的代码，往其中增加新功能时。例如给某些点击事件新增操作提示
+function decorator(dom, fn) {
+  if (typeof dom.onclick === "function") {
+    let _old = dom.onclick;
+    //重写
+    dom.onclick = function () {
+      //调用老方法
+      _old();
+      //执行新的操作
+      fn();
+    };
+  }
+}
+```
+
+
+
+**命令模式**
+
+> 目的：解耦实现和调用，让双方互不干扰
+> 
+> 应用场景：调用的命令充满不确定性
+
+
+
+
 
 ## 八、webWorker
 
