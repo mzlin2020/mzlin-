@@ -2079,13 +2079,95 @@ function decorator(dom, fn) {
 }
 ```
 
-
-
 **命令模式**
 
 > 目的：解耦实现和调用，让双方互不干扰
 > 
 > 应用场景：调用的命令充满不确定性
+
+**观察者模式**
+
+> 目的：减少对象间的耦合，来提高扩展性
+> 
+> 应用场景：当两个模块直接沟通会增加他们的耦合性时
+
+```js
+/基本结构
+// 观察存储器
+function observe() {
+  this.message = {};
+}
+
+// 注册监听
+observe.prototype.regist = function (type, fn) {
+  this.message[type] = fn;
+};
+
+// 触发监听
+observe.prototype.fire = function (type) {
+  this.message[type]();
+};
+```
+
+```js
+//例子：存在两个不相关的模块，需要实现通信
+const obj = {
+  message: {},
+  regist: function (type, fn) {
+    this.message[type] = fn;
+  },
+  function(type) {
+    this.message[type](); 
+  },
+};
+
+// A模块
+obj.regist('getSomething', (data) => {
+    //doSomething
+})
+// B模块
+obj.fire("getSomething")
+```
+
+**职责链模式**
+
+> 目的：为了避免请求发送者与多个请求处理者耦合再一起，形成一个链条
+> 
+> 应用场景：把操作分割成一系列模块，每个模块只处理自己的事情
+
+
+
+**提高代码质量的设计模式**
+
+ **策略模式/状态模式**
+
+> 目的：优化if-else分支
+> 
+> 应用场景：当出现过多if-else分支
+
+
+
+**外观模式**
+
+> 目的：通过为多个复杂的子系统提供一个一致的接口
+> 
+> 应用场景：当完成一个操作，需要操作多个子系统，不如提供一个更高级的
+
+
+
+**迭代器模式**
+
+> 目的：不访问内部的情况下，便利数据
+> 
+> 应用场景：当我们要对某个对象进行操作，但是又不能暴露内部
+
+
+
+**备忘录模式**
+
+> 目的：记录状态，方便回滚
+> 
+> 应用场景：系统状态多样，为了保证状态的回滚方便，记录状态
 
 
 

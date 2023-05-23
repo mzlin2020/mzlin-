@@ -26,3 +26,35 @@
 // const protoArr = Array.prototype;
 // let copyArr = Object.create(protoArr);
 // console.log(copyArr.prototype === Array.prototype);
+
+// 观察存储器
+// function observe() {
+//   this.message = {};
+// }
+
+// // 注册监听
+// observe.prototype.regist = function (type, fn) {
+//   this.message[type] = fn;
+// };
+
+// // 触发监听
+// observe.prototype.fire = function (type) {
+//   this.message[type]();
+// };
+
+const obj = {
+  message: {},
+  regist: function (type, fn) {
+    this.message[type] = fn;
+  },
+  function(type) {
+    this.message[type]();
+  },
+};
+
+// A模块
+obj.regist("getSomething", (data) => {
+  //doSomething
+});
+// B模块
+obj.fire("getSomething");
