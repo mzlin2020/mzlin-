@@ -42,19 +42,26 @@
 //   this.message[type]();
 // };
 
-const obj = {
-  message: {},
-  regist: function (type, fn) {
-    this.message[type] = fn;
-  },
-  function(type) {
-    this.message[type]();
-  },
-};
+// const obj = {
+//   message: {},
+//   regist: function (type, fn) {
+//     this.message[type] = fn;
+//   },
+//   function(type) {
+//     this.message[type]();
+//   },
+// };
 
-// A模块
-obj.regist("getSomething", (data) => {
-  //doSomething
-});
-// B模块
-obj.fire("getSomething");
+// // A模块
+// obj.regist("getSomething", (data) => {
+//   //doSomething
+// });
+// // B模块
+// obj.fire("getSomething");
+// const fetch = require("node-fetch");
+
+async function foo() {
+  const res = await fetch("https://www.baidu.com");
+  console.log(res.text());
+}
+foo();

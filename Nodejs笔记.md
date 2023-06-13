@@ -4,8 +4,6 @@ Nodejs笔记
 
 Node.js是一个基于V8 JavaScript引擎的JavaScript运行时环境
 
-
-
 ### 1.1 浏览器
 
 **浏览器内核**
@@ -16,8 +14,6 @@ Node.js是一个基于V8 JavaScript引擎的JavaScript运行时环境
 + Blink：Webkit的一个分支，Google开发，目前应用于Google Chrome、Edge、Opera
 
 事实上，我们经常说的浏览器内核指的是浏览器的排版引擎（渲染引擎）
-
-
 
 **渲染引擎的工作过程**
 
@@ -39,8 +35,6 @@ js代码的执行需要JavaScript引擎
 
 3、所以我们需要JavaScript引擎帮助我们将JavaScript代码翻译成CPU指令来执行
 
-
-
 常见的JavaScript引擎：
 
 a、SpiderMonkey：初代JavaScript引擎，由Brendan Eich开发（JavaScript作者）
@@ -51,16 +45,12 @@ c、JavaScriptCore：WebKit中的JavaScript引擎、Apple公司开发
 
 d、**V8**：Google开发的强大的JavaScript引擎
 
-
-
 ### 1.2 基本使用
 
 如何通过node执行js代码？
 
 + 方式一：将代码交给浏览器
 + 方式二：将代码载入到node环境中执行
-
-
 
 如果希望把js文件交给node执行，需要在终端命令`node js文件名`的方式来载入和执行对应的js文件
 
@@ -70,15 +60,11 @@ d、**V8**：Google开发的强大的JavaScript引擎
 node index.js
 ```
 
-
-
 **Node的REPL**
 
 node提供也一个REPL交互环境，可以在其中演练简单的代码
 
 通过在终端输入`node`命令开启
-
-
 
 ### 1.3 传递参数
 
@@ -102,9 +88,7 @@ process.argv.forEach(item=>{
 })
 ```
 
-
-
-### 1.4 常见的全局对象 
+### 1.4 常见的全局对象
 
 **__dirname**
 
@@ -115,8 +99,6 @@ console.log(__dirname);
 //输出：C:\Users\Administrator\Desktop\Nodejs\code\01-基础
 ```
 
-
-
 **__filename**
 
 获取当前文件所在的路径和文件名称
@@ -126,13 +108,9 @@ console.log(__filename);
 //输出：C:\Users\Administrator\Desktop\Nodejs\code\01-基础\index.js
 ```
 
-
-
 **process对象**
 
 process提供了node进程中相关的信息。比如node的运行环境、参数信息等
-
-
 
 **console对象**
 
@@ -150,33 +128,23 @@ process提供了node进程中相关的信息。比如node的运行环境、参�
 
 打印函数的调用栈
 
-
-
 **定时器函数**
 
 1、setTimeout（callback，delay）
 
 延迟一些时间后执行一次
 
-
-
 2、setInterval（callback，delay）
 
 每隔多长时间重复执行一次
-
-
 
 3、setImmediate（callback[,...args]）
 
 callback的 I/O事件后的回调的“立即”执行。区别于setTimeout
 
-
-
 4、process.nextTick（callback[,...args]）
 
 添加到下一次的tick队列中
-
-
 
 **global对象**
 
@@ -185,8 +153,6 @@ global是一个全局对象，上边提到的process、console、setTimeout等�
 注意：global与window对象是不同的
 
 在浏览器中，全局变量都是在window上的，比如document、setInterval、setTimeout、alert、console等等。在node中，也有一个类似的global对象，里边存放了许多其他对象。
-
-
 
 ## 二、JavaScript的模块化
 
@@ -200,15 +166,11 @@ Node是CommonJS在服务器端的一个具有代表性的实现。
 
 2、这个模块中包括CommonJS规范的核心变量：exports、module.exports、require
 
-
-
 **exports与require**
 
 案例理解
 
 创建main.js 与bar.js ，在main.js中导入bar.js模块
-
-
 
 ```javascript
 //main.js
@@ -241,11 +203,7 @@ exports.age = age;
 exports.fn = fn;
 ```
 
-
-
 从上面的例子我们可以知道，exports是一个默认存在的空的对象，我们向外导出的变量变成了exports的属性（方法），用require导入的其实就是exports这个对象。
-
-
 
 **module.exports**
 
@@ -258,8 +216,6 @@ exports.fn = fn;
 2、所以在Node中真正用于导出的其实根本不是exports，而是module.exports
 
 在Node源码中规定`module.exports = exports`，所以二者指向同一个引用。即**module.exports = exports=require（）**
-
-
 
 **require细节**
 
@@ -285,8 +241,6 @@ X是以 ./ 或 ../ 或 / 开头的
 
 查找规则：会循着文件路径，依次去每个文件夹下的node_modules文件夹下查找。
 
-
-
 **模块的加载过程**
 
 结论一：模块在被第一次引入时，模块中的js代码会被运行一次
@@ -297,8 +251,6 @@ X是以 ./ 或 ../ 或 / 开头的
 
 结论三：存在循环引用、也只加载一次。而且按照的是图结构的深度优先搜索的顺序
 
-
-
 **CommonJS规范的缺点**
 
 1、CommonJS加载模块是同步的。
@@ -306,8 +258,6 @@ X是以 ./ 或 ../ 或 / 开头的
 这意味着只有等到对应的模块加载完毕，后续的内容才能被运行（从上往下），这在服务器中不会有什么问题，因为服务器加载的js文件都是本地文件，加载速度非常快。
 
 但是如果它应用于浏览器。因为浏览器需要从服务器中将文件下载下来，再运行。采用同步的方式则意味着之后的js代码无法正常运行。
-
-
 
 ### 2.2 ES Module
 
@@ -320,8 +270,6 @@ ES Module与CommonJS的模块化有一些不同之处
 3、采用ES Module将**自动**采用严格模式： use strict
 
 4、ES Module加载模块是异步的
-
-
 
 **导入导出的三种方式**
 
@@ -355,8 +303,6 @@ console.log(age);
 sayHello('lin')
 ```
 
-
-
 2、方式二
 
 ```javascript
@@ -378,15 +324,13 @@ console.log(wAge);
 Wfn('linming')
 ```
 
-
-
 3、方式三
 
 ```javascript
 //foo.js
 //导出时给标识符起一个别名
 export {
-	name as fName,
+    name as fName,
     age as fAge,
     sayHello as fFn
 }
@@ -398,8 +342,6 @@ console.log(obj.fName);
 console.log(obj.fAge);
 obj.fFn('linming')
 ```
-
-
 
 **default用法**
 
@@ -420,8 +362,6 @@ export default function () {}
 
 注：在一个模块中，只能有一个默认导出
 
-
-
 **Node对ES Module的支持**
 
 在Node的current版本（v14.13.1）中，支持es module。
@@ -430,8 +370,6 @@ export default function () {}
 
 方式二：文件以.mjs结尾，表示使用的是ES Module
 
-
-
 ```javascript
 //演示方式二
 //js/bar.mjs
@@ -439,7 +377,7 @@ const name = 'ming';
 const sayHello = function (name) {    
     console.log("你好" + name);}
 export {
-	name,
+    name,
     sayHello
 }
 
@@ -448,8 +386,6 @@ import { name,sayHello } from "./js/bar.mjs";
 console.log(name);
 sayHello("明明");
 ```
-
-
 
 ## 三、常见的内置模块
 
@@ -472,8 +408,6 @@ const fileName = 'test.vue';
 const myPath = path.resolve(basePath,fileName);
 console.log(myPath);
 ```
-
-
 
 **dirname、basename、extname**
 
@@ -515,8 +449,6 @@ console.log(path.extname(filepath));
 //输出： .js
 ```
 
-
-
 **join**
 
 用于路径拼接
@@ -539,8 +471,6 @@ const filepath2 = path.resolve(basepath,filename);
 console.log(filepath2);
 ```
 
-
-
 ### 3.2 fs文件系统
 
 fs（File System），表示文件系统
@@ -553,15 +483,11 @@ fs（File System），表示文件系统
 
 3、比如某些配置文件或者用户资源（图片、音视频）都是以文件的形式存在于操作系统上的
 
-
-
 Node也有自己的文件系统操作模块，就是fs：
 
 1、借助Node帮助我们封装的文件系统，我们可以在任何操作系统（window、Mac OS、Linnx）上面直接去操作文件
 
 2、这也是Node可以开发服务器的一大原因，也是它可以成为前端自动化脚本等热门工具的原因
-
-
 
 fs文件系统的API大多数都提供三种操作方式
 
@@ -588,7 +514,7 @@ fs.stat('./abc.txt',(err,state)=>{
         console.log(err);
         return
     }
-    
+
 console.log(state);})
 console.log('后续代码执行');
 ```
@@ -603,8 +529,6 @@ fs.promises.stat('./abc.txt').then(state=>{
 
 console.log("后续代码执行");
 ```
-
-
 
 **文件描述符**
 
@@ -636,13 +560,9 @@ fs.open('./abc.txt',(err,fd)=>{
     })})
 ```
 
-
-
 **文件的读写**
 
 如果我们希望对文件的内容进行操作，这个时候可以使用文件的读写
-
-
 
 1、fs.writeFile(file,data [,options] ,callback) :在文件中写入内容
 
@@ -666,8 +586,6 @@ fs.writeFile('./abc.txt',content,{flag:"a"},err=>{
 })
 ```
 
-
-
 2、fs.readFile(path [,options],callback) :读取文件的内容；
 
 ```javascript
@@ -676,8 +594,6 @@ fs.readFile('./abc.txt',{encoding:'utf-8'},(err,data)=>{
     console.log(data);
 })
 ```
-
-
 
 参数：flag选项
 
@@ -693,8 +609,6 @@ fs.readFile('./abc.txt',{encoding:'utf-8'},(err,data)=>{
 目前普遍采用utf-8字符编码
 
 如果不填写encoding，则返回的结果是Buffer
-
-
 
 **对文件夹的操作**
 
@@ -748,16 +662,12 @@ fs.rename('./ming','./linming',err=>{
 })
 ```
 
-
-
 **其他常用API**
 
 + writeFile 从指定文件中读取数据
 + appendFile 追加的方式向指定文件中写入数据
 + copyFile 将某个文件中的数据拷贝至另一个文件
 + watch File 对指定文件进行监控
-
-
 
 ### 3.3 events模块
 
@@ -806,8 +716,6 @@ setTimeout(()=>{
 },2000)
 ```
 
-
-
 ## 四、包管理工具npm
 
 Node package Manager 
@@ -840,8 +748,6 @@ Node package Manager
 
 我们安装的版本依赖：^2.0.3 或者 ~2.0.3 这是什么意思呢？
 
-
-
 npm的包通常需要遵从semver版本规范
 
 1、X主版本号：当发布了不兼容之前版本的API修改（如webpack4升级到webpack5）
@@ -850,15 +756,11 @@ npm的包通常需要遵从semver版本规范
 
 3、Z修订号：当做了向下兼容的问题修正（没有新功能，修复之前版本的bug）
 
-
-
 ^ 和 ~ 的区别
 
 1、^x.y.z：表示x是保持不变的，y和z永远安装最新的版本；
 
 2、~x.y.z：表示x和y保持不变的，z永远安装最新的版本
-
-
 
 ### 4.2 npm install
 
@@ -878,17 +780,13 @@ npm的包通常需要遵从semver版本规范
 
 npm install会检测是有package-lock.json文件。
 
-
-
 **其他命令**
 
 卸载某个依赖包：`npm uninstall <package>`
 
 强制重新build ：`npm rebuild`
 
-清除缓存：`npm cache clean	 `
-
-
+清除缓存：`npm cache clean     `
 
 ### 4.3 其他工具
 
@@ -904,8 +802,6 @@ yarn是为了弥补npm的一些缺陷而出现的
 
 移除包 ：`yarn remove <package>`
 
-
-
 **cnpm**
 
 查看当前npm镜像
@@ -920,13 +816,9 @@ yarn是为了弥补npm的一些缺陷而出现的
 
 `npm config set registry https://registry.npm.taobao.org`
 
-
-
 比较推荐将镜像绑定在cnpm上，并且将cnpm设置为淘宝的镜像，这样子不会影响原来npm命令的使用。
 
 `npm install -g cnpm --registry=https://registry.npm.taobao.org`
-
-
 
 ## 五、构建脚手架工具
 
@@ -951,8 +843,6 @@ console.log("实现自己的命令：执行index.js");
 
 这样子就可以在终端通过`mzlin`来执行index.js文件了
 
-
-
 **定义version与help**
 
 `npm install commander -g`
@@ -967,8 +857,6 @@ program.version(require('./package.json').version)
 // 解析终端指令
 program.parse(process.argv)
 ```
-
-
 
 增加其他的options
 
@@ -1001,8 +889,6 @@ module.exports = {
     helpOptions
 }
 ```
-
-
 
 **创建项目指令**
 
@@ -1044,18 +930,11 @@ const {createCommands} = require('./lib/core/create')
 createCommands()
 ```
 
-
-
 ```javascript
 //2、通过download-git-repo从代码仓库中下载模板
-
 ```
 
 后续学习......
-
-
-
-
 
 ## 六、buffer
 
@@ -1119,8 +998,6 @@ console.log(buffer4);
 //输出：<Buffer 58 88 00 00 00 00 00 00>
 ```
 
-
-
 **buffer的实例方法**
 
 + fill 使用数据填充buffer
@@ -1130,16 +1007,10 @@ console.log(buffer4);
 + indexOf 在buffer中查找数据
 + copy 拷贝buffer中的数据
 
-
-
 **静态方法**
 
 + concat 拼接多个buffer
 + isBuffer 判断传入的数据是否是buffer
-
-
-
-
 
 ### 6.2 buffer与文件读取
 
@@ -1157,8 +1028,6 @@ fs.readFile('./info.txt',{encoding:'utf-8'},(err,data) => {
 //输出：你好啊
 ```
 
-
-
 读取图片
 
 ```javascript
@@ -1168,8 +1037,6 @@ fs.readFile('./头像.jpg',(err,data) => {
 //输出：<Buffer ff d8 ff e0 00 10 4a 46 49 46 00 01 01 01 00 48 00 48 00 00 ff e1 00 bc 45 78 69 66 00 00 4d 4d 00 2a 00 00 00 08 00 05 01 12 00 03 00 00 00 01 00 01 ... 129667 more bytes>
 ```
 
-
-
 ```javascript
 fs.readFile('./头像.jpg',(err,data) => {
     console.log(data); //输出buffer
@@ -1177,11 +1044,7 @@ fs.readFile('./头像.jpg',(err,data) => {
 })
 ```
 
-
-
 事实上，我们创建Buffer时，并不会频繁向操作系统申请内存，它会默认先申请一个8*1024个字节大小的内存，即8kb。
-
-
 
 ## 七、事件循环和异步IO
 
@@ -1193,8 +1056,6 @@ fs.readFile('./头像.jpg',(err,data) => {
 + Node的事件循环是JavaScript代码和系统调用（file system）之间的桥梁。桥梁间通过回调函数进行沟通
 
 ![](img/node/image-20210702232205628.png)
-
-
 
 ### 7.2 进程和线程
 
@@ -1208,19 +1069,13 @@ fs.readFile('./头像.jpg',(err,data) => {
 
 启动的每一个进程中，都会对应启动一个（或多个）线程来执行其中的代码。可以说进程就是线程的一个容器。
 
-
-
 可以这么理解，操作系统类似于一个工厂，工厂里边有很多车间，车间就相当于进程，每个车间有一个以上的工人，工人就相当于线程。
-
-
 
 **多进程多线程开发 **
 
 操作系统是如何做到同时让多个进程（边听歌、边写代码、边查阅资料）同时工作呢？
 
 这是因为CPU的运算速度非常快，它可以快速的在多个进程之间迅速的切换，对于用户来说是感受不到这种快速的切换的。
-
-
 
 **浏览器和JavaScript**
 
@@ -1234,11 +1089,7 @@ JavaScript是单线程的，JavaScript的线程有自己的容器（进程）：
 
 每个进程中（如每个tab页面）又有很多的线程，其中包括执行JavaScript代码的线程；
 
-
-
 JavaScript的代码是在一个单独的线程中执行的，这就是意味着同一时刻只能做一件事，如果这件事非常耗时，就意味着当前的线程会被阻塞。
-
-
 
 我们来看这段js代码是怎么执行的
 
@@ -1286,8 +1137,6 @@ setTimeout(() => {
 
 <img src="img/node/image-20210711202035830.png" style="zoom: 50%;" />
 
-
-
 **宏任务和微任务**
 
 事件循环并非只维护着一个队列，事实上有两个队列
@@ -1303,8 +1152,6 @@ setTimeout(() => {
 1、main script中的代码优先执行（编写的顶层script代码）
 
 2、在执行任何一个宏任务之前，都会先查看微任务队列是否有任务需要执行。（也就是宏任务执行之前，必须保证微任务队列是空的。如果不为空，那么优先执行微任务队列中的任务）
-
-
 
 **面试题**
 
@@ -1324,24 +1171,24 @@ setTimeout(function () {
       console.log("then2");
     });
   });
-  
+
   new Promise(function (resolve) {
     console.log("pr1");
     resolve();
   }).then(function () {
     console.log("then1");
   });
-  
+
   setTimeout(function () {
     console.log("set2");
   });
-  
+
   console.log(2);
-  
+
   queueMicrotask(() => {
     console.log("queueMicrotask1")
   });
-  
+
   new Promise(function (resolve) {
     resolve();
   }).then(function () {
@@ -1382,8 +1229,6 @@ set1、then2、then4
 
 9、最后回到宏任务执行set2的回调，打印出最后的set2
 
-
-
 ## 八、Stream
 
 ### 8.1 概述
@@ -1408,8 +1253,6 @@ stream（流）
 
 2、文件非常大，一次性读取不合适。比如一个视频文件
 
-
-
 ### 8.2 文件读写的Stream
 
 Node.js中有四种基本流类型
@@ -1421,8 +1264,6 @@ Node.js中有四种基本流类型
 3、Duplex：兼顾Readable和Writable
 
 4、Transform：Duplex可以在写入和读取数据时修改或者转换数据的流
-
-
 
 **读取文件**
 
@@ -1473,8 +1314,6 @@ reader.on('data',(data) => {
 })
 ```
 
-
-
 **写入文件**
 
 ```javascript
@@ -1483,8 +1322,6 @@ fs.writeFile('./foo.txt',"hello world",{flag:'a'},(err) => {
     console.log(err);
 })
 ```
-
-
 
 ```javascript
 // stream的写入方式
@@ -1506,8 +1343,6 @@ writer.on('close',() => {
     console.log("文件关闭了");
 })
 ```
-
-
 
 **pipe的使用**
 
@@ -1531,12 +1366,6 @@ reader.pipe(writer);
 writer.close()
 ```
 
-
-
-
-
-
-
 ## 九、http模块
 
 ### 9.1 概述
@@ -1547,11 +1376,7 @@ writer.close()
 
 目前有很多开源的web服务器：Nginx、Apache（静态）、Apache Romcat（静态、动态）、Node.js
 
-
-
 **web服务器初体验**
-
-
 
 ```javascript
 //创建服务器方式一：
@@ -1580,8 +1405,6 @@ server.listen(8888,'0.0.0.0',() => {
 
 之后通过`nodemon server.js `；来启动服务器，修改代码就可以同步至服务器
 
-
-
 ```javascript
 // 创建服务器方式二：
 const server2 = new http.Server((red,res) => {
@@ -1595,8 +1418,6 @@ server2.listen(8001,() => {
 
 本质上：方式一和方式二是相同的
 
-
-
 **细节补充**
 
 listen函数有三个参数：（三个参数都可以省略）
@@ -1609,8 +1430,6 @@ server2.listen(() => { //不传端口号
     console.log(server2.address().port); //输出：64949 系统自动分配
 })
 ```
-
-
 
 2、主机号host：通常传入localhost、ip地址127.0.0.1，或者ip地址0.0.0.0（默认就是0.0.0.0）
 
@@ -1629,8 +1448,6 @@ server2.listen(8081,'0.0.0.0',() => {
 //假设此时的ip地址是172.19.213.53，访问：172.19.213.53：8081即可访问到这个服务器
 ```
 
-
-
 ### 9.2 request对象
 
 在向服务器发送请求时，会携带很多信息：本次请求的URL、请求的方式（get、post）、本次请求的headers...
@@ -1640,17 +1457,15 @@ server2.listen(8081,'0.0.0.0',() => {
 ```javascript
 const server = http.createServer((req,res) => {
     //request对象中封装了客户端给我们服务器传递过来的所有信息
-    
+
     console.log(req.url); //打印请求的url
     console.log(req.method); //打印请求方式
     console.log(req.headers); //打印请求头信息
-    
+
     res.end('hello server') 
-    
+
 });
 ```
-
-
 
 服务器端需要根据不同的请求地址，作出不同的响应
 
@@ -1672,8 +1487,6 @@ server.listen(8088,'0.0.0.0',() => {
     console.log("服务器运行成功");
 })
 ```
-
-
 
 **url的解析**
 
@@ -1711,8 +1524,6 @@ const server = http.createServer((req,res) => {
     }
 })
 ```
-
-
 
 **request.method**
 
@@ -1760,8 +1571,6 @@ const server = http.createServer((req,res) => {
 })
 ```
 
-
-
 **request.headers**
 
 在request对象的header中也包含很多有用的信息，客户端会默认传递过来一些信息：
@@ -1785,8 +1594,6 @@ http是就要tcp协议的，但是通产在进行一次请求和响应结束后�
 
 6、user-agent：客户端相关的信息
 
-
-
 ### 9.3 response对象
 
 如果我们希望给客户端响应的结果数据，可以通过两种方式：
@@ -1809,23 +1616,21 @@ server.listen(8080,'0.0.0.0',() => {
 
 如果没有调用end，客户端将会一直等待结果。（所以一般客户端在发送网络请求时，都会设置超时时间）
 
-
-
 **返回状态码**
 
 http状态码（http status code）是用来表示http响应状态的数字代码：
 
 http状态码非常多，可以根据不同的情况，给客户端返回不同的状态码
 
-| 状态代码 | 状态描述              | 说明                                                         |
-| -------- | --------------------- | ------------------------------------------------------------ |
-| 200      | OK                    | 客户端请求成功                                               |
-| 400      | Bad Request           | 由于客户端请求语法错误，不能被服务器所理解                   |
-| 401      | Unauthorized          | 请求未经授权                                                 |
-| 403      | Forbidden             | 服务器收到请求，但是拒绝提供服务                             |
-| 404      | Not Found             | 请求的资源不存在                                             |
-| 500      | internal server error | 服务器发生不可预期的错误                                     |
-| 503      | service unavailable   | 服务器当前不能够处理客户端请求，在一段时间后，可能会恢复正常 |
+| 状态代码 | 状态描述                  | 说明                             |
+| ---- | --------------------- | ------------------------------ |
+| 200  | OK                    | 客户端请求成功                        |
+| 400  | Bad Request           | 由于客户端请求语法错误，不能被服务器所理解          |
+| 401  | Unauthorized          | 请求未经授权                         |
+| 403  | Forbidden             | 服务器收到请求，但是拒绝提供服务               |
+| 404  | Not Found             | 请求的资源不存在                       |
+| 500  | internal server error | 服务器发生不可预期的错误                   |
+| 503  | service unavailable   | 服务器当前不能够处理客户端请求，在一段时间后，可能会恢复正常 |
 
 设置状态码
 
@@ -1840,8 +1645,6 @@ const server = http.createServer((req,res) => {
     res.end('come from server~')
 })
 ```
-
-
 
 **响应头文件**
 
@@ -1858,8 +1661,6 @@ const server = http.createServer((req,res) => {
 })
 ```
 
-
-
 ### 9.4 http请求
 
 axios库可以在浏览器中使用，也可以在Node中使用
@@ -1867,8 +1668,6 @@ axios库可以在浏览器中使用，也可以在Node中使用
 1、在浏览器中，axios使用的是封装xhr
 
 2、在node中，使用的是http内置模块
-
-
 
 发送http发送get请求
 
@@ -1883,13 +1682,9 @@ http.get("http://localhost:8888",(res) => {
 })
 ```
 
-
-
 ### 9.5 文件上传
 
 创建并启动一个服务器，通过postman向服务器上传一张图片，使服务器将图片保存在本地
-
-
 
 **错误写法**
 
@@ -1928,8 +1723,6 @@ server.listen(8088,() => {
 
 如果要图片正常显示，需要把多余的数据剔除出去，这在http模块中操作是比较麻烦的~
 
-
-
 ## 十、express框架
 
 ### 10.1 概述
@@ -1942,8 +1735,6 @@ express本质上是对http模块的封装，其核心是中间件
 
 2、所有的内容混在一起不容易维护
 
-
-
 **express安装**
 
 + 方式一：通过express框架提供的脚手架，直接创建一个应用的骨架。
@@ -1955,8 +1746,6 @@ express本质上是对http模块的封装，其核心是中间件
 安装依赖：`npm install`
 
 启动项目：`node bin/www`
-
-
 
 + 方式二：从零搭建的express应用框架
 
@@ -1990,21 +1779,15 @@ app.listen(8080, () => {
 })
 ```
 
-
-
 ### 10.2 中间件
 
 express是一个路由和中间件的web框架，它本身的功能非常少，express应用程序本质上是一系列中间函数的调用。
-
-
 
 **中间件是什么？**
 
 1、中间件本质是传递给express的一个回调函数
 
 2、这个回调函数接收三个参数：请求对象（request对象）、响应对象（response对象），next对象（在express中定义的用于执行下一个中间件的函数）
-
-
 
 **中间件可以执行哪些任务？**
 
@@ -2017,8 +1800,6 @@ express是一个路由和中间件的web框架，它本身的功能非常少，e
 4、调用栈中的下一个中间件
 
 如果当前中间件功能没有结束请求-响应周期，则必须调用next（）将控制权传递给下一个中间件功能，否则，请求将被挂起
-
-
 
 **应用中间件**
 
@@ -2051,8 +1832,6 @@ app.listen(8080,() => {
 })
 ```
 
-
-
 案例二：path匹配中间件
 
 发送网络请求的时候需要加上路径，否则会报错。
@@ -2073,8 +1852,6 @@ app.listen(8080,() => {
     console.log("路径匹配的中间件服务器启动成功~");
 })
 ```
-
-
 
 案例三：路径和方法匹配中间件
 
@@ -2097,8 +1874,6 @@ app.listen(8080,() => {
     console.log("路径和方法匹配服务器启动成功~");
 })
 ```
-
-
 
 案例四：连续匹配中间件
 
@@ -2124,8 +1899,6 @@ app.listen(8080,() => {
 })
 ```
 
-
-
 ### 10.3 中间件的应用
 
 1、解析json：`app.use(express.json())`
@@ -2133,8 +1906,6 @@ app.listen(8080,() => {
 2、解析x-www-form-urlencoded :`app.use(express.urlencoded({extended:true}))`
 
 3、解析form-data，express没有内置相关的方法，需要去安装multer这个库
-
-
 
 案例：json解析（用户无论从products界面还是login界面，发送过来的数据都能够被服务器解析成对象）
 
@@ -2149,7 +1920,7 @@ app.use((req,res,next) => {
             const info = JSON.parse(data.toString()) //解析成对象
             req.body = info //将对象保存在响应体里（可以传递给下一个中间件）
         })
-    
+
         req.on('end',() => {
             next() //传递给下一个中间件
         })
@@ -2176,8 +1947,6 @@ app.listen(8080,() => {
 
 在postman中选择body->row->json,就可以在url：/login或者/products中向服务器发送网络请求，并且请求都能被解析成为对象
 
-
-
 但是上述的代码太多繁琐，node其中内置了一个bady-parser的函数，帮助我们实现以上功能
 
 **json解析**
@@ -2203,8 +1972,6 @@ app.listen(8080,() => {
     console.log("express服务器启动成功~");
 })
 ```
-
-
 
 **解析form-data**
 
@@ -2262,7 +2029,6 @@ app.post('/upload',upload.single("file"),(req,res,next) =>{
 app.listen(8080,() => {
     console.log("formdata解析图片服务器启动成功~");
 })
-
 ```
 
 问题：此时图片资源保存在了uploads文件夹下，但是图片没有后缀名且图片名为自动生成，不利于后续的操作。
@@ -2303,7 +2069,6 @@ app.post('/upload',upload.single("file"),(req,res,next) =>{
 app.listen(8080,() => {
     console.log("formdata解析图片服务器启动成功~");
 })
-
 ```
 
 利用时间戳生成图片名称,利用path.extname自动查找源文件拓展名
@@ -2318,8 +2083,6 @@ const storage = multer.diskStorage({
     }
 })
 ```
-
-
 
 + **解析图片资源（多个文件上传）**
 
@@ -2364,12 +2127,9 @@ app.post('/upload',upload.array("file"),(req,res,next) =>{
 app.listen(8080,() => {
     console.log("formdata解析图片服务器启动成功~");
 })
-
 ```
 
 可以通过`req.files`获取上传的图片的一些信息
-
-
 
 ### 10.4 客户端发送请求的方式
 
@@ -2386,8 +2146,6 @@ app.listen(8080,() => {
 5、方式五：通过post请求中的form-data格式
 
 (方式三、四、五已经演练过)
-
-
 
 **方式一：通过get请求中的URL的params**
 
@@ -2407,8 +2165,6 @@ app.listen(8080,() => {
     console.log("服务器启动成功~");
 });
 ```
-
-
 
 **方式二：通过get请求中的URL的query**
 
@@ -2434,8 +2190,6 @@ app.listen(8080,() => {
 });
 ```
 
-
-
 **补充：响应数据**
 
 1、end方法
@@ -2450,8 +2204,6 @@ json方法中可以传入很多的类型：object、array、string、boolean、n
 
 用于设置状态码
 
-
-
 ### 10.5 express路由
 
 如果我们将所有的代码逻辑都写在app中，那么app会变得越来越复杂
@@ -2459,8 +2211,6 @@ json方法中可以传入很多的类型：object、array、string、boolean、n
 1、一方面，完整的web服务器包含非常多的处理逻辑
 
 2、另一方面，有些处理逻辑其实是一个整体，我们应该将他们放在一起：如获取用户列表、获取某一个用户信息、创建一个新的用户、删除一个用户、更新一个用户等
-
-
 
 解决方案：路由
 
@@ -2504,8 +2254,6 @@ app.listen(8000,() => {
 })
 ```
 
-
-
 ### 10.6 静态资源的部署
 
 node也可以作为静态资源服务器，并且express提供了非常方便的部署静态资源的方法
@@ -2521,8 +2269,6 @@ app.listen(8080, () => {
     console.log("服务器启动成功~");
 })
 ```
-
-
 
 ### 10.7 错误处理
 
@@ -2579,8 +2325,6 @@ app.listen(8080, () => {
 })
 ```
 
-
-
 ## 十一、koa框架
 
 ### 11.1 概述
@@ -2590,8 +2334,6 @@ app.listen(8080, () => {
 Koa官方介绍：koa：next generation web framework for node.js
 
 koa是express同一个团队开发的新的web框架，旨在为web应用程序和API提供更小、更丰富和更强大的能力。它相比起express具有更强的异步处理能力，核心代码只有1600行，是一个更加轻量级的框架。
-
-
 
 **基本使用**
 
@@ -2618,15 +2360,11 @@ app.listen(8080,() => {
 })
 ```
 
-
-
 **响应数据**
 
 本质上`ctx.body`与`ctx.resoponse.body`是一样的，都可以用来作为返回给客户端的信息
 
 设置状态码：`ctx.status = 201` 或者`ctx.response.status`
-
-
 
 ### 11.2 中间件与路由
 
@@ -2636,15 +2374,11 @@ koa注册中间件只能通过use方法
 
 也就是不能使用`app.get 、app.post 、app.use('路径')`
 
-
-
 但是真实开发中如何将路径和methods分离呢？
 
 方式一：根据request来判断
 
 方式二：根据第三方路由中间件
-
-
 
 ```javascript
 //方式一
@@ -2707,15 +2441,11 @@ app.listen(8080, () => {
 })
 ```
 
-
-
 以上我们实现了get、post请求，但是如果用户发送了其他的methods，koa服务器都是统一返回not found。
 
 我们可以使用路由内置的allowedMethods来判断某一个method是否支持
 
 `app.use(userRouter.allowedMethods())`
-
-
 
 ### 11.3 参数解析
 
@@ -2742,8 +2472,6 @@ app.listen(8080,() => {
 })
 ```
 
-
-
 **2、解析url的query**
 
 ```javascript
@@ -2760,8 +2488,6 @@ app.listen(8080,() => {
     console.log("koa服务器启动成功~");
 })
 ```
-
-
 
 **3、解析json和urlencoded**
 
@@ -2794,8 +2520,6 @@ app.listen(8080,() => {
 })
 ```
 
-
-
 **4、解析form-data**
 
 安装`npm install koa-multer`
@@ -2818,8 +2542,6 @@ app.listen(8080,() => {
     console.log("服务器启动成功~");
 })
 ```
-
-
 
 ### 11.4 文件上传
 
@@ -2850,10 +2572,7 @@ app.use(uploadRouter.routes())
 app.listen(8080,() =>{
     console.log('服务器启动成功~');
 })
-
 ```
-
-
 
 ### 11.5 静态资源部署
 
@@ -2871,8 +2590,6 @@ app.listen(8080,() => {
     console.log("服务器启动成功~");
 })
 ```
-
-
 
 ### 11.6 补充
 
@@ -2922,8 +2639,6 @@ MySQL是一个开源的数据库，原开发者为瑞典的MYSQL AB公司。现�
 
 MYSQL是一个关系型数据库，其本质上就是一个软件、一个程序。
 
-
-
 通常我们将数据库划分成两类：关系型数据库和非关系型数据库
 
 **关系型数据库：**MySQL、Oracle、DB2、SQL Server、Postgre SQL等
@@ -2936,8 +2651,6 @@ MYSQL是一个关系型数据库，其本质上就是一个软件、一个程序
 
 4、支持事务，对数据的访问更加安全
 
-
-
 **非关系型数据库**：MongoDB、Redis、Memcached、HBse等
 
 1、非关系型数据库（Not only SQL），简称为NoSQL
@@ -2947,8 +2660,6 @@ MYSQL是一个关系型数据库，其本质上就是一个软件、一个程序
 3、NoSQL是基于key-value的对应关系，并且查询的过程中不需要经过SQL解析，所以性能更高
 
 4、NoSQL通常不支持事务，需要在自己的程序中来保证一些原子性的操作
-
-
 
 ### 12.2 基本操作
 
@@ -2987,7 +2698,7 @@ mysql默认的数据库有四个：
 
 ```sql
 create table user(
-	name varchar(20),
+    name varchar(20),
     age int,
     height double
 );
@@ -3006,8 +2717,6 @@ insert into user(name,age,height) values('xiaoqiang',20,180)
 
 `select * from user`
 
-
-
 **GUI工具**
 
 在开发中，我们可以借助一些GUI工具来连接上数据库，知乎直接在GUI工具中操作就会非常方便
@@ -3019,8 +2728,6 @@ insert into user(name,age,height) values('xiaoqiang',20,180)
 2、SQLYog（古老、免费）
 
 3、TablePlus
-
-
 
 ### 12.3 SQL语句
 
@@ -3035,8 +2742,6 @@ SQL是Structured Query Language ，称之为结构化查询语言，简称SQL
 2、一句语句结束后，需要以 ； 结尾
 
 3、如果遇到关键字作为表名或者字段名称，可以使用 ``包裹
-
-
 
 常见的SQL语句可以分成四类：
 
@@ -3056,8 +2761,6 @@ SQL是Structured Query Language ，称之为结构化查询语言，简称SQL
 
 对数据库、表格的权限进行相关访问控制操作
 
-
-
 ==**数据库的操作**==
 
 ```sql
@@ -3076,9 +2779,9 @@ CREATE DATABASE bilibili；#（不严谨）
 CREATE DATABASE IF NOT EXISTS bilibili; #(不存在则创建)
 
 CREATE DATABASE IF NOT EXISTS bilibili
-		DEFAULT CHARACTER SET utf8mb4 CLOLATE utf8mb4_0900_ai-ci;
-		#(不存在则创建，并指定字符集与排序规则)
-		
+        DEFAULT CHARACTER SET utf8mb4 CLOLATE utf8mb4_0900_ai-ci;
+        #(不存在则创建，并指定字符集与排序规则)
+
 #删除数据库
 DROP DATABASE bilibili; #(不严谨)
 
@@ -3086,11 +2789,9 @@ DROP DARABASE IF EXISTS bilibili；
 
 #修改数据库的字符集和排序规则
 ALTER DATABASE bilibili 
-	CHARACTER SET = UTF8 
-	COLLATE = utf8_unicode_ci;
+    CHARACTER SET = UTF8 
+    COLLATE = utf8_unicode_ci;
 ```
-
-
 
 ==**数据表的操作**==
 
@@ -3103,7 +2804,7 @@ DESC user;
 
 #创建数据表
 CREATE TABLE IF NOT EXISTS `users`(
-	name VARCHAR(20),
+    name VARCHAR(20),
     age INT,
     height DOUBLE
 );
@@ -3112,13 +2813,9 @@ CREATE TABLE IF NOT EXISTS `users`(
 DROP TABLE IF EXISTS `users`;
 ```
 
-
-
 ==**SQL的数据类型**==
 
 MYSQL支持的数据类型：数字类型、日期和时间类型、字符串(字符和字节)类型、空间类型、JSON数据类型
-
-
 
 **数字类型**
 
@@ -3127,8 +2824,6 @@ MYSQL支持的数据类型：数字类型、日期和时间类型、字符串(�
 2、浮点数字类型：FLOAT 、DOUBLE （FLOAT4个字节、DOUBLE8字节）
 
 3、精确数字类型：DECIMAL 、NUMERIC
-
-
 
 **日期类型**
 
@@ -3162,8 +2857,6 @@ MYSQL支持的数据类型：数字类型、日期和时间类型、字符串(�
 
 范围：1970-01-01 00:00:01 到 2038-01-19 03:14:07
 
-
-
 **字符串类型**
 
 1、CHAR类型
@@ -3186,8 +2879,6 @@ MYSQL支持的数据类型：数字类型、日期和时间类型、字符串(�
 
 用于存储大的字符串类型
 
-
-
 ==**表约束**==
 
 1、**主键：PRIMARY KEY**
@@ -3204,31 +2895,21 @@ MYSQL支持的数据类型：数字类型、日期和时间类型、字符串(�
 
 建议：开发中主键字段应该是和业务无关的，尽量不要使用业务字段来作为主键；
 
-
-
 2、**唯一：UNIQUE**
 
 某些字段在开发中我们希望是唯一的，不会重复的，比如手机号码、身份证号码等，这个字段我们可以使用UNIQUE来约束
-
-
 
 3、**不能为空：NOT NULL**
 
 某些字段我们要求用户必须插入值，不可以为空，这个时候我们可以使用 NOT NULL 来约束
 
-
-
 4、**默认值：DEFAULT**
 
 某些字段我们希望在没有设置值时给予一个默认值，这个时候我们可以使用 DEFAULT来完成；
 
-
-
 5、**自动递增：AUTO_INCREMENT**
 
 某些字段我们希望不设置值时可以进行递增，比如用户的id，这个时候可以使用AUTO_INCREMENT来完成；
-
-
 
 ### 12.4 创建表
 
@@ -3236,10 +2917,10 @@ MYSQL支持的数据类型：数字类型、日期和时间类型、字符串(�
 
 ```sql
 CREATE TABLE IF NOT EXISTS student(
-	id INT PRIMARY KEY,
-	`name` VARCHAR(20) NOT NULL,
-	age INT DEFAULT 20,
-	telPhone VARCHAR(20) DEFAULT '' UNIQUE NOT NULL
+    id INT PRIMARY KEY,
+    `name` VARCHAR(20) NOT NULL,
+    age INT DEFAULT 20,
+    telPhone VARCHAR(20) DEFAULT '' UNIQUE NOT NULL
 );
 ```
 
@@ -3273,8 +2954,6 @@ CREATE TABLE `teacher` LIKE `student`;
 CREATE TABLE `student2` (SELECT * FROM `student`);
 ```
 
-
-
 **插入数据**
 
 ```sql
@@ -3286,7 +2965,7 @@ INSERT INTO student VALUES (001,'ming',23,'13543914804','2021-7-19','2021-7-19')
 #因为id设置了自动递增AUTO_INCREMENT，所以之后可以不用插入值
 #方式二
 INSERT INTO student (name,age,telPhone,createTime,updateTime)
-							VALUES('qiang',22,'12345678901','2020-11-22','2022-11-30')
+                            VALUES('qiang',22,'12345678901','2020-11-22','2022-11-30')
 ```
 
 思考：怎么给createTime，和updateTime设置时间，使其自动根据时间更新呢？
@@ -3296,7 +2975,7 @@ INSERT INTO student (name,age,telPhone,createTime,updateTime)
 ALTER TABLE student MODIFY `createTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 #updateTime默认自动设置值，数据更新时，自动更新值
 ALTER TABLE student MODIFY `updateTime` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-										ON UPDATE CURRENT_TIMESTAMP; 
+                                        ON UPDATE CURRENT_TIMESTAMP; 
 ```
 
 这样子一来，之后添加数据可以简单许多
@@ -3306,8 +2985,6 @@ INSERT INTO student (name,age,telPhone)
 VALUES('hong',23,'15338283019');
 #而且createTime、updateTime也会根据当前时间自动设置值
 ```
-
-
 
 **删除数据**
 
@@ -3319,8 +2996,6 @@ DELETE FROM student;
 DELETE FROM student WHERE id =3;
 ```
 
-
-
 **更新数据**
 
 ```sql
@@ -3329,8 +3004,6 @@ UPDATE student SET name = 'mzlin',telPhome = '110110110';
 #更新符合条件的数据
 UPDATE student SET name = 'lily',telPhone = '010-100100' WHERE id =2;
 ```
-
-
 
 ### 12.5 数据查询
 
@@ -3347,8 +3020,6 @@ SELECT title as phoneTitle,price as currentPrice FROM products;
 ```
 
 假设数据库里存放了一些手机的商品数据（id、brand、title、price、score、voteCnt、url、pid）
-
-
 
 ==**where条件查询**==
 
@@ -3369,8 +3040,6 @@ SELECT * FROM `products` WHERE price = 3399;
 SELECT * FROM `products` WHERE `brand` = '华为';
 ```
 
-
-
 ```sql
 # 查询品牌是华为，并且小于2000元的手机
 SELECT * FROM `products` WHERE `brand` = '华为' and `price` < 2000;
@@ -3390,8 +3059,6 @@ SELECT * FROM `products` WHERE price BETWEEN 1000 and 2000;
 SELECT * FROM `products` WHERE brand in ('华为', '小米');
 ```
 
-
-
 **模糊查询**
 
 1、%表示匹配任意字符
@@ -3409,8 +3076,6 @@ SELECT * FROM `products` WHERE title LIKE '%M%';
 SELECT * FROM `products` WHERE title LIKE '__M%';
 ```
 
-
-
 **查询结果排序**
 
 ORDER BY：
@@ -3422,11 +3087,8 @@ ORDER BY：
 ```sql
 #华为手机，小米手机安价格升序排序，价格相同则按照分数降序排序
 SELECT * FROM products WHERE brand IN ('华为','小米')
-					ORDER BY price ASC,score DESC
-
+                    ORDER BY price ASC,score DESC
 ```
-
-
 
 ==**分页查询**==
 
@@ -3442,10 +3104,7 @@ SELECT * FROM products LIMIT 20 OFFSET 20; #第二次查询
 #方式二：LIMIT 偏移量，多少条数据
 SELECT * FROM products LIMIT 0,20;
 SELECT * FROM products LIMIT 20,20;
-
 ```
-
-
 
 ==**聚合函数**==
 
@@ -3465,10 +3124,7 @@ SELECT AVG(price) FROM products WHERE brand = '华为';
 #最高手机的价格和最低手机的价格
 SELECT MAX(price) FROM products;
 SELECT MIN(price) FROM products;
-
 ```
-
-
 
 ```sql
 #求华为手机的个数
@@ -3478,8 +3134,6 @@ SELECT COUNT(url) FROM products WHERE brand = '苹果';
 #去重
 SELECT COUNT(DISTINCT price) FROM products;
 ```
-
-
 
 **group by与having的使用**
 
@@ -3496,10 +3150,7 @@ GROUP BY brand HAVING avgPrice > 2000;
 #案例：求各个手机品牌手机，评分大于7.5的平均价格；
 SELECT brand,AVG(price) FROM products WHERE score > 7.5 GROUP BY brand;
 #说明：where可以再 GROUP BY之前使用，但是不能在之后使用
-
 ```
-
-
 
 ==**多表查询**==
 
@@ -3523,7 +3174,6 @@ INSERT INTO `brand` (name, website, worldRank) VALUES ('苹果', 'www.apple.com'
 INSERT INTO `brand` (name, website, worldRank) VALUES ('oppo', 'www.oppo.com', 15);
 INSERT INTO `brand` (name, website, worldRank) VALUES ('京东', 'www.jd.com', 3);
 INSERT INTO `brand` (name, website, worldRank) VALUES ('Google', 'www.google.com', 8);
-
 ```
 
 添加外键的方式一：创建表时设置
@@ -3537,8 +3187,6 @@ FOREIGN KEY(brand_id) REFERENCES brand(id)
 );
 ```
 
-
-
 方式二：
 
 为表新增列，并设置外键
@@ -3547,8 +3195,6 @@ FOREIGN KEY(brand_id) REFERENCES brand(id)
 ALTER TABLE products ADD brand_id INT;
 ALTER TABLE products ADD FOREIGN KEY(brand_id) REFERENCES brand(id);
 ```
-
-
 
 现在我们可以将products中的brand_id关联到brand中的id的值
 
@@ -3573,8 +3219,6 @@ UPDATE `products` SET `brand_id` = 2 WHERE `brand` = '小米';
 
 **SET NULL**：当更新或者删除某个记录时，会检查该记录是否有关联的外键记录，有的话，将对应的值设置为null
 
-
-
 案例：修改外键，对应的记录保持更新
 
 ```sql
@@ -3591,8 +3235,6 @@ REFERENCES brand(id)
 ON UPDATE CASCADE ON DELETE CASCADE;
 ```
 
-
-
 **什么是多表查询**
 
 以上边的两张表为例，如果我们希望查询到产品的同时，显示对应的品牌相关的信息，因为数据时存放在两张表中，所以这个时候就需要进行多表查询。
@@ -3602,8 +3244,6 @@ ON UPDATE CASCADE ON DELETE CASCADE;
 SELECT * FROM products,brand
 #最终结果个数是表1X表格2中的每一项，显示是错误的(笛卡尔乘积)
 ```
-
-
 
 ==**常见的多表连接方式**：==
 
@@ -3624,8 +3264,6 @@ SELECT * FROM products LEFT JOIN brand ON products.brand_id = brand.id
 WHERE brand_id IS NULL;
 ```
 
-
-
 2、右连接
 
 希望获取到的是右边的所有数据
@@ -3639,8 +3277,6 @@ SELECT * FROM products RIGHT JOIN brand on products.brand_id = brand.id
 WHERE products.id IS NULL;
 ```
 
-
-
 3、内连接
 
 内连接表示左边的表和右边的表都有对应的数据关联
@@ -3652,8 +3288,6 @@ WHERE products.id IS NULL;
 ```sql
 SELECT * FROM products INNER JOIN brand ON products.brand_id = brand.id;
 ```
-
-
 
 4、全连接
 
@@ -3674,8 +3308,6 @@ UNION
  WHERE `products`.id IS NULL);
 ```
 
-
-
 ==**多对多关系**==
 
 数据库中数据之间的关系大致可以分成三种：
@@ -3685,8 +3317,6 @@ UNION
 2、一对多
 
 3、多对多
-
-
 
 什么是多对多？
 
@@ -3701,20 +3331,18 @@ UNION
 ```sql
 #创建学生表
 CREATE TABLE IF NOT EXISTS student (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	name VARCHAR(20) NOT NULL,
-	age INT
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(20) NOT NULL,
+    age INT
 );
 
 #创建课程表
 CREATE TABLE IF NOT EXISTS courses (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	name varchar(20) NOT NULL,
-	price DOUBLE NOT NULL
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name varchar(20) NOT NULL,
+    price DOUBLE NOT NULL
 );
 ```
-
-
 
 2、插入数据
 
@@ -3732,7 +3360,6 @@ INSERT INTO `courses` (name, price) VALUES ('数学', 888);
 INSERT INTO `courses` (name, price) VALUES ('历史', 80);
 INSERT INTO `courses` (name, price) VALUES ('地理', 788);
 INSERT INTO `courses` (name, price) VALUES ('政治', 80);
-
 ```
 
 3、创建关系表，并插入数据
@@ -3741,15 +3368,13 @@ INSERT INTO `courses` (name, price) VALUES ('政治', 80);
 #创建关系表
 
 CREATE TABLE IF NOT EXISTS students_courses (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	student_id INT NOT NULL,
-	course_id INT NOT NULL,
-	FOREIGN KEY (student_id) REFERENCES students(id) ON UPDATE CASCADE,
-	FOREIGN KEY (course_id) REFERENCES courses(id) ON UPDATE CASCADE
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    student_id INT NOT NULL,
+    course_id INT NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES students(id) ON UPDATE CASCADE,
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON UPDATE CASCADE
 );
 ```
-
-
 
 ```sql
 #小明选了英语、数学
@@ -3765,10 +3390,7 @@ INSERT INTO students_courses (student_id,course_id) VALUES (2,3);
 #小华选了历史、语文
 INSERT INTO students_courses (student_id,course_id) VALUES (5,2);
 INSERT INTO students_courses (student_id,course_id) VALUES (5,4);
-
 ```
-
-
 
 4、查询案例
 
@@ -3792,7 +3414,7 @@ SELECT s.id id,s.name stuName,s.age stuAge,c.id cId,c.price cPrice
 FROM students s
 LEFT JOIN students_courses sc on s.id = sc.student_id
 LEFT JOIN courses c on c.id = sc.course_id
-WHERE	c.id IS NULL;
+WHERE    c.id IS NULL;
 
 #4.哪些课是没有被选的
 SELECT s.id id,s.name stuName,s.age stuAge,c.id cId,c.price cPrice
@@ -3809,8 +3431,6 @@ LEFT JOIN courses c on c.id = sc.course_id
 WHERE s.id = 1;
 ```
 
-
-
 **将查询数据转换为json**
 
 `SELECT * FROM products LEFT JOIN brand ON products.brand_id = brand.id;`
@@ -3823,20 +3443,17 @@ WHERE s.id = 1;
 #将查询到的数据转成对象（一对多）
 
 SELECT 
-	products.id id,products.title title,products.price price,
-	JSON_OBJECT('id',brand.id,'name',brand.`name`,'website',brand.website) brand
+    products.id id,products.title title,products.price price,
+    JSON_OBJECT('id',brand.id,'name',brand.`name`,'website',brand.website) brand
 FROM products
-LEFT JOIN brand ON products.brand_id	= brand.id;
-
+LEFT JOIN brand ON products.brand_id    = brand.id;
 ```
 
 输出的样式
 
-| id   | title               | price | brand                                                  |
-| ---- | ------------------- | ----- | ------------------------------------------------------ |
-| 1    | 华为nova3（全网通） | 2699  | {"id": 1, "name": "华为", "website": "www.huawei.com"} |
-
-
+| id  | title        | price | brand                                                |
+| --- | ------------ | ----- | ---------------------------------------------------- |
+| 1   | 华为nova3（全网通） | 2699  | {"id": 1, "name": "华为", "website": "www.huawei.com"} |
 
 **多对多转换成数组**
 
@@ -3846,17 +3463,17 @@ LEFT JOIN brand ON products.brand_id	= brand.id;
 
 以学生与选课之间的关系为例
 
-| id   | stuName | stuAge | cId  | cPrice | name |
-| ---- | ------- | ------ | ---- | ------ | ---- |
-| 1    | 小明    | 18     | 1    | 100    | 英语 |
-| 1    | 小明    | 18     | 3    | 888    | 数学 |
+| id  | stuName | stuAge | cId | cPrice | name |
+| --- | ------- | ------ | --- | ------ | ---- |
+| 1   | 小明      | 18     | 1   | 100    | 英语   |
+| 1   | 小明      | 18     | 3   | 888    | 数学   |
 
 如何将上方的数据组织成对象，放入一个数组中呢（多对多）
 
 ```sql
 SELECT
-	s.id,s.name,s.age,
-	JSON_ARRAYAGG(JSON_OBJECT('id',c.id,'name',c.`name`,`price`,c.price))
+    s.id,s.name,s.age,
+    JSON_ARRAYAGG(JSON_OBJECT('id',c.id,'name',c.`name`,`price`,c.price))
 FROM students s
 JOIN students_courses sc on s.id = sc.student_id
 JOIN courses c on c.id = sc.course_id
@@ -3865,11 +3482,9 @@ GROUP BY s.id;
 
 最终结果
 
-| id   | name | age  | result                                                       |
-| ---- | ---- | ---- | ------------------------------------------------------------ |
-| 1    | 小明 | 18   | [{"id": 1, "100": 100.0, "name": "英语"}, {"id": 3, "888": 888.0, "name": "数学"}] |
-
-
+| id  | name | age | result                                                                         |
+| --- | ---- | --- | ------------------------------------------------------------------------------ |
+| 1   | 小明   | 18  | [{"id": 1, "100": 100.0, "name": "英语"}, {"id": 3, "888": 888.0, "name": "数学"}] |
 
 ### 12.6 在node中使用mysql
 
@@ -3903,7 +3518,7 @@ SELECT * FROM students;
 
 connection.query(statement,(err,results,fields) => {
     console.log(results);
-   	// 停止
+       // 停止
     connection.end();
 })
 ```
@@ -3939,8 +3554,6 @@ connection.execute(statement,[8000,5],(err,results) => {
 })
 ```
 
-
-
 **connetction pools连接池**
 
 上方的代码中，我们创建了一个连接，但是如果有多个请求的话，该连接很有可能正在被占用，那么是否每次发送一个请求都要去创建一个新的连接呢？
@@ -3972,8 +3585,6 @@ connections.execute(statement,[8000,5],(err,results) => {
 });
 ```
 
-
-
 **使用promise**
 
 为了避免回调地狱，开发中尽量少使用回调函数的方式获取数据，多使用promise的方式。
@@ -3992,4 +3603,3 @@ connections.promise().execute(statement,[8000,5]).then(([results]) => {
 ```
 
 注：这里的then（res）实际会包含results和fields，然后我们不需要fields，所结构结构的方式取出了[results]
-

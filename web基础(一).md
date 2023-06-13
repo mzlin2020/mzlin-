@@ -193,15 +193,11 @@ HTTP响应也由四个部分组成，分别是：状态行、消息报头、空�
 
 4、服务端推送
 
-
-
 **HTTP3.0**
 
 <img title="" src="file:///C:/Users/mzlin/Desktop/mzlin-notes/img/拓展/HTTP3.0.PNG" alt="">
 
 HTTP3.0使用了UDP来作为传输协议，其中利用QUIC来保证可靠性、安全性
-
-
 
 ## 二、浏览器
 
@@ -742,8 +738,6 @@ TCP释放连接时之所以需要“四次挥手”,是因为FIN释放连接报�
 <img title="" src="file:///C:/Users/mzlin/Desktop/mzlin-notes/img/拓展/UDP.PNG" alt="">
 
 > TCP建立连接需要三次握手，但是UDP直接传输即可，不保证数据可达
-
-
 
 UDP通信不保证顺序
 
@@ -1526,13 +1520,30 @@ plugin的功能更加强大，loader不能做的都是它做，它的功能要�
 
 **2、fetch**
 
-在网络上获取数据的标准接口
+在网络上获取数据的标准接口，一个让处理http pipeline更容易的工具
 
-+ 提供对请求/返回对象（标准promise接口）
++ 提供对请求/返回对象（标准promise接口），resolve发生在网络通信正常（即使是404,500），reject发生在网络通信异常
 
 + 提供自定义Header能力
 
 + 提供跨域能力
+
+> fetch作为一种标准可以在浏览器中直接使用，但在node端需要引入
+
+```js
+//基本使用
+fetch('url', {
+  method: 'PUT',
+  header: {
+    'Content-Type': "application/json"
+},
+  credentials: 'include' //Cookie
+})
+
+fetch('https://www.baidu.com', {cache: 'force-cache'}) //使用缓存
+```
+
+> option不传，默认是put请求
 
 **3、whistle**
 
@@ -1548,4 +1559,18 @@ plugin的功能更加强大，loader不能做的都是它做，它的功能要�
 
 1、`npm install whistle -g`
 
-2、安装SwitchOmega插件
+2、安装SwitchOmega插件（可实现对某些网站进行代理）
+
+
+
+用法：
+
+```js
+w2 start //开启
+
+w2 stop //关闭
+
+w2 proxy //设置全局代理
+
+w2 proxy off //关闭全局代理
+```
