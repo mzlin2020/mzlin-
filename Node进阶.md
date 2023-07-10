@@ -1,3 +1,5 @@
+
+
 # Node进阶
 
 <img src="./img/node/node架构.png" alt="node架构" style="zoom:50%;" />
@@ -2016,6 +2018,47 @@ app.post("/fileb64", (req, res) => {
 });
 ```
 
+但是图片转换为base64体积变大了，可以使用另外一种方式
+
+```html
+<body>
+        <input type="file" name="file" id="file" >
+        <br/>
+        <input type="submit" onClick="submit()">
+
+        <script>
+            let upload = {} //存储要上传的文件
+            function submit () {
+                const formData = new FormData()
+                formData.append('name', upload.name)
+                formData.append('file', upload.data)
+                fetch('fileBlob', {
+                    method: 'post',
+                    body: formData,
+                    headers: {}
+                })
+            }
+
+            // 监听change方法
+            document.getElementById("file").addEventListener('change', e=> {
+                const files = e.target.files 
+                for(let file of files) {
+                    upload.data = file
+                    upload.name = file.name
+                    }
+
+            })
+        </script>
+</body>
+```
+
+```js
+app.post("/fileBlob", fileUpload(), (req, res) => {
+  req.files.file.mv(path.resolve(__dirname, "a.jpg"));
+  res.status(201).send("ok");
+});
+```
+
 #### 9.3 大文件上传切片
 
 前端代码
@@ -2246,3 +2289,234 @@ function resolvePost(req) {
   });
 }
 ```
+
+
+
+
+
+### 10、SSR与SPA
+
+编写一个render函数，该函数允许传入dom、html、rehydrate三种类型。
+
+```js
+function render(node, renderAs = "dom", path = []) {
+  const { name, props, style, children } = node;
+  if (renderAs === "dom") {
+    const element = document.createElement(name);
+    if (props && props.onClick) {
+      element.addEventListener("click", props.onClick);
+    }
+
+    if (style) {
+      Object.keys(style).forEach((key) => {
+        element.style[key] = style[key];
+      });
+    }
+
+    if (typeof children === "string") {
+      element.innerHTML = children;
+    } else if (Array.isArray(children)) {
+      children.forEach((child, i) => {
+        element.appendChild(render(child, renderAs, path.concat(i)));
+      });
+    } else {
+      throw "invalid children";
+    }
+    return element;
+  } else if (renderAs === "html") {
+    let styles = [];
+    if (style) {
+      styles = Object.keys(style).map((key) => {
+        const k = key.replace(/([A-Z])/, (m) => "-" + m.toLowerCase());
+        const val = style[key];
+        return `${k}=${val}`;
+      });
+    }
+    const styleString = styles.join(";");
+    let childrenStr = "";
+    if (typeof children === "string") {
+      childrenStr = children;
+    } else {
+      childrenStr = children
+        .map((child, i) => render(child, renderAs, path.concat(i)))
+        .join("");
+    }
+    return `<${name} id='node-${path.join(
+      "-"
+    )}' style='${styleString}'>${childrenStr}</${name}>`;
+  } else if (renderAs === "rehydrate") {
+    if (props && props.onClick) {
+      document
+        .getElementById("node-" + path.join("-"))
+        .addEventListener("click", props.onClick);
+    }
+
+    if (Array.isArray(children)) {
+      children.forEach((child, i) => {
+        render(child, renderAs, path.concat(i));
+      });
+    }
+  }
+}
+```
+
+当传入DOM时，会将传入的vnode，转为真实DOM
+
+当传入html时，会将传入的vnode,转为可被浏览器执行的html字符串
+
+当传入rehydrate时，会将传入的vnode（此vnode应与生成的html字符串同）进行事件的判断，如果有则挂载事件（这部分代码由浏览器执行）
+
+#### 10.1 SPA单页面应用
+
+传统的SPA页面，前端根目录只有一个div，由后端返回js文件，生成DOM并渲染到页面上
+
+过程如下
+
+```js
+const app = require("express")();
+const path = require("path");
+
+app.get("/page.js", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "page.js"));
+});
+
+// spa单页面渲染原理
+app.get("/", (req, res) => {
+  res.send(`<html>
+    <body>
+    <div id="root">
+    </div>
+    <script src='/page.js'></script>
+  </body>`);
+});
+
+app.listen(3000);
+```
+
+```js
+//page.js
+const element = render(
+  {
+    name: "div",
+    props: {
+      onClick: () => {
+        window.alert("123");
+      },
+    },
+    children: [
+      {
+        name: "ul",
+        children: [
+          {
+            name: "li",
+            children: "Apple",
+          },
+          {
+            name: "li",
+            children: "Alibaba",
+          },
+        ],
+      },
+    ],
+  },
+  "dom"
+);
+
+document.getElementById("root").appendChild(element);
+```
+
+使用了脚手架的vue项目都会带有一个根index.html，后端会返回这个html文件以及一堆js，css文件在浏览器执行生成最终页面
+
+#### 10.2 ssr页面渲染
+
+**后端执行**
+
+服务端拿到用户的vNode并将其生成可被浏览器执行的html字符串，发送给前端浏览器直接生成页面。（相比于spa，ssr不用到前端执行js文件生成DOM，这部分变为在后端转html字符串，并在前台直接展示）
+
+问题：后端生成的html字符串不能绑定事件，仅有浏览器能够绑定事件
+
+```js
+const app = require("express")();
+const render = require("./renderFn");
+const path = require("path");
+const html = render(
+  {
+    name: "div",
+    props: {
+      onClick: () => {
+        window.alert("123");
+      },
+    },
+    children: [
+      {
+        name: "ul",
+        children: [
+          {
+            name: "li",
+            children: "Apple",
+          },
+          {
+            name: "li",
+            children: "Alibaba",
+          },
+        ],
+      },
+    ],
+  },
+  "html"
+);
+
+app.get("/page-ssr.js", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "page-ssr.js"));
+});
+
+// ssr渲染原理
+app.get("/ssr", (req, res) => {
+  res.send(`<html>
+    <body>
+      <div id="root">
+      ${html}
+      </div>
+    <script src='/page-ssr.js'></script>
+  </body>`);
+});
+
+app.listen(3000);
+```
+
+
+
+**前端执行**
+
+因为浏览器绑定不了事件，所以会将生成了html字符串的vNode交由前端执行一次，执行过程中为所对应的节点绑定上事件
+
+```js
+//page-ssr.js
+render(
+  {
+    name: "div",
+    props: {
+      onClick: () => {
+        window.alert("123");
+      },
+    },
+    children: [
+      {
+        name: "ul",
+        children: [
+          {
+            name: "li",
+            children: "Apple",
+          },
+          {
+            name: "li",
+            children: "Alibaba",
+          },
+        ],
+      },
+    ],
+  },
+  "rehydrate"
+);
+```
+

@@ -1537,7 +1537,7 @@ fetch('url', {
   header: {
     'Content-Type': "application/json"
 },
-  credentials: 'include' //Cookie
+  credentials: 'include' //携带上Cookie
 })
 
 fetch('https://www.baidu.com', {cache: 'force-cache'}) //使用缓存
@@ -1560,8 +1560,6 @@ fetch('https://www.baidu.com', {cache: 'force-cache'}) //使用缓存
 1、`npm install whistle -g`
 
 2、安装SwitchOmega插件（可实现对某些网站进行代理）
-
-
 
 用法：
 

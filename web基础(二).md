@@ -355,7 +355,7 @@ C、队头阻塞问题
 
 Cookie本质上就是浏览器里存储的一个很小的文本文件，内部以建立键值对的方式来存储信息。
 
-![](E:/学习笔记汇总/img/前端总结（二）/cookie.jpg)
+![](C:\Users\mzlin\Desktop\mzlin-notes\img\前端总结（二）\cookie.jpg)
 
 + **HTTP是无状态的协议**，每次http请求都是独立、无关的，默认不需要保留状态。服务器无法确认当前访问者的身份信息。所以服务器与浏览器为了进行会话跟踪（知道谁在访问我），就必须主动去维护一个状态，这个状态用于告知服务端前后两个请求是否来自同一个浏览器
 + **cookie存储在客户端**：cookie是服务器发送到用户浏览器并保存在本地的一小块数据，它会在浏览器下次向同一服务器再发起请求时被携带发送到服务器上
@@ -396,7 +396,7 @@ document.cookie = 'myname=linming;'
 
 **有效期不同**：Cookie可以设置为长时间保持，Session一般失效时间较短，客户端关闭或者Session超时都会失效
 
-**存储大小不同：**单个Cookie保存的数据不能超过4K，Session可存储数据远高于Cookie，但是访问量过多时，会占用很多的服务器资源
+**存储大小不同：** 单个Cookie保存的数据不能超过4K，Session可存储数据远高于Cookie，但是访问量过多时，会占用很多的服务器资源
 
 ### 5、简单demo
 
@@ -420,4 +420,56 @@ app.use(useRouter.routes())
 app.listen('8080', () => {
   console.log("服务器启动成功~");
 })
+```
+
+### 6、单点登录sso
+
+模拟cookie设置过程
+
+```js
+const express = require("express");
+
+const app = express();
+
+//真实情况应是post请求
+app.get("/login", (req, res) => {
+  res.setHeader("Set-Cookie", "name=linming");
+  res.send("ok");
+});
+
+app.listen(3000, () => {
+  console.log("服务器启动成功");
+});
+```
+
+登录成功后，服务器给浏览器返回了一个响应头Set-Cookie，浏览器接收到了之后就会将其设置进cookie中
+
+问题：当访问不同源的资源时，存在跨域问题
+
+```js
+const express = require("express");
+const app2 = express();
+
+app2.get("/info", (req, res) => {
+  res.send("info");
+});
+
+app2.listen(3001, () => {
+  console.log("服务器2启动成功");
+});
+```
+
+当我们在3000端口这个域下访问3001时，就会报跨域问题
+
+```js
+fetch("http://127.0.0.1:3001/info", {credentials: 'include'})
+```
+
+解决
+
+```js
+app2.get("/info", (req, res) => {
+
+  res.send("info");
+});
 ```
