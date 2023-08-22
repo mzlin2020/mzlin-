@@ -2217,3 +2217,108 @@ self.onmessage = (event) => {
   postMessage('world')
 }
 ```
+
+## 九、其他
+
+### 9.1 异步函数的传染性
+
+在开发中，如果定义一个网络请求函数并要求返回其结果，那么需要使用到async await。并且如果其他函数执行了该函数，他们也需要用上async await
+
+```js
+async function getData() {
+  return await fetch('https://my-json-server.typicode.com/typicode/demo/profile').then((resp) => resp.json())
+}
+
+async function fn1(){
+  //other  works
+  return await getData()
+}
+
+async function fn2(){
+  //other  works
+  return await fn1()
+}
+fn2()
+```
+
+弊端：每个使用到getData的函数，都需要使用到async await。破坏了纯函数的结构，产生了副作用
+
+
+
+想要实现的效果，不使用async await能够获取到网络请求的结果
+
+思路：在调用时直接报错，在报错中进行结果的处理
+
+```js
+//实现
+function run(func) {
+  let cache = []; //缓存的列表，由于可能不止一个fetch，所以要用一个list
+  let i = 0; //缓存列表的下标
+  const _originalFetch = window.fetch; //储存原先的fetch
+  window.fetch = (...args) => {
+    //重写fetch函数，这个fetch要么抛出异常，要么返回真实的数据
+    if (cache[i]) {
+      //判断一下缓存是否存在，如果存在就返回真实的数据或抛出异常
+      if (cache[i].status === "fulfilled") {
+        return cache[i].data;
+      } else if (cache[i].status === "rejected") {
+        throw cache[i].err;
+      }
+    }
+    const result = {
+      status: "pending",
+      data: null,
+      err: null,
+    };
+    cache[i++] = result; //添加缓存
+    //发送请求
+    //真实的fetch调用
+    const prom = _originalFetch(...args)
+      .then((resp) => resp.json())
+      .then(
+        (resp) => {
+          //等待返回结果，然后修改缓存
+          result.status = "fulfilled";
+          result.data = resp;
+        },
+        (err) => {
+          result.status = "rejected";
+          result.data = err;
+        }
+      );
+    //如果没有缓存，就添加缓存和抛出异常
+    throw prom;
+    //这里为什么会抛出真实fetch返回的promise，主要是因为外面会用到这个promise然后等待拿到最终结果
+  };
+
+  try {
+    //在try里调用func也就是上述的main函数
+    //由于main里面有fetch，且第一次没有缓存，所以会抛出一个异常
+    func();
+  } catch (err) {
+    //从这里捕获到异常
+    //这里的err就是上述fetch返回的promise
+
+    if (err instanceof Promise) {
+      //验证一下是不是promise
+      const reRun = () => {
+        i = 0; //重置一下下标
+        func();
+      };
+      err.then(reRun, reRun); //待promise返回结果后重新执行func，也就是重新执行main
+      //这次执行已经有缓存了，并且返回中有了正确的结果，所以重写的fetch会返回真实的数据
+    }
+  }
+}
+
+
+// 调用
+function main() {
+  const res = fetch(
+    "https://my-json-server.typicode.com/typicode/demo/profile"
+  );
+  console.log("res", res); //res要得到一个data数据而不是一个promise对象
+}
+run(main);
+```
+
