@@ -30,8 +30,6 @@ html5新增的语义化标签：
 
 3、便于团队开发和维护，语义化更具可读性
 
-
-
 ## 2、iframe是什么？缺点？
 
 定义：iframe元素会创建包含另一个文档的**内联框架**
@@ -39,8 +37,6 @@ html5新增的语义化标签：
 ( iframe一般用来包含别的页面，例如我们可以在我们自己的网站页面加载别人网站的内容)
 
 提示：可以将提示文字放在`<iframe></iframe>`,在不支持iframe的浏览器会显示出来
-
-
 
 **优点：**
 
@@ -68,8 +64,6 @@ Doctype声明位于文档最前面，告诉浏览器以何种方式来渲染页�
 
 **混杂模式：**是指浏览器按照自己的方式来解析代码，使用一种比较宽松的向后兼容的方式来显示页面。删除了`<!Doctype>`，意味着把如何渲染html页面的权利交给了浏览器，有多少种浏览器就有多少种展示方式。
 
-
-
 ## 4、html新增元素
 
 1、为了更好的实践web语义化，增加了：header，footer，nav，aside，section等语义化标签；
@@ -82,25 +76,17 @@ Doctype声明位于文档最前面，告诉浏览器以何种方式来渲染页�
 
 5、其他：地理定位、canvas画布、拖放、多线程编程的web worker 和 websocket协议
 
-
-
 ## 5、html5媒体
-
-
-
-
 
 ## 6、meta标签
 
 meta标签对网页能否被搜索引擎检索，在搜索中的排名中起着关键性的作用
 
-| 属性       | 说明                             |
-| ---------- | -------------------------------- |
+| 属性         | 说明               |
+| ---------- | ---------------- |
 | content    | 表示要设置的项的值（必填的属性） |
-| http-equiv | 设置的项（非必填）               |
-| name       | 设置的项（非必填）               |
-
-
+| http-equiv | 设置的项（非必填）        |
+| name       | 设置的项（非必填）        |
 
 **一、http-equiv属性**
 
@@ -166,8 +152,6 @@ name属性主要用于**描述网页**，与对应的content中的内容主要�
 
 `<meta name="keywords" content="clothes shoes">`
 
-
-
 **4、robots**
 
 告诉搜索引擎机器人抓取哪些页面，`all/none/index/noindex/follow/nofollow`
@@ -186,8 +170,6 @@ name属性主要用于**描述网页**，与对应的content中的内容主要�
 
 `nofollow`：文件将不被检索，页面上的连接可以被查询
 
-
-
 ## 7、HTML / XHTML / XML
 
 + HTML：超本文标记语言，是语法较为松散的，不严格的web语言
@@ -196,21 +178,17 @@ name属性主要用于**描述网页**，与对应的content中的内容主要�
 
 其中，XHTML是HTML的规范版本
 
-
-
 ## 8、行内元素和块元素
 
 1、块元素：独占一行，并且自动填满父元素，可以设置margin和padding及高度和宽度
 
 2、行内元素：不会独占一行，width和height会失效，并且在垂直方向的padding和margin会失效
 
-
-
-| 元素类型 | 列举                                     |
-| -------- | ---------------------------------------- |
+| 元素类型 | 列举                                 |
+| ---- | ---------------------------------- |
 | 行内元素 | `a、b、span、img、input、select、string` |
-| 块级元素 | `div、ul、li、dl、dt、dd、h1至h5、p`等   |
-| 空元素   | `<br>、<hr>、<img>、<link>、<meta>`      |
+| 块级元素 | `div、ul、li、dl、dt、dd、h1至h5、p`等      |
+| 空元素  | `<br>、<hr>、<img>、<link>、<meta>`    |
 
 ## 9、src与href的区别
 
@@ -226,7 +204,7 @@ href是`Hypertext Reference`的缩写，指向网络资源所在位置，建立�
 
 ![](img/html/vscode基础插件与配置.jpg)
 
-##  11、H5新增全局属性data-
+## 11、H5新增全局属性data-
 
 该属性用于自定义属性数据，然后在js中DOM操作通过dataset获取到，通常用于HTML与js数据之间的传递
 
@@ -248,15 +226,31 @@ age: "18"
 sex: "男"
 ```
 
+## 12、图片预览功能
 
+本地获取上传的图片对象，并进行预览
 
+```html
+<body>
+    <input type="file">
+    <img class="preview"></div>
+    <script>
+        const input = document.getElementsByTagName('input')[0]
+        const preview = document.querySelector('.preview')
 
-
-
-
-
-
-
-
+        input.onchange = e => {
+            // 获取file对象
+            const file = e.target.files[0]
+            // 转为base64
+            const reader = new FileReader()
+            reader.onload = e => {
+                console.log(e.target.result);
+                    preview.src = e.target.result
+            }
+            reader.readAsDataURL(file)
+        }
+    </script>
+</body>
+```
 
 
