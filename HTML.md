@@ -254,3 +254,212 @@ sex: "男"
 ```
 
 
+
+## 13、浏览器录屏功能
+
+仅限于支持`navigator.mediaDevices`功能的浏览器，录制范围不包括桌面。
+
+```vue
+<template>
+    <div style="width: 100%">
+        <div class="container">
+            <div class="title">屏幕录制</div>
+            <div class="content">
+                <div class="videoBox" :style="{ width: `${videoWidth}px`, height: `${videoHeight}px` }">
+                    <video
+                        class="recordVideo"
+                        :style="{ width: `${videoWidth}px`, height: `${videoHeight}px` }"
+                        muted
+                        autoPlay
+                        x5-video-player-fullscreen="true"
+                        x5-playsinline="true"
+                        playsInline
+                        webkit-playsinline="true"
+                        crossOrigin="anonymous"
+                        ref="recordVideoRef"
+                    ></video>
+
+                    <video
+                        v-if="videoStatus === 'playing'"
+                        class="playVideo"
+                        :style="{ width: `${videoWidth}px`, height: `${videoHeight}px` }"
+                        muted
+                        autoPlay
+                        x5-video-player-fullscreen="true"
+                        x5-playsinline="true"
+                        playsInline
+                        webkit-playsinline="true"
+                        crossOrigin="anonymous"
+                        :src="videoUrl"
+                        ref="playVideoRef"
+                    ></video>
+                </div>
+                <div class="btns">
+                    <a-button type="primary" @click="onStartOrEnd">
+                        {{ videoStatus === "inRecording" ? "录制中，点击结束" : videoUrl ? "重新录制" : "开始录制" }}
+                    </a-button>
+                    <a-button
+                        v-if="!!videoUrl"
+                        type="primary"
+                        @click="
+                            () => {
+                                if (playVideoRef) {
+                                    playVideoRef.play();
+                                } else {
+                                    if (recordVideoRef) {
+                                        recordVideoRef.srcObject = null;
+                                    }
+                                    videoStatus = 'playing';
+                                }
+                            }
+                        "
+                    >
+                        {{ "播放" }}
+                    </a-button>
+                    <a :download="fileName" :href="videoUrl" v-if="!!videoUrl">
+                        {{ "下载" }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { ref, onUnmounted } from "vue";
+import { message } from "ant-design-vue";
+
+const videoWidth = Math.floor(window.screen.width * 0.36);
+const videoHeight = Math.floor(window.screen.height * 0.36);
+let mediaRecorder = null;
+let chunks = [];
+let stream = null;
+
+const recordVideoRef = ref();
+const playVideoRef = ref();
+const videoUrl = ref("");
+const fileName = ref("");
+const videoStatus = ref("ready");
+
+const onStartOrEnd = () => {
+    if (mediaRecorder) {
+        if (videoStatus.value === "inRecording") {
+            mediaRecorder.stop();
+            videoStatus.value = "ready";
+        } else {
+            if (videoUrl.value) {
+                window.URL.revokeObjectURL(videoUrl.value);
+                fileName.value = "";
+                videoUrl.value = "";
+                mediaRecorder = null;
+                videoStatus.value = "ready";
+            }
+        }
+    } else if (recordVideoRef.value) {
+        if (navigator?.mediaDevices?.getDisplayMedia) {
+            navigator.mediaDevices
+                .getDisplayMedia({
+                    video: true,
+                })
+                .then((newStream) => {
+                    if (recordVideoRef.value && newStream) {
+                        stream = newStream;
+                    }
+                    const mimeType = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
+                        ? "video/webm; codecs=vp9"
+                        : "video/webm";
+                    try {
+                        const options = {
+                            audioBitsPerSecond: 128000,
+                            videoBitsPerSecond: 5000000,
+                            mimeType,
+                        };
+                        const recorder = new MediaRecorder(stream, options);
+                        recorder.ondataavailable = (e) => {
+                            if (e.data && e.data.size > 0) {
+                                chunks.push(e.data);
+                            }
+                        };
+                        recorder.onstop = () => {
+                            if (videoStatus.value === "inRecording") {
+                                videoStatus.value = "ready";
+                            }
+                            const blob = new Blob(chunks, {
+                                type: "video/webm",
+                            });
+                            fileName.value = `${new Date().getTime()}.webm`;
+                            const newAudioUrl = window.URL.createObjectURL(blob);
+                            videoUrl.value = newAudioUrl;
+                            chunks = [];
+                        };
+                        mediaRecorder = recorder;
+                        if (recordVideoRef.value && stream) {
+                            recordVideoRef.value.srcObject = stream;
+                        }
+                        mediaRecorder.start();
+                        videoStatus.value = "inRecording";
+                    } catch (e) {
+                        message.error(`MediaRecorder creation failed: ${e}. mimeType:${mimeType}`);
+                    }
+                })
+                .catch(() => {
+                    message.error("授权失败，请点击设置->隐私设置和安全->网站设置->摄像头，打开允许使用");
+                });
+        } else {
+            message.error("浏览器不支持getDisplayMedia");
+        }
+    }
+};
+
+onUnmounted(() => {
+    videoUrl.value && window.URL.revokeObjectURL(videoUrl.value);
+});
+</script>
+
+<style scoped lang="less">
+.container {
+    width: 100%;
+    padding: 20px;
+    .title {
+        font-size: 20px;
+        font-family: "SourceHanSansCN-Bold" !important;
+        font-weight: 600;
+        color: #fff;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .videoBox {
+            box-sizing: border-box;
+            border: 1px solid #aaa;
+            position: relative;
+
+            video {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+            .recordVideo {
+                z-index: 1;
+            }
+            .playVideo {
+                z-index: 2;
+            }
+        }
+        .btns {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+
+            button {
+                margin: 0 20px;
+            }
+        }
+    }
+}
+</style>
+```
+
