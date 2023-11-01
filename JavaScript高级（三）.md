@@ -2322,3 +2322,33 @@ function main() {
 run(main);
 ```
 
+### 9.2 禁止网页被调试
+
+1、如何绕过别人网站的断点进行调试
+
++ 禁止网页所有断点
++ 右键断点选择`add logpoint`,返回`false`
++ 右键断点选择`add script to ignore list`，添加的忽略代码
+
+2、如何防止自己的网站被调试（不完善）
+
+```js
+;(() => {
+  function block() {
+    if (window.outerHeight - window.innerHeight > 200 || window.outerWidth - window.innerWidth > 200) {
+      document.body.innerHTML = '检测到非法调试,请关闭后刷新重试!'
+    }
+    setInterval(() => {
+      ;(function () {
+        return false
+      })
+        ['constructor']('debugger')
+        ['call']()
+    }, 50)
+  }
+  try {
+    block()
+  } catch (err) {}
+})()
+```
+
