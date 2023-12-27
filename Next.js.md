@@ -16,7 +16,77 @@ nest14默认使用服务端渲染（SSR），这导致了许多客户端行之�
 | 使用依赖于状态，效果或仅浏览器API的自定义钩子 | ✗          | ✓          |
 | 使用React类组件                               | ✗          | ✓          |
 
+> 注：使用 "use client"（通常是通过 `next/dynamic` 实现的）来指定某个页面或组件在客户端渲染，类似于单页应用程序（SPA）的行为。Next.js 作为一个框架，同时支持服务器端渲染（SSR）和静态站点生成（SSG），这意味着即使部分页面或组件是在客户端渲染的，其他部分的内容可能仍然是在服务器端渲染的
+>
+> 如果希望完全由客户端js渲染生成：const YourComp = dynamic(() => import('./YourComp '), { ssr: false })，这样一来才能使用浏览器相关的api
 
+
+
+> 注：next14默认使用严格模式，导致组件会重复渲染两次。其原因是为了模拟立即卸载组件和重新挂载组件。帮助开发者提前发现重复挂载造成的Bug，提供的调试机制
+
+```js
+//强制关闭 next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: false, //关闭严格模式
+}
+module.exports = nextConfig
+
+```
+
+
+
+> 使用next提供的Image组件，报错——`next/image` 未配置的主机
+>
+> 原因：利用该`next/image`组件的页面之一传递了一个值，`src`该值使用 URL 中的主机名，而该主机名未在`images.remotePatterns`in中定义`next.config.js`。
+
+```js
+//修复 next.config.js
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'assets.example.com',
+        port: '',
+        pathname: '/account123/**',
+      },
+    ],
+  },
+}
+
+//或者直接写域名
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    domains: [
+      "assets.example.com",
+    ],
+  },
+};
+
+module.exports = nextConfig;
+```
+
+
+
+> 遇到控制台警告如下
+>
+> Nested CSS was detected, but CSS nesting has not been configured correctly.
+> Please enable a CSS nesting plugin *before* Tailwind in your configuration.
+
+```javascript
+//postcss.config.js
+module.exports = {
+  plugins: {
+    "postcss-import": {},
+    "tailwindcss/nesting": {},
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+```
 
 ## 二、路由
 
@@ -187,19 +257,19 @@ async function getPosts() {
 
 ## 四、项目搭建
 
-1、创建项目
+### 1、创建项目 
 
 ```shell
 npx create-next-app@latest
 ```
 
-![](C:\Users\mzlin\Desktop\mzlin-notes\img\next\终端创建.jpeg)
+![](https://mzlin2020-notes.oss-cn-shenzhen.aliyuncs.com/img/next/%E7%BB%88%E7%AB%AF%E5%88%9B%E5%BB%BA.jpeg)
 
 测试一下能够打包`pnpm run build`，建议停止项目后执行此命令
 
 
 
-2、配置**Eslint**和**Prettier**
+### 2、配置**Eslint**和**Prettier**
 
 建议vscode安装这两个插件
 
@@ -261,7 +331,7 @@ dist
 
 
 
-3、css
+### 3、css
 
 安装sass `pnpm add sass -D`，并将目录下的css文件改为`.scss`，即可生效
 
@@ -276,3 +346,170 @@ dist
 }
 ```
 
+如果想要为`tailwind`的类名顺序做排序，也可以安装`npm install -D prettier prettier-plugin-tailwindcss`
+
+```js
+{
+  "trailingComma": "es5",
+   // ....
+  "plugins": ["prettier-plugin-tailwindcss"] //拓展插件
+}
+```
+
+
+
+### 4、安装组件库antd
+
+`npm install antd`
+
+> 在测试中，antd5.11.3以下版本可用以下方式解决
+
+安装后需解决antd与tailwind的样式冲突
+
+```js
+// tailwind.config.ts
+{
+    corePlugins: {
+      preflight: false,
+    },
+}
+```
+
+问题：试着刷新页面的时候，我们可以看到，首屏加载时，Ant Design的样式没有立即加载出来，导致开始一段时间样式缺失，然后才恢复正常
+
+Ant Design 提供了解决方案来解决这个问题
+
+`npm install @ant-design/cssinjs --save`
+
+```tsx
+//src/lib/AntdRegistry.tsx
+'use client'
+
+import React from 'react'
+import {createCache, extractStyle, StyleProvider} from '@ant-design/cssinjs'
+import type Entity from '@ant-design/cssinjs/es/Cache'
+import {useServerInsertedHTML} from 'next/navigation'
+
+const StyledComponentsRegistry = ({ children }: React.PropsWithChildren) => {
+  const cache = React.useMemo<Entity>(() => createCache(), []);
+  const isServerInserted = React.useRef<boolean>(false);
+  useServerInsertedHTML(() => {
+    if (isServerInserted.current) return;
+    isServerInserted.current = true;
+    return <style id="antd" dangerouslySetInnerHTML={{ __html: extractStyle(cache, true) }} />;
+  });
+  return <StyleProvider cache={cache}>{children}</StyleProvider>;
+};
+
+export default StyledComponentsRegistry;
+
+export default StyledComponentsRegistry
+```
+
+```tsx
+//src/app/layout.tsx
+import type {Metadata} from 'next'
+import {Inter} from 'next/font/google'
+import StyledComponentsRegistry from '../lib/AntdRegistry'
+import './globals.scss'
+
+const inter = Inter({subsets: ['latin']})
+
+export const metadata: Metadata = {
+    title: 'Create Next App',
+    description: 'Generated by create next app',
+}
+
+export default function RootLayout({children}: {children: React.ReactNode}) {
+  return (
+    <html lang="en">
+      <body className={inter.className}>
+	<StyledComponentsRegistry>{children}</StyledComponentsRegistry>
+      </body>
+    </html>
+  )
+}
+```
+
+
+
+### 5、布局
+
+以下是 tailwindcss 默认的 5 个断点：`sm、md、lg、xl、zxl`，自定义新增一个针对手机的断点`xs`
+
+| 断点前缀 | 宽度   | css                                |
+| -------- | ------ | ---------------------------------- |
+| xs       | 480px  | @media (min-width: 480px) { ... }  |
+| sm       | 640px  | @media (min-width: 640px) { ... }  |
+| md       | 768px  | @media (min-width: 768px) { ... }  |
+| lg       | 1024px | @media (min-width: 1024px) { ... } |
+| xl       | 1280px | @media (min-width: 1280px) { ... } |
+| 2xl      | 1536px | @media (min-width: 1536px) { ... } |
+
+```js
+// tailwind.config.js
+import defaultTheme from "tailwindcss/defaultTheme";
+module.exports = {
+    ...,// 其他配置
+    theme: {
+        screens: {
+            xs: '480px',
+            ...defaultTheme.screens,
+        },
+    },
+}
+```
+
+> 屏幕尺寸小于 480px 为手机端，480px 到 1024px 为平板端，1024px 到 1280px 之间为大 pad 尺寸和小笔记本屏幕的混合区。大于 1280px 为 PC 端
+
+
+
+6、状态管理
+
+安装`npm install zustand`
+
+```js
+import { create } from "zustand";
+
+interface ConfigState {
+  pageToken: PageToken;
+  breakpoint: Breakpoint;
+  screenWidth: number;
+  updatePageToken: (params: PageToken) => void;
+  updateBreakpoint: (params: Breakpoint) => void;
+  updateScreenWidth: (params: number) => void;
+}
+
+const useConfigStore = create<ConfigState>((set) => ({
+  pageToken: {
+    cbg: "#EDEFF3",
+    fHeight: "60px",
+    fbg: "#7DBCEA",
+    sPlacement: "left",
+    sWidth: "280px",
+    sMobileWidth: "240px",
+  },
+  breakpoint: "", //断点
+  screenWidth: 0, //尺寸
+
+  updatePageToken: (newToken) => set({ pageToken: newToken }),
+  updateBreakpoint: (newVal) => set({ breakpoint: newVal }),
+  updateScreenWidth: (newVal) => set({ screenWidth: newVal }),
+}));
+
+export default useConfigStore;
+
+```
+
+```js
+//应用
+const {  pageToken, updateScreenWidth } = useConfigStore();
+
+// updateScreenWidth(newVal)
+```
+
+
+
+6、markdown笔记
+
+参考链接：`https://blog.csdn.net/Sakuraaaa_/article/details/128400497`
