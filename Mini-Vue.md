@@ -1,5 +1,12 @@
 # Mini-Vue
 
+```js
+@title 'Mini-Vue' 
+@description '探索vue的基本实现原理，并基于vue源码的三大核心功能实现一个简单版本的Vue'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
+
+
 ## 一、项目简介
 
 实现一个简洁的Mini-Vue框架，包括三个模块

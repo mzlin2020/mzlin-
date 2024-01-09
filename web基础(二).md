@@ -1,5 +1,11 @@
 # web基础(二)
 
+```js
+@title 'Web基础（二）' 
+@description '计算机应知应会基础知识点二'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
+
 ## 一、前端跨域
 
 **概念**

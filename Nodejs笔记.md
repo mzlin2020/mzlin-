@@ -2,6 +2,12 @@ Nodejs笔记
 
 ## 一、初识Node
 
+```js
+@title 'Node.js' 
+@description 'nodejs学习笔记，汇总了包括js引擎与浏览器渲染原理等知识，全面介绍了node的使用，并结合sql实现后端服务'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
+
 Node.js是一个基于V8 JavaScript引擎的JavaScript运行时环境
 
 ### 1.1 浏览器
@@ -787,6 +793,18 @@ npm install会检测是有package-lock.json文件。
 强制重新build ：`npm rebuild`
 
 清除缓存：`npm cache clean     `
+
+
+
+**下载源**
+
+查看当前源： `npm config get resistry`
+
+下载淘宝镜像源：`npm install -g cnpm --registry=https://registry.npm.taobao.org`
+
+当前源切换为淘宝的源：`npm config set registry https://registry.npm.taobao.org	`
+
+切换为官方源：`npm config set registry https://registry.npmjs.org/`
 
 
 

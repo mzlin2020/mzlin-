@@ -1,5 +1,12 @@
 # Web基础
 
+
+```js
+@title 'Web基础（一）' 
+@description '计算机应知应会基础知识点一'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
+
 ## 一、http和https
 
 ### 1、http 和 https 的基本概念

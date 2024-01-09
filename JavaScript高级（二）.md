@@ -2,6 +2,12 @@
 
 ## 一、class类
 
+```js
+@title 'JavaScript高级（二）' 
+@description 'JavaScript新版本特性、高级用法与部分原理提升'
+@image 'https://mzlin2020-notes.oss-cn-shenzhen.aliyuncs.com/img/js%E9%AB%98%E7%BA%A7/%E5%8F%91%E5%B8%83%E8%AE%A2%E9%98%85.png'
+```
+
 ### 1.1 class基础
 
 **1、定义类**

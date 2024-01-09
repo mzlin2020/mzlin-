@@ -1,5 +1,11 @@
 # git
 
+```js
+@title 'Git' 
+@description 'Git相关知识与常用命令汇总'
+@image 'https://mzlin2020-notes.oss-cn-shenzhen.aliyuncs.com/img/git/reset.png'
+```
+
 ## 一、简介
 
 Git是一个免费的、开源的分布式版本控制系统，可以快速高效地处理从小型到大型的各种项目。

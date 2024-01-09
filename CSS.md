@@ -1,5 +1,11 @@
 # CSS
 
+```js
+@title 'CSS' 
+@description 'CSS基础知识点汇总'
+@image 'https://mzlin2020-notes.oss-cn-shenzhen.aliyuncs.com/img/css/flex%E5%B8%83%E5%B1%801.jpg'
+```
+
 ## 一、基础提升
 
 ### 1、块元素和行内元素
@@ -2512,7 +2518,7 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 
 ### 8.1 重要概念
 
-<img src="img/css/flex布局1.jpg" style="zoom:50%;" />
+<img src="img/css/flex布局1.jpg" style="zoom:100%;" />
 
 1、开启了flex布局的元素叫做`flex container`，其直接子元素叫做`flex item`
 

@@ -1,6 +1,10 @@
 # 	webpack
 
-
+```js
+@title 'Webpack框架' 
+@description 'Webpack5基本知识点，讲解了在脚手架项目中代码转化、babel、plugin等基本常识。以及如何从零搭建出一个项目'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
 
 ### 1、 初识webpack
 

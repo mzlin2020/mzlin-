@@ -1,7 +1,12 @@
 # surpermall笔记
 
-使用vue.js从零开始搭建一个APP商城项目
+```js
+@title 'mall笔记' 
+@description '基于vue2开发的h5商城笔记'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
 
+使用vue.js从零开始搭建一个APP商城项目
 
 
 ## 1、基础搭建

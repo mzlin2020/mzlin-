@@ -2,6 +2,12 @@
 
 # Node进阶
 
+```js
+@title 'Node.js进阶' 
+@description 'nodejs进阶包含了许多原理性知识，包括了常见的数据库类型与基本使用，基本的node框架、服务端渲染等内容'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
+
 <img src="./img/node/node架构.png" alt="node架构" style="zoom:50%;" />
 
 ### 1、代理客户端

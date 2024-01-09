@@ -1,5 +1,11 @@
 # TypeScript
 
+```js
+@title 'TypeScript' 
+@description 'TypeScript知识点大全'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
+
 ## 一、JavaScript的问题
 
 并且随着近几年前端领域的快速发展，让JavaScript迅速被普及和受广大开发者的喜爱，借助于JavaScript本身的

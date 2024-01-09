@@ -1,5 +1,11 @@
 # React（一）
 
+```js
+@title 'React.js' 
+@description 'React.js全生态学习笔记'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
+
 react是一个构建用户界面的JavaScript库
 
 ## 一、初识react
@@ -4175,3 +4181,23 @@ yarn dev
 ```
 
 一个文件就是一个页面，在pages下增加一个页面，就可以不用配置路由，直接通过`ip/文件名`访问到
+
+
+
+## 五、其它细节
+
+1、react 报错： React Hook useEffect has a missing dependency
+
+```js
+const state = {}
+const getUserInfo = () =>{
+    //....
+    //state值变化
+}
+useEffect(() => {
+    getUserInfo()
+}, [])
+```
+
+错误原因参考：`https://juejin.cn/post/7133968417404485663`
+

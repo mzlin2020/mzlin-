@@ -1,5 +1,11 @@
 # JavaScript
 
+```js
+@title 'JavaScript基础（一）' 
+@description 'JavaScript应知应会基本知识点一'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
+
 ## 一、ES5
 
 ### 1、call、apply

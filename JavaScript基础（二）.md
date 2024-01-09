@@ -1,5 +1,11 @@
 # JavaScript基础（二）
 
+```js
+@title 'JavaScript基础（二）' 
+@description 'JavaScript应知应会基本知识点二'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
+
 ### 1、script的async与defer属性
 
 在HTML中会遇到以下三类script:

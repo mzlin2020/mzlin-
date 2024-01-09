@@ -1,5 +1,11 @@
 # CoderHub项目
 
+```js
+@title 'Koa2项目笔记' 
+@description '基于Koa2的后端笔记，详细记录了登录注册、标签管理、动态发布、用户评论等一系列接口服务'
+@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
+```
+
 coderHub，一个程序员分享生活动态的平台
 
 ## 一、基础构建
