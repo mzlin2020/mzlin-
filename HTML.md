@@ -469,3 +469,50 @@ onUnmounted(() => {
 </style>
 ```
 
+## 14、谷歌翻译
+
+在项目中使用引入谷歌翻译实现国际化(适用于海外项目，国内用户需科学上网)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .skiptranslate iframe.skiptranslate {
+        display: none !important;
+      }
+      body {
+        top: auto !important;
+        min-height: auto !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="text-align: center">翻译的内容</div>
+
+    <!-- 切换下拉框，可自定义样式 -->
+    <div
+      id="google_translate_element"
+      style="text-align: center; margin-top: 100px"
+    ></div>
+  </body>
+  <script>
+    document.cookie = "googtrans=/auto/de"; //指定默认的语言
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        {
+          //需支持的语言类型,结合自己的需求
+          includedLanguages:
+            "de,hi,lt,hr,lv,ht,hu,zh-CN,hy,uk,mg,id,ur,mk,ml,mn,af,mr,uz,ms,el,mt,is,it,my,es,et,eu,ar,pt-PT,ja,ne,az,fa,ro,nl,en-us,en,en-GB,no,be,fi,ru,bg,fr,bs,sd,se,si,sk,sl,ga,sn,so,gd,ca,sq,sr,kk,st,km,kn,sv,ko,sw,gl,zh-TW,pt-BR,co,ta,gu,ky,cs,pa,te,tg,th,la,cy,pl,da,en",
+        },
+        "google_translate_element"
+      );
+    }
+  </script>
+  <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</html>
+```
+
