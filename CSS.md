@@ -8,78 +8,40 @@
 
 ## 一、基础提升
 
-### 1、块元素和行内元素
-
-1、块元素：独占一行，并且自动填满父元素，可以设置margin和padding及高度和宽度
-
-2、行内元素：不会独占一行，width和height会失效，并且在垂直方向的padding和margin会失效
-
-**补充1、：img是行内元素吗？为什么可以设置宽高**
-
-> <img> 是一个**可替换元素**。它的 display 属性的默认值是 inline，但是它的默认分辨率是由被嵌入的图片的原始宽高来确定的，使得它就像 **inline-block** 一样。所以可以设置 border/border-radius、padding/margin、width、height 等等的 CSS 属性。
-
-**补充2：什么是可替换元素**
-
-**可替换元素**（**replaced element**）的展现效果不是由 CSS 来控制的。这些元素是一种外部对象，它们外观的渲染，是独立于 CSS 的。
-
-**理解**：比如`img`标签就是一个典型的可替换元素，浏览器会去找到对应的图片资源，并且替换掉img标签。
-
-可替换元素比较特殊，其宽高由其加载的内容决定，但是CSS可以覆盖其本身的样式
-
-**典型的可替换元素：**`<img>、<video>、<input>`
-
-**补充3：行内块元素**
-
-`display: inline-block`
-
-特点：
-
-1、元素不会独占一行，宽度默认由其内容决定
-
-2、支持设置宽高、外边距、内边距等样式
-
-### 2、选择器优先级
+### 1、选择器优先级
 
 1、css优先级？
 
-7种选择器基础：
+| 选择器                             | 优先级权重 |
+| ---------------------------------- | ---------- |
+| !important                         | 10000      |
+| 内联样式                           | 01000      |
+| ID 选择器                          | 00100      |
+| 类选择器、伪类选择器、属性选择器   | 00010      |
+| 标签选择器、伪元素选择器           | 00001      |
+| 通配选择器、后代选择器、兄弟选择器 | 00000      |
 
-+ id选择器，如 #id {...}
-+ 类选择器，如 .class {...}
-+ 标签选择器，如 div {...}
-+ 属性选择器 ，如a[ href = "segmentfault.com" ] {...}
-+ 伪类选择器，：hover {...}
-+ 伪元素选择器，::before {...}
-+ 通配选择器，如 * {...}
+> 知识点1：增加样式权重的方法：`!important`
+>
+> 用法：`#box{color:red !important;}`
 
-**优先级**: ！important > 内联样式 > ID选择器 >  类选择器( 伪类选择器 )> 标签选择器 (伪元素选择器) 
-
-- 10000：!important；
-- 01000：内联样式；
-- 00100：ID 选择器；
-- 00010：类选择器、伪类选择器、属性选择器；
-- 00001：元素选择器、伪元素选择器；
-- 00000：通配选择器、后代选择器、兄弟选择器；
-
-注1：选择器**从右往左**解析，即从优先级低到优先级高的顺序进行解析
-
-注2：`!important`为开发者提供了一个增加样式权重的方法。
-
-用法：`#box{color:red !important;}`
+> 知识点2：CSS选择器是从右往左解析
+>
+> 例如：#div p .class{}，解析时先从class开始解析
 
 2、选择器都有哪些？
 
 **基础选择器**
 
-- 标签选择器：`h1`
-- 类选择器：`.checked`
-- ID 选择器：`#picker`
-- 通配选择器：`*`
+- 标签选择器：`h1{}`
+- 类选择器：`.checked{}`
+- ID 选择器：`#picker{}`
+- 通配选择器：`*{}`
 
 **组合选择器**
 
-- 相邻兄弟选择器：`A + B`
-- 普通兄弟选择器：`A ~ B`
+- 相邻兄弟选择器：`A + B`，选中的是兄弟B
+- 普通兄弟选择器：`A ~ B`，选中的是除A外所有的兄弟B
 - 子选择器：`A > B`
 - 后代选择器：`A B`
 
@@ -105,101 +67,79 @@
 或者
 
 ```html
-<style>
-    [aaa]{
-        color: aqua;
-    }
-    [bbb]{
-        color: blue;
-    }
-</style>
+<style>[aaa]{ color: aqua;}</style>
 <body>
     <div aaa>hello</div>
-    <div bbb>world</div>
 </body>
 ```
 
-### 3、BFC
+
+
+### 2、BFC
 
 **定义**：
 
-块级格式化上下文（Block Formatting Context，BFC） 是Web页面的可视化CSS渲染的一部分，是块盒子的布局过程发生的区域，也是浮动元素与其他元素交互的区域。
+块级格式化上下文（Block Formatting Context，BFC） 是Web页面的可视化CSS渲染的一部分，是块盒子的布局过程发生的区域，也是浮动元素与其他元素交互的区域——MDN
 
-> (**块级格式化上下文**，是一个独立的渲染区域，让处于 BFC 内部的元素与外部的元素相互隔离，使内外元素的定位不会相互影响)
+块级格式化上下文，它是页面中的一块渲染区域，并且有一套属于自己的渲染规则，它决定了元素如何对齐内容进行布局，以及与其他元素的关系和相互作用。
 
-**理解**
-
-块级格式化上下文，它是页面中的一块渲染区域，并且有一套属于自己的渲染规则，它决定了元素如何对齐内容进行布局，以及与其他元素的关系和相互作用。 当涉及到可视化布局的时候，BFC提供了一个环境，HTML元素在这个环境中按照一定规则进行布局
-
-总结:**BFC是一个独立的布局环境，BFC内部的元素布局与外部互不影响**
+> 简单地讲：**块级格式化上下文**，是一块独立的渲染区域，让处于 BFC 内部的元素与外部的元素相互隔离，使内外元素的布局不会相互影响
 
 **BFC布局规则**
 
-1、内部的Box会在垂直方向上一个接着一个地放置
+1、内部元素垂直方向上，自上而下排列（与文档流排列方式一致）
 
-2、Box垂直方向上的距离由margin决定。属于同一个BFC的两个相邻的Box的margin会发生重叠
+2、BFC中，两个相邻的容器的margin会发生重叠
 
-3、每个盒子的外边框紧挨着包含块的左边框，即使浮动元素也是如此
-
-> BFC 中子元素的 margin box 的左边， 与包含块 (BFC) border box的左边相接触 (子元素 absolute 除外)
+3、每个容器的外边框紧挨着BFC容器的左边框
 
 4、BFC 的区域不会与 float 的元素区域重叠
 
-5、BFC就是页面上的一个隔离的独立容器，容器里面的子元素不会影响到外面的元素，反之亦然
+5、计算BFC高度时，浮动子元素也参与计算
 
-6、计算BFC高度时，考虑BFC所包含的所有元素，浮动子元素也参与计算
+6、BFC是独立的容器，容器内部元素不会影响外部元素
 
 **触发BFC**
 
-| 属性       | 属性值                           |
-| -------- | ----------------------------- |
+文档的根元素：`<html>`
+
+| 属性     | 属性值                         |
+| -------- | ------------------------------ |
 | float    | left、right                    |
 | position | absolute、fixed                |
-| overflow | auto、scroll、hidden（除了visible） |
-| display  | inline-block、table-cell       |
+| overflow | auto、scroll、hidden           |
+| display  | inline-block、table-cell、flex |
 
 **BFC解决的问题**
 
-1、解决浮动元素令父元素高度塌陷的问题
-
-方法：给父元素开启BFC
+1、解决浮动元素令父元素高度塌陷的问题——给父元素开启BFC
 
 原理：计算BFC的高度时，浮动子元素也参与计算
 
-2、非浮动元素被浮动元素覆盖
-
-方法：给非浮动元素开启BFC
+2、非浮动元素被浮动元素覆盖——给非浮动元素开启BFC
 
 原理：BFC的区域不会与float box重叠
 
-3、两栏自适应布局
-
-方法：给固定栏设置固定宽度，给不固定栏开启BFC
+3、两栏自适应布局——给固定栏设置固定宽度，给不固定栏开启BFC
 
 原理：BFC的区域不会与float box重叠
 
-4、外边距垂直方向重合的问题
-
-方法：给上box或者下box任意一个包裹新的box（container）并开启BFC
+4、外边距垂直方向重合的问题——给上box或者下box任意一个包裹新的box（container）并开启BFC
 
 原理：属于同一个BFC的两个相邻的Box会发生重叠
 
-### 4、伪类与伪元素
+
+
+### 3、伪类与伪元素
 
 **伪类**：当已有元素处于某个状态时，为其添加对应的样式，这个状态是根据用户行为而动态变化的
 
 例如：当用户鼠标悬停指定的元素时，`:hover`可以用来描述这个元素的状态
 
 ```html
-//改变第一个li的颜色
-<ul>
-    <li>first</li> 
-    <li>second</li>
-    <li>third</li>
-</ul>
-
+<div>hello</div>
 <style>
-    li:first-child{
+    div:hover{
         color: red;
     }
 </style>
@@ -210,22 +150,17 @@
 例如：`::before`可以在一个元素前增加一些文本，并为这些文本添加样式。（虽然用户可以看到这些文本，但是这些文本实际上不在DOM树上）
 
 ```html
-//改变第一个字母的颜色
-
-<p>Hello World</p>
-
+<div>Hello</div>
 <style>
-    p::first-letter {
-        color: royalblue;
+    div::after {
+        content: "world";
     }
 </style>
 ```
 
-这个地方使用伪元素，看起来好像是创建了一个`<span>`包裹了‘ H ’，但实际上DOM树上并不存在这个元素
-
 从上述的例子中可以看出，伪类的操作对象是DOM树中已有的元素，而伪元素则创建了一个DOM树外的元素。因此，伪类与伪元素的区别在于：有没有创建一个文档树之外的元素
 
-常见的伪类和伪元素
+**常见的伪类和伪元素**
 
 | 伪元素            | 说明                           |
 | -------------- | ---------------------------- |
@@ -236,27 +171,20 @@
 | ：：placeholder  | 设置对象文字占位符的样式                 |
 | ：：selection    | 设置对象被选择时的颜色                  |
 
-| 伪类           | 说明                         |
-| ------------ | -------------------------- |
-| ：link        | 设置超链接a在未被访问前的样式            |
-| ：visited     | 设置超链接a在其链接地址已被访问过时的样式      |
-| ：hover       | 设置元素在其鼠标悬停是的样式             |
-| ：active      | 设置元素在被用户激活时的样式（鼠标点击后释放的事件） |
-| ：focus       | 设置元素在称为输入焦点时的样式            |
-| ：first-child | 匹配父元素的第一个子元素               |
-| ：last-child  | 匹配父元素的最后一个子元素              |
+| 伪类           | 说明                                                 |
+| -------------- | ---------------------------------------------------- |
+| ：link         | 设置超链接a在未被访问前的样式                        |
+| ：visited      | 设置超链接a在其链接地址已被访问过时的样式            |
+| ：hover        | 设置元素在其鼠标悬停是的样式                         |
+| ：active       | 设置元素在被用户激活时的样式（鼠标点击后释放的事件） |
+| ：focus        | 设置元素在称为输入焦点时的样式                       |
+| ：first-child  | 设置元素是其父元素的第一个子元素时的样式             |
+| ：last-child   | 设置元素是其父元素最后一个子元素时的样式             |
+| ：nth-child(n) | 设置元素是其父元素的第n个子元素时的样式              |
 
-### 5、高度塌陷
 
-**解决方案：**
 
-1、创建父级BFC
-
-2、为父级设置高度
-
-3、通过增加尾元素清除浮动？
-
-### 6、层叠上下文
+### 4、层叠上下文
 
 ![](img/%E5%89%8D%E7%AB%AF%E6%80%BB%E7%BB%93/%E5%B1%82%E5%8F%A0%E4%B8%8A%E4%B8%8B%E6%96%87.jpg)
 
@@ -279,11 +207,13 @@
 - `will-change` 中指定了任意 CSS 属性，即便你没有直接指定这些属性的值
 - `-webkit-overflow-scrolling` 属性被设置 `touch`的元素
 
-### 7、回流与重绘
+
+
+### 5、回流与重绘
 
 **回流（reflow）**
 
-当render tree中的一部分（或全部）因为元素的尺寸、布局、隐藏等改变而需要重新构建，就称为回流。
+当render tree中的一部分（或全部）因为元素的尺寸、布局、显示隐藏等改变而需要重新构建，就称为回流（又称重排）。
 
 注：每个页面至少需要一次回流，就是在页面第一次加载的时候
 
@@ -323,15 +253,13 @@
 
 例如获取一个元素的scrollTop、scrollLeft等属性，浏览器为了保证值的正确也会回流取得最新的值
 
-5、页面的初次渲染
-
-无法避免
-
-6、浏览器窗口尺寸变化
+5、浏览器窗口尺寸变化
 
 resize事件也会引起回流
 
-### 8、@import和link
+
+
+### 6、@import和link
 
 ```css
 /*这两种相同 */
@@ -343,35 +271,29 @@ resize事件也会引起回流
 
 2、link 导入的样式会在页面加载时同时加载，@import 导入的样式需等页面加载完成后再加载（可能导致页面闪烁）；
 
-3、link 没有兼容性问题，@import 不兼容 ie5 以下；
+3、link 没有兼容性问题，@import 低版本的浏览器可能不支持；
 
 4、link 可以通过 JS 操作 DOM 动态引入样式表改变样式，而@import不可以。
 
-### 10、CSS隐藏元素
+
+
+### 7、CSS隐藏元素
 
 方式一：`overflow：hidden`
 
-说明：overflow的hidden用来隐藏元素溢出部分，占据空间，无法响应点击事件
+说明：overflow的hidden用来隐藏元素溢出部分，占据空间，无法响应事件
 
 方式二：`opacity: 0`
 
-```css
-#box {
-    opacity: 0
-}
-```
-
-opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了元素
+opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了元素，可以响应事件
 
 方式三：`display: none`
 
-```css
-#box {
-    display: none
-}
-```
-
 彻底隐藏了元素，不占据空间，也不会影响布局
+
+方式四：`visibility：hidden`
+
+元素隐藏但仍然占据空间，无法响应事件
 
 方式四：position
 
@@ -396,11 +318,19 @@ opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了
 }
 ```
 
-### 11、雪碧图
+其他方式：css裁剪元素、transform: scale(0,0)缩小元素
 
-雪碧图（CSS Sprites），其目的是将多张比较小的图片，合并到一张大的图片上，大的图片背景透明。使用的时候，通过把该张图片当做背景图片，通过不同的`background-postion`定位展示那部分的图片
 
-**优点**：降低服务器压力、减少网络请求，页面渲染更快
+
+### 8、雪碧图
+
+雪碧图（CSS Sprites，又称精灵图），其目的是将多张比较小的图片，合并到一张大的图片上，大的图片背景透明。使用的时候，通过把该张图片当做背景图片，通过不同的`background-postion`定位展示那部分的图片
+
+**优点**：
+
+1、降低服务器压力、减少网络请求，从而提高页面性能
+
+2、减少页面图片所占据的字节
 
 **缺点**：
 
@@ -418,16 +348,12 @@ opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了
     border:1px black solid;
     background: url('./img/cookie.jpg')-200px -200px;
 }
-#box2 {
-    width: 100px;
-    height: 100px;
-    border:1px black solid;
-    background: url('./img/cookie.jpg') -200px -200px;
-}
 </style>
 ```
 
-### 12、less基本使用
+
+
+### 9、less基本使用
 
 | 语法         | 示例(说明)                                                                         |
 | ---------- | ------------------------------------------------------------------------------ |
@@ -441,19 +367,21 @@ opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了
 | 继承         | 定义：`.myColor: { ... }`  继承使用： `.box { &: extend(.myColor)  }`                  |
 | 注释         | `//`注释与`/**/`都可以使用                                                             |
 
-### 13、absolute和fixed
 
-共同点：都会脱离当前文档流、触发BFC
 
-区别：
+### 10、position属性
 
-1、相对定位的元素不同：absolute是相对于离它最近的有定位的父元素进行定位（如果没有定位的元素则相对于浏览器窗口）；fixed是相对于浏览器窗口定位
+| 属性值   | 描述                                                         |
+| -------- | ------------------------------------------------------------ |
+| absolute | 绝对定位，脱离文档流，触发BFC。相对于离它最近的有定位的父元素进行定位（如果没有定位的元素则相对于浏览器窗口） |
+| fixed    | 固定定位，脱离文档流，触发BFC，开启fixed的元素不会滑动，始终固定在同一个位 |
+| relative | 相对定位，相对于其原来的位置进行定位                         |
+| static   | 默认值，没有定位，元素出现在正常的文档流中                   |
+| inherit  | 规定从父元素继承position属性的值                             |
 
-2、在有滚动条的页面中，absolute会跟随页面滑动，fixed不会滑动，始终固定在同一个位置
 
-### 14、css定位
 
-### 15、继承性
+### 11、继承性
 
 **1、css的某些属性具备继承性**
 
@@ -469,36 +397,24 @@ opacity是用来设置元素透明度的，设置透明度为0相当于隐藏了
 
 ```css
 /*例如：border不具备继承性，我们使它可以被继承*/
-  <style>
-    div#box {
-      color: red;
-      border: 1px solid black;
-    }
-  </style>
+    <style>
+      div#box {
+        color: red;
+        border: 1px solid black;
+      }
+      span {
+        border: inherit;
+      }
+    </style>
 
-<body>
-  <div id="box">
-    <span>span</span>
-    <p>p元素</p>
-  </div>
-</body>
+    <div id="box">
+      <span>span</span>
+    </div>
 ```
 
-使border可以继承到span
 
-```css
-  <style>
-    div#box {
-      color: red;
-      border: 1px solid black;
-    }
-    span {
-      border: inherit;
-    }
-  </style>
-```
 
-### 16、css函数
+### 12、css函数
 
 **var**
 
@@ -547,45 +463,9 @@ img {
 }
 ```
 
-### 17、margin上下传递
 
-案例理解：一个父盒子里放置着子盒子
 
-如果给子盒子设置`margin-left/right`，那么子盒子将相对于父盒子做出偏移
-
-1、但是如果子盒子的顶部与父元素重叠，设置`margin-top`，那么子盒子的这个值会传递给父盒子，最终结果是父盒子做出偏移
-
-2、如果子盒子的底部线和父盒子的底部线重叠，并且父盒子的高度是auto，那么这个子盒子的这个css样式依然会传递给父盒子
-
-**如何解决？**
-
-1、给父元素设置padding-top/padding-bottom
-
-2、给父元素设置border
-
-3、触发BFC
-
-**建议**
-
-1、margin一般用来设置兄弟元素之间的间距
-
-2、padding一般用来设置父子之间的间距
-
-### 18、margin上下的折叠
-
-垂直方向上相邻的两个盒子，一个设置margin-bottom，一个设置margin-top，会被合并为一个值（取最大的那一个）,这种现象叫做折叠
-
-### 19、行内非替换元素
-
-诸如：span等行内非替换元素，有以下的特殊点
-
-1、设置padding，左右生效，上下生效但不占据空间（意味着，如果span紧挨着父元素，设置padding-top后依然挨着）
-
-2、设置border，左右生效，上下生效但不占据空间
-
-3、设置margin，左右生效，但是上下不生效
-
-### 20、长文本省略号显示
+### 13、长文本省略号显示
 
 单行——固定的三行文本
 
@@ -601,11 +481,13 @@ text-overflow: ellipsis;
 overflow: hidden;
 text-overflow: ellipsis;
 display: -webkit-box;
--webkit-line-clamp: 2;
+-webkit-line-clamp: 2; // 显示的行数
 -webkit-box-orient: vertical;
 ```
 
-### 21、结构伪类
+
+
+### 14、结构伪类
 
 **1、nth-child()** 
 
@@ -684,11 +566,11 @@ ul li:nth-child(2n) {
 
 :not(x)，其中x是一个简单选择器，除去x，其他的元素都被选中
 
-### 22、web fonts
+
+
+### 15、web fonts
 
 在设置`font-family`字体时，感觉系统的提供的字体不满足个性化需求，也可以引入网络字体
-
-使用过程：
 
 将字体放在对应的目录中，通过`@font-face`来引入字体，并设置格式，并通过`font-family`来使用引进的字体
 
@@ -713,13 +595,15 @@ ul li:nth-child(2n) {
 
 解决：为了使所有浏览器都能够识别，我们需要该字体的其他所有格式的文件
 
-`https://font.qqe2.com/#`（网络上有一些网站能够识别字体文件的其他格式，并返回，例如该地址）
+> `https://font.qqe2.com`，通过一些网站将文件转换为其他格式，并引入项目
 
 当在引入所有的文件后，css有一个固定的编写方式
 
 ![](img/css/web-font字体.jpg)
 
-### 23、字体图标
+
+
+### 16、字体图标
 
 字体图标有来源于字体，具备字体的各种优势
 
@@ -729,57 +613,29 @@ ul li:nth-child(2n) {
 
 3、占用空间较小
 
-在阿里巴巴矢量图标图可以找到大量的图标
-
-使用方式：
+**示例：阿里巴巴矢量图标库**
 
 1、直接下载为`SVG/Png/AI`等格式，并直接引入页面（不推荐）
 
-2、将想要的图标加入购物车，并下载为代码
+2、下载图标资源到本地并引用
 
-**使用过程**
-
-具体的使用步骤`demo_index.html`都有讲清楚
-
-1、方式一，直接使用`.ttf`文件
++ 首先在`https://www.iconfont.cn/`资源管理 => 我的项目 => 新建项目（默认配置即可）
++ 在网站海量的图标中任选图标加入购物车 => 添加至新建的项目
++ 下载图标项目文件并解压至代码中
 
 ```html
- <head>
-    <style>
-        @font-face {
-            font-family: 'iconfont';
-            src: url('./download/font_mgurytal7ys/iconfont.ttf');
-        }
-        .iconfont {
-            font-family: "iconfont" !important;
-            font-size: 16px;
-            font-style: normal;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-    </style> 
-</head>
-<body>
-    <span class="iconfont">&#xe68e;</span>
-</body>
+<!-- 引用资源 -->
+<link rel="stylesheet" href="./font/iconfont.css" />
+
+<!-- 使用图标: 该&#xe6b8;可在“我的项目”中查找 -->
+<span class="iconfont">&#xe6b8;</span>
 ```
 
-`&#xe68e;` Unicode 编码从对应的下载结果中`demo_index.html`获取
+> 更多的使用方式下载的代码中`demo_index.html`都有说明
 
-2、方式二、通过Font class的方式
 
-```html
-<head>
-    <link rel="stylesheet" href="./download/font_mgurytal7ys/iconfont.css">
-</head>
-<body>
-    <span class="iconfont icon-xxx"></span>
-</body>
-```
 
-`iconfont icon-xxx`这两个类名具体要查看css文件
-
-### 24、Emmet语法
+### 17、Emmet语法
 
  Emmet语法的前身是Zen coding,它使用缩写,来提高html/css的编写速度, Vscode内部已经集成该语法 
 
@@ -853,16 +709,10 @@ ul li:nth-child(2n) {
 + h100——height：100px;
   
   大致都可以通过css样式进行推断
+  
+  
 
-### 25、定位元素
-
-注意事项
-
-1、当position设置为absolute/fixed时，行内元素可以设置宽高（没有设置则默认由内容决定）
-
-2、设置position：absolute，元素的`top/right/bottom/left`是相对于开启了定位的祖先元素进行偏移，如果祖先元素没有开启定位元素的，则相对于视口定位
-
-### 26、行内元素间的空格
+### 18、行内元素间的空格
 
 当多个行内元素在同一个中显示，且编写的代码如下所示时，那么他们之间就会存在空格
 
@@ -913,16 +763,20 @@ body {
 }
 ```
 
-### 27、vertival-align
+
+
+### 19、vertival-align
 
 该属性会影响在一个行盒(line box)中，行内块级元素的垂直方向位置。该属性是设置在line box中的行内级元素上
 
-> 行盒：就是一个块级元素独占一行，但是这一行中可能存在span等行内元素、也可能存在img等行内块级元素。但是这些行内级、行内块级的高度往往一致。行盒就他们都包裹在内，并把这一行的块级元素撑高。
+> 行盒：就是一个块级元素独占一行，但是这一行中可能存在span等行内元素、也可能存在img等行内块级元素。但是这些行内级、行内块级的高度往往一致。行盒将他们都包裹在内，并把这一行的块级元素撑高。
 
-案例分析
+**案例分析**
+
+![vertical-align1](img/css/vertical-align1.jpg)
 
 ```html
-![vertical-align1](img/css/vertical-align1.jpg)<head> 
+<head> 
   <style>
     #container {
       border: 1px solid solid;
@@ -938,17 +792,12 @@ body {
     <span>xxxxxxx</span>
     <img src="./img/others/test_img.jpg" alt="">
   </div>
-
 </body>
 ```
 
-最终效果:
-
-![](img/css/vertical-align1.jpg)
-
 可以看到最终图片下方有一段没被覆盖到的空间，为什么图片没有完全对齐底部呢？遵循什么样的垂直对齐方式？
 
-答案：默认的对齐方式是基线对齐方式（vertical-align：baseline），可简单理解为x字母的下方就是基线的位置
+默认的对齐方式是基线对齐方式（vertical-align：baseline），可简单理解为x字母的下方就是基线的位置
 
 ![](img/css/vertical-align2.jpg)
 
@@ -958,7 +807,9 @@ body {
 
 解决方案：将`vertival-align`设置为`top/bottom/middle`都可以解决，或者直接将图片改为块级元素
 
-### 28、浏览器前缀
+
+
+### 20、浏览器前缀
 
 官方文档专业术语：vendor-specific-extensions(供应商特定扩展)
 
@@ -975,9 +826,13 @@ body {
 
 添加了对应的前缀，就只有对应的浏览器才能解析使用
 
-> 一般而言，使用某一CSS属性时，如果对应的浏览器及版本兼容性呈现黄色，说明需要通过浏览器前缀来使其适配该属性。不过，后来出现的模块化打包工具会自动识别CSS与浏览器的兼容情况，并自动添加前缀
+> https://caniuse.com/兼容性查询
+>
+> 一般而言，使用某一CSS属性时，如果对应的浏览器及版本兼容性呈现黄色，说明需要通过浏览器前缀来使其适配该属性。不过，后来出现的模块化打包工具（如postCss）会自动识别CSS与浏览器的兼容情况，并自动添加前缀
 
-### 29、媒体查询
+
+
+### 21、媒体查询
 
 媒体查询是一种提供给开发者针对不同设备需求进行定制化开发的一个接口，开发者可以根据设备的类型或者特性来修改页面
 
@@ -1021,7 +876,7 @@ body {
 
 在使用媒体查询时，必须指定要使用的媒体类型（可选），默认为all类型。
 
-+ all：适用与所有设置
++ all：适用于所有设置
 + print：适用于在打印预览模式下在屏幕上查看的分页材料和文档
 + screen：主要用于屏幕
 + speech：主要用于语音合成器
@@ -1036,7 +891,9 @@ body {
 
 > 注：也可以多条件匹配，需用到and or not逻辑运算符
 
-### 30、css单位
+
+
+### 22、css布局单位
 
 一般而言，可以将单位分为`绝对单位`和`相对单位`
 
@@ -1093,37 +950,9 @@ html {
 }
 ```
 
-### 31、移动端视口
 
-移动端视口大致可以划分为三种情况：
 
-+ 布局视口（layout viewport）
-+ 视觉视口（visual viewport）：显示在可见区域的视口
-+ 理想视口（ideal layout）：当布局视口与视觉视口相等时，就是理想视口
-
-**布局视口**
-
-<img src="img/css/布局视口.jpg" style="zoom:50%;" />
-
-布局视口默认是980px
-
-在PC端写入一些布局，当进入移动端时为了可以完整显示在页面中，它会按照宽度等比例缩小页面布局。
-
-但是着违背了我们的期望，我们往往希望在pc端显示多大，在移动端就显示多大，所以理想视口才是我们需要的
-
-**理想视口**
-
-当布局视口与视觉视口相等时，就是理想视口。
-
-怎么设置成理想视口呢？设置`meta中的viewport`
-
-![](img/css/理想视口的设置.jpg)
-
-`<meta name="viewport" content="width=device-width, initial-scale=1.0">`
-
-我们经常在html文件中看到这个标签，就是为了保证布局视口与用户的屏幕视口相等的
-
-### 32、移动端适配方案
+### 23、移动端适配方案
 
 + 方案一：百分比设置（不推荐）
 + 方案二：rem单位 + 动态html的font-szie
@@ -1196,17 +1025,15 @@ html {
   </style>
 ```
 
-问题：html的font-size的初始值应该设置为多少好呢？
+> 问题：html的font-size的初始值应该设置为多少好呢？
+>
+> 答：根据设计稿，一般的设计稿视口为375px或者750px，那么html的font-size可以设置为37.5或者75
+>
+> 问题：假设html的font-szie设置为37.5px，设计稿中存在一个100px的盒子，换算成rem为多少呢？
+>
+> 答：100 / 37.5 rem
 
-答：根据设计稿，一般的设计稿视口为375px或者750px，那么html的font-size可以设置为37.5或者75
-
-问题：假设html的font-szie设置为37.5px，设计稿中存在一个100px的盒子，换算成rem为多少呢？
-
-答：100 / 37.5 rem
-
-问题：开发中那么多的单位需要换算成rem，很麻烦，有什么办法解决吗？
-
-使用以下方式：
+如果项目中突然有需要适配移动端的方案，也可以批量将px替换成rem。使用以下方式：
 
 1、使用less的函数、混入、映射解决
 
@@ -1228,11 +1055,13 @@ html {
 
 直接引用该库即可，该库的核心代码就是方式二的思想
 
-**33、vw的单位换算**
+
+
+**23、vw的单位换算**
 
 vw、wh是相对于视口的单位，一般开发中我们仅用vw即可。
 
-在现代浏览器中，我们通常使用的是vw，该布局相比于rem布局更加简洁，但是仍然进行换算
+在现代浏览器中，我们通常使用的是vw，该布局相比于rem布局更加简洁，但是仍然需要进行换算
 
 **方案一：手动换算**
 
@@ -1260,6 +1089,319 @@ vw、wh是相对于视口的单位，一般开发中我们仅用vw即可。
 **方案四：vscode插件**
 
 使用`px to rem`这个vscode插件，并根据设计稿的调整该插件是基于375px还是750px
+
+
+
+### 24、css画图
+
+**三角形**
+
+通过改变参数可以做出各种形状的三角形
+
+原理：设置div的宽高均为0，调整div四个方向的border，并适当隐藏不需要的border，就可以做出三角形
+
+```html
+<style>
+    div {
+        width: 0px;
+        height: 0px;
+        border-bottom: 100px solid red;
+        border-right: 100px solid transparent; /*transparent：透明颜色*/
+        border-top: 100xpx solid transparent;
+        border-left: 100px solid transparent;
+    }
+</style>
+<div></div>
+```
+
+**线条**
+
+```html
+<style>
+    div{
+        width: 200px;
+        border-bottom: 1px black solid;
+    }
+</style>
+<div></div>
+```
+
+当然也可以用`<hr>`来画一条线（全屏）
+
+**圆形**
+
+```html
+<style>
+    div{
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 1px black solid;
+    }
+</style>
+<div></div>
+```
+
+
+
+### 25、清除浮动
+
+1、什么是浮动？
+
+**浮动元素会脱离文档流并向左/向右浮动，直到碰到父级元素或者另一个浮动元素**
+
+2、为什么要清除浮动？
+
+因为浮动元素会脱离正常的文档流，并不会占据文档流的位置。
+
+一个元素的高度默认由其子元素的高度决定，当子元素浮动时，父元素就是去了高度。造成所谓的高度塌陷。对页面的布局造成影响。所以，需要清除浮动造成的影响
+
+**1、clear清除浮动**
+
+clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素，原理是在被清除浮动的元素上边或者下边添加足够的清除空间（clear不是直接应用在浮动元素上的）
+
+方式一：增加一个没有高度的div，并给其设置`clear:both`
+
+原理：这个div的左边右边不允许存在浮动元素，那么浏览器为了满足其需求，会让其渲染在浮动元素下方。间接就把父元素的高度撑起来了
+
+```html
+<style>
+    .son1,.son2{
+        width: 100px;
+        height: 100px;
+        border: 1px black solid;
+        float: left;
+    }
+    .son3{
+        clear: both;
+    }
+</style>
+<div class="parent">
+    <div class="son1"></div>
+    <div class="son2"></div>
+    <div class="son3"></div>     <!-- 清除浮动应用在非浮动元素上-->
+</div>
+```
+
+缺点：增加了一个div标签，增加了页面的渲染负担
+
+方式三：利用伪元素+ 方式一
+
+```html
+<style>
+.parent::after {
+  content: '';
+  height: 0;
+  display: block;
+  clear: both;
+}
+</style>
+```
+
+利用伪元素替代方式一的div标签。伪元素是不会被渲染出来的，很好地提高了性能
+
+**2、BFC清除浮动**
+
+原理：开启BFC的元素内部，浮动元素也参与高度计算
+
+一般使用：给父元素设置`overflow:auto`或者`overflow:hidden`来开启BFC
+
+**3、暴力清除浮动**
+
+给父元素设置固定高度
+
+
+
+### 26、requestAnimationframe
+
+requestAnimationframe（请求动画帧），主要用于实现动画
+
+> MDN：
+>
+> `window.requestAnimationFrame()`告诉浏览器——你希望执行一个动画，并且要求浏览器在下次重绘之前调用指定的回调函数更新动画。该方法需要传入一个回调函数作为参数，该回调函数会在浏览器下一次重绘之前执行
+
+语法：`window.requestAnimationFrame(callback)`，callback是**下一次重绘之前更新动画帧所调用的函数**。该回调函数会被传入DOMHighResTimeStamp参数，它表示requestAnimationFrame() 开始去执行回调函数的时刻。
+
+当需要取消动画时，使用`cancelAnimationFrame(id)`，与定时器类似
+
+```js
+// 执行动画
+const id = window.requestAnimationFrame(() => {
+    // 动画相关操作
+    // 通常需要回调window.requestAnimationFrame
+}) 
+
+// 取消动画
+cancelAnimationFrame(id)
+```
+
+**示例**
+
+```js
+// box往右平移动画
+const btn = document.getElementsByTagName("button")[0];
+const box = document.getElementsByTagName("div")[0]; //需开启绝对定位
+
+btn.addEventListener("click", () => {
+    let timer = null; //标识
+    let left = 0;
+
+    const callback = () => {
+        box.style.left = `${left++}px`;
+        // 回调执行
+        if (parseInt(box.style.left) < 200) {
+            window.requestAnimationFrame(callback);
+        } else {
+            // 取消动画
+            window.cancelAnimationFrame(timer);
+        }
+    };
+    timer = window.requestAnimationFrame(callback);
+});
+```
+
+
+
+**前端动画方案**
+
+css动画：transition、animation
+
+js动画：基于定时器改变DOM的动画、canvas动画、requestAnimationframe
+
+其中，requestAnimationframe动画要比定时器动画流畅许多
+
+**requestAnimationframe动画的优势**
+
+定时器`setTimeout(callback, time)`动画和`requestAnimationFrame(callback)`动画十分相似。都是每个一段时间执行callback去操作DOM实现动画（两者均需递归调用）
+
+但是定时器动画可以**自由**设置时间间隔，而requestAnimationFrame的间隔由浏览器（或者说显示器的刷新率）决定（60hz约17毫秒）
+
+定时器动画容易出现**抖动**，原因在于定时器任务被放入异步队列，只有当主线程任务执行完后才会执行队列中的任务，因此实际执行时间总是比设定时间要晚，并且，定时器的固定时间间隔不一定与屏幕刷新间隔时间相同，会引起丢帧
+
+而`requestAnimationFrame`能够做到，精准严格的卡住浏览器重绘的时间，在重绘之前执行
+
+
+
+### 27、css优化
+
+**优化加载性能**
+
+1、对css进行压缩，减少文件体积
+
+2、复合样式属性的效率比使用多个单一样式属性低（但几乎可以忽略不计）
+
+3、减少使用`@import`，而采用`<link>`（link 导入的样式会在页面加载时同时加载，@import 导入的样式需等页面加载完成后再加载（可能导致页面闪烁））
+
+**选择器优化**
+
+由于css选择器是从右往左进行匹配。**嵌套选择器**：过度嵌套选择器可能会增加样式规则的匹配难度，导致渲染性能下降
+
+```css
+// 不推荐写法
+aaa bbb > #id {}
+// 修改后的写法
+#id {}
+```
+
+**渲染性能**
+
+1、减少页面的重绘、重排
+
+2、不滥用性能损耗高的属性：动画过渡、阴影渐变、布局属性position等
+
+3、图片图标资源过多时考虑使用雪碧图
+
+4、合理使用web字体
+
+
+
+### 28、postCss
+
+postCss是css的转换编译器。类似于babel对js的转换，它能够实现对css代码的分析和转换。同时，它也提供了强大的插件机制来做自定义转换
+
+应用场景：
+
+1、转换代码适配低版本浏览器。（利用postCss的autoprefixer插件可以自动给css添加浏览器前缀）
+
+2、转换开发者编写的最新版本的css特性
+
+更多应用场景可以查看postCss插件市场：`https://www.postcss.parts/`
+
+
+
+### 29、盒模型
+
+页面渲染时，dom 元素所采用的 **布局模型**。可通过`box-sizing`进行设置。根据计算宽高的区域可分为：
+
+- `content-box` (W3C 标准盒模型)
+- `border-box` (IE 盒模型)
+- `padding-box` (FireFox 曾经支持)
+- `margin-box` (浏览器未实现)
+
+**盒子的组成**
+
+四部分：margin（外边距）、border（边框）、padding（内边距）、content（内容）
+
+margin、border、padding是css属性，因此可以通过这三个属性来控制盒子的这三个部分。而content则是HTML元素的内容。
+
+**两种盒模型**
+
+盒子的宽度和高度的计算方式由box-sizing属性控制,
+
+css的盒模型包括**IE盒子模型**和**标准的W3C盒子**
+
+1、**标准盒模型**：
+
+```css
+box-sizing:content-box
+```
+
+content-box：默认值，width和height属性分别应用到元素的内容框，在宽度和导读之外绘制元素的内边距、边框、外边距
+
+```css
+width = content-width
+height = content-height
+```
+
+2、**IE盒模型**
+
+```css
+box-sizing:border-box
+```
+
+border-box:为元素设定的width和height属性决定了元素的边框盒。就是说，为元素指定的任何内边距和边框都将在已设定的高度和宽度内进行绘制。
+
+```css
+width = content-width + padding-width + border-width
+heigth = content-heigth + padding-heigth + border-heigth
+```
+
+**盒子成分分析**
+
+margin、padding、border都包含：top、bottom、left、right四个方向
+
+```css
+/*margin实例*/
+margin-top /*上外边距*/
+margin-bottom /*下外边距*/
+margin-left /*左外边距*/
+margin-right /*右外边距*/
+```
+
+简写
+
+```css
+/*以margin为例*/
+margin:10px ; /*设置四条边的外边距相等*/
+
+margin:10px 5px;  /*设置上下10px,左右5px*/
+
+margin:10px 8px 5px; /*设置上外边距10px，左右外边距8px 下外边距5px*/
+
+margin:10px 8px 5px 3px; /*设置顺序为上、右、下、左的外边距*/
+```
+
+## 
 
 ## 二、居中
 
@@ -1374,7 +1516,7 @@ vw、wh是相对于视口的单位，一般开发中我们仅用vw即可。
 }
 ```
 
-**B.块级元素：table**
+**D.块级元素：table**
 
 ```css
 .parent {
@@ -1422,7 +1564,6 @@ vw、wh是相对于视口的单位，一般开发中我们仅用vw即可。
     right: 0;
     top: 0;
     bottom: 0;
-    margin:
 }
 ```
 
@@ -1459,139 +1600,9 @@ vw、wh是相对于视口的单位，一般开发中我们仅用vw即可。
 }
 ```
 
-## 三、css画图
 
-### 3.1 画一个三角形
 
-通过改变参数可以做出各种形状的三角形
-
-原理：设置div的宽高均为0，调整div四个方向的border，并适当隐藏不需要的border，就可以做出三角形
-
-```html
-    <style>
-        div {
-            width: 0px;
-            height: 0px;
-            border-bottom: 100px solid red;
-            border-right: 100px solid transparent; /*transparent：透明颜色*/
-            border-top: 100xpx solid transparent;
-            border-left: 100px solid transparent;
-        }
-    </style>
-</head>
-<body>
-    <div></div>
-</body>
-```
-
-### 3.2 画一条线
-
-```html
-    <style>
-        div{
-            width: 200px;
-            border-bottom: 1px black solid;
-        }
-    </style>
-</head>
-<body>
-    <div></div>
-</body>
-```
-
-当然也可以用`<hr>`来画一条线（全屏）
-
-### 3.3 画一个圆
-
-```javascript
-    <style>
-        div{
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 1px black solid;
-        }
-    </style>
-</head>
-<body>
-    <div></div>
-
-</body>
-```
-
-## 四、盒模型
-
-页面渲染时，dom 元素所采用的 **布局模型**。可通过`box-sizing`进行设置。根据计算宽高的区域可分为：
-
-- `content-box` (W3C 标准盒模型)
-- `border-box` (IE 盒模型)
-- `padding-box` (FireFox 曾经支持)
-- `margin-box` (浏览器未实现)
-
-**盒子的组成**
-
-四部分：margin（外边距）、border（边框）、padding（内边距）、content（内容）
-
-margin、border、padding是css属性，因此可以通过这三个属性来控制盒子的这三个部分。而content则是HTML元素的内容。
-
-**两种盒模型**
-
-盒子的宽度和高度的计算方式由box-sizing属性控制,
-
-css的盒模型包括**IE盒子模型**和**标准的W3C盒子**
-
-1、**标准盒模型**：
-
-```css
-box-sizing:content-box
-```
-
-content-box:默认值，width和height属性分别应用到元素的内容框，在宽度和导读之外绘制元素的内边距、边框、外边距
-
-```css
-width = content-width
-height = content-height
-```
-
-2、**IE盒模型**
-
-```css
-box-sizing:border-box
-```
-
-border-box:为元素设定的width和height属性决定了元素的边框盒。就是说，为元素指定的任何内边距和边框都将在已设定的高度和宽度内进行绘制。
-
-```css
-width = content-width + padding-width + border-width
-heigth = content-heigth + padding-heigth + border-heigth
-```
-
-**盒子成分分析**
-
-margin、padding、border都包含：top、bottom、left、right四个方向
-
-```css
-/*margin实例*/
-margin-top /*上外边距*/
-margin-bottom /*下外边距*/
-margin-left /*左外边距*/
-margin-right /*右外边距*/
-```
-
-简写
-
-```css
-/*以margin为例*/
-margin:10px ; /*设置四条边的外边距相等*/
-
-margin:10px 5px;  /*设置上下10px,左右5px*/
-
-margin:10px 8px 5px; /*设置上外边距10px，左右外边距8px 下外边距5px*/
-
-margin:10px 8px 5px 3px; /*设置顺序为上、右、下、左的外边距*/
-```
-
-## 五、CSS动画
+## 三、CSS动画
 
 ### 5.1 CSS动画-animation
 
@@ -1843,75 +1854,9 @@ JS动画是逐帧动画，**在时间帧上绘制内容**，一帧一帧的，�
 
 总结：**CSS动画的渲染成本小，执行效率高。所以只要能用CSS实现的动画，就不要采用JS去实现**
 
-## 六、清除浮动
 
-1、什么是浮动？
 
-**浮动元素会脱离文档流并向左/向右浮动，直到碰到父级元素或者另一个浮动元素**
-
-2、为什么要清除浮动？
-
-因为浮动元素会脱离正常的文档流，并不会占据文档流的位置。
-
-一个元素的高度默认由其子元素的高度决定，当子元素浮动时，父元素就是去了高度。造成所谓的高度塌陷。对页面的布局造成影响。
-
-所以，需要清除浮动造成的影响
-
-**1、clear清除浮动**
-
-clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素，原理是在被清除浮动的元素上边或者下边添加足够的清除空间（clear不是直接应用在浮动元素上的）
-
-方式一：增加一个没有高度的div，并给其设置`clear:both`
-
-原理：这个div的左边右边不允许存在浮动元素，那么浏览器为了满足其需求，会让其渲染在浮动元素下方。间接就把父元素的高度撑起来了
-
-```html
-<style>
-    .son1,.son2{
-        width: 100px;
-        height: 100px;
-        border: 1px black solid;
-        float: left;
-    }
-    .son3{
-        clear: both;
-    }
-</style>
-<div class="parent">
-    <div class="son1"></div>
-    <div class="son2"></div>
-    <div class="son3"></div>     <!-- 清除浮动应用在非浮动元素上-->
-</div>
-```
-
-缺点：增加了一个div标签，增加了页面的渲染负担
-
-方式三：利用伪元素+ 方式一
-
-```html
-<style>
-.parent::after {
-  content: '';
-  height: 0;
-  display: block;
-  clear: both;
-}
-</style>
-```
-
-利用伪元素替代方式一的div标签。伪元素是不会被渲染出来的，很好地提高了性能
-
-**2、BFC清除浮动**
-
-原理：开启BFC的元素内部，浮动元素也参与高度计算
-
-一般使用：给父元素设置`overflow:auto`或者`overflow:hidden`来开启BFC
-
-**3、暴力清除浮动**
-
-给父元素设置固定高度
-
-## 七、css布局
+## 四、css布局
 
 ### 7.1 两列布局
 
@@ -1956,8 +1901,6 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 ```
 
 原理：开启BFC区域不会与浮动区域重叠
-
-缺点：浮动脱
 
 实现方式三：使用绝对定位
 
@@ -2048,6 +1991,8 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
   </style>
 ```
 
+
+
 ### 7.2 三列布局
 
 **1、两列定宽，一列自适应**
@@ -2130,6 +2075,8 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 </style>
 ```
 
+
+
 **2、两侧定宽，中间自适应**
 
 #### 双飞翼布局
@@ -2199,6 +2146,8 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
     <div id="footer"></div>
 </body>
 ```
+
+
 
 #### 圣杯布局
 
@@ -2318,6 +2267,8 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 </style>
 ```
 
+
+
 ### 7.3 多列布局
 
 #### 多列等宽布局
@@ -2365,6 +2316,8 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 
 缺点：需要清除浮动
 
+
+
 #### 九宫格布局
 
 1、使用flex布局
@@ -2408,6 +2361,8 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
     </div>
 </body>
 ```
+
+
 
 ### 7.4 全屏布局
 
@@ -2514,7 +2469,9 @@ clear属性不允许被清除浮动的元素的左边/右边挨着浮动元素�
 </body>
 ```
 
-## 八、Flex布局
+
+
+## 五、Flex布局
 
 ### 8.1 重要概念
 
