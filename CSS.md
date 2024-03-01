@@ -186,7 +186,7 @@
 
 ### 4、层叠上下文
 
-![](img/%E5%89%8D%E7%AB%AF%E6%80%BB%E7%BB%93/%E5%B1%82%E5%8F%A0%E4%B8%8A%E4%B8%8B%E6%96%87.jpg)
+![](img/css/stacking-context.jpg)
 
 **层叠上下文**（堆叠上下文，Stacking  Context）,是HTML中一个三维的概念。在CSS2.1规范中，每一个元素的位置是三维的，当元素发生层叠，这时它可能覆盖了其他元素或者被其他元素覆盖；排在z轴越靠上的位置，距离屏幕观察者越近
 
@@ -599,7 +599,7 @@ ul li:nth-child(2n) {
 
 当在引入所有的文件后，css有一个固定的编写方式
 
-![](img/css/web-font字体.jpg)
+![](img/css/web-font.jpg)
 
 
 
@@ -887,7 +887,7 @@ body {
 
 通常将媒体特性描述为一个表达式，每条表达式必须用括号括起来
 
-![](img/css/媒体查询.jpg)
+![](img/css/media-query.jpg)
 
 > 注：也可以多条件匹配，需用到and or not逻辑运算符
 
@@ -2475,7 +2475,7 @@ JS动画是逐帧动画，**在时间帧上绘制内容**，一帧一帧的，�
 
 ### 8.1 重要概念
 
-<img src="img/css/flex布局1.jpg" style="zoom:100%;" />
+<img src="img/css/flex1.jpg" style="zoom:100%;" />
 
 1、开启了flex布局的元素叫做`flex container`，其直接子元素叫做`flex item`
 
@@ -2487,7 +2487,7 @@ JS动画是逐帧动画，**在时间帧上绘制内容**，一帧一帧的，�
 
 **模型**
 
-<img src="img/css/flex布局2.jpg" style="zoom:50%;" />
+<img src="img/css/flex2.jpg" style="zoom:50%;" />
 
 `main axis`：主轴，默认开启flex布局的元素沿着主轴分布
 
