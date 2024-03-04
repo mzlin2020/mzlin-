@@ -925,862 +925,7 @@ AO = {
 
 所以在浏览器执行该代码的过程中，v8引擎会删除掉这个age
 
-## 六、理解this指向
 
-在全局作用域下，浏览器环境下，this指向window
-
-在全局作用域下，Node环境下，this指向一个空对象
-
-严格模式下，默认的this就是undefined
-
-```js
-console.log(this) 
-//浏览器输出：window
-//node输出：{}
-```
-
-```js
-function foo() {
-    "use strict";
-    console.log(this);
-}
-foo() 
-//输出：undefined
-```
-
-**this的指向在函数定义的时候是确定不了的，只有函数执行的时候才能确定this到底指向谁**
-
-1、规则一：默认绑定
-
-2、规则二：隐式绑定
-
-3、规则三：显示绑定
-
-4、规则四：new绑定
-
-### 6.1 默认绑定
-
-**案例一**
-
-```js
-function foo() {
-    console.log(this) 
-}
-
-foo() //window
-```
-
-**案例二**
-
-```js
-function foo1() {
-    console.log(this)
-}
-
-function foo2() {
-    console.log(this)
-    foo1()
-}
-
-function foo3() {
-    console.log(this)
-    foo2()
-}
-
-foo3()
-```
-
-这个案例中，调用`foo3`，直接输出三个`window`
-
-**案例三**
-
-this永远指向最后调用它的对象
-
-```js
-const obj = {
-    name: 'linming',
-    foo: function() {
-        console.log(this)
-    }
-}
-var fn = obj.foo
-fn()
-```
-
-这个案例输出的是`window`
-
-**案例四**
-
-```js
-function foo() {
-    function bar() {
-        console.log(this)
-    }
-    return bar
-}
-var fn = foo()
-fn()
-```
-
-这个案例输出的也是`window`
-
-### 6.2 隐式绑定
-
-这一种调用方式是通过某个对象进行调用的
-
-使用`obj.foo()`这样的语法来调用函数的时候，函数foo中的this绑定到obj对象
-
-**案例一**
-
-```js
-function foo() {
-    console.log(this)
-}
-
-var obj = {
-    name: 'lingming',
-    foo: foo
-}
-
-obj.foo()  //obj对象
-```
-
-**案例二**
-
-```js
-var obj = {
-    name: 'linming',
-    eating: function() {
-        console.log(this.name + '在吃东西')
-    }
-}
-
-var fn = obj.eating
-fn() // 在吃东西
-```
-
-这种情况下，this指向window
-
-**案例三**
-
-```js
-var obj1 = {
-    name: 'obj1',
-    foo: function() {
-        console.log(this)
-    }
-}
-
-var obj2 = {
-    name: 'obj2',
-    bar:obj1.foo
-}
-
-obj2.bar()
-```
-
-this指向obj2
-
-### 6.3 显示绑定
-
-显示绑定一般指 `call、apply、bind`
-
-一般情况下，我们可以通过以下的方式调用一个函数
-
-```js
-function foo() {
-    console.log("函数被调用了", this)
-}
-//调用
-foo()
-foo.call()
-foo.apply()
-//效果一致
-```
-
-输出：`函数被调用了，window`
-
-那么，正常调用跟`call`、`apply`调用有什么区别呢
-
-直接调用跟`call`、`apply`调用的不同在于this绑定的不同
-
-比如我们不希望this指向window，而是指向obj对象
-
-```js
-var obj = {
-    name: 'linming'
-}
-
-foo.call(obj)
-foo.apply(obj)
-```
-
-输出：`函数被调用了，obj`
-
-call、apply的第一个参数就是this的绑定
-
-**call与apply的区别**
-
-```js
-function sum(num1, num2, num3) {
-    console.log(num1 + num2 + num3, this)
-}
-
-sum.call("call", 20, 30, 40)
-sum.apply("apply", [20, 30, 40])
-```
-
-其实区就是传参的区别
-
-**bind**
-
-```js
-function foo() {
-    console.log(this)
-}
-
-var newFoo = foo.bind('aaa') //返回一个函数
-newFoo() 
-//String {"aaa"}
-```
-
-这里调用`newFoo()`是在全局作用域下调用的，this却指向`aaa`
-
-原因：默认绑定和显示绑定bind冲突：显示绑定的优先级高
-
-### 6.4 new绑定
-
-通过new关键字调用一个函数时（构造器），这个时候this是在这个构造器创建出来的对象
-
-即：this = 创建出来的对象
-
-```js
-function Person(name, age) {
-    this.name = name
-    this.age = age
-}
-
-var p1 = new Person('linming', 18) //this = p1
-
-var p2 = new Person('xiaohou', 18) //this 
-```
-
-**补充**
-
-构造函数一般没有返回值
-
-如果构造函数使用了return语句，返回一个原始值/没有返回值，则this继续指向这个新创建的实例
-
-如果构造函数使用了return语句，返回一个对象，那么this指向这个对象
-
-```js
-function Person(name) {
-    this.name = 'linming'
-    // console.log(this);
-    return {
-        name:'obj'
-    }
-}
-var p1 = new Person()
-console.log(p1.name); //输出obj
-```
-
-返回一个`{ name: 'obj' }`,实例最终指向这个对象
-
-### 6.5 其他案例分析
-
-**1、setTimeout中的this**
-
-```js
-setTimeout(function() {
-    console.log(this);
-}, 1000)
-//输出： window
-```
-
-注：案例中的定时器回调函数不是箭头函数，箭头函数的话情况有所不同
-
-箭头函数this将指向上层作用域
-
-**2、监听点击**
-
-```js
-var box = document.querySelector('#box')
-box.onclick = function() {
-    console.log(this);
-}
-//<div id="box"></div>
-```
-
-事件点击的this绑定相当于隐式绑定,上边的案例中，this最终绑定在box上
-
-**3、高阶函数中的this**
-
-```js
-var arr = ['abc', 'cba', 'nba']
-arr.forEach(function(item) {
-    console.log(item, this);
-})
-//输出：window
-```
-
-### 6.6 规则优先级
-
-如果一个函数调用位置应用了多条规则，谁的优先级更高呢？
-
-**1、默认绑定的优先级最低**
-
-同时存在默认绑定和其他规则，就会使用其他规则的方式来绑定this
-
-**2、显示绑定优先级高于隐式绑定**
-
-call/apply
-
-```js
-var obj = {
-    name: 'obj',
-    foo: function() {
-        console.log(this);
-    }
-}
-
-//隐式绑定
-obj.foo()
-//call/apply显示绑定高于隐式绑定
-obj.foo.call('abc') 
-obj.foo.apply('cna') //输出：String {"cna"}
-```
-
-可以看到，同时存在着隐式绑定和显示绑定，最终结果是绑定了显示绑定
-
-bind
-
-```js
-function foo() {
-    console.log(this);
-}
-
-var obj = {
-    name: 'obj',
-    foo: foo.bind('aaa') //返回一个函数
-}
-obj.foo()  //输出：aaa
-```
-
-bind的优先级依然高于隐式绑定
-
-**3、new绑定优先级高于隐式绑定**
-
-?
-
-```js
-var obj = {
-    name: 'obj',
-    foo: function() {
-        console.log(this);
-    }
-}
-
-var ff = new obj.foo() //foo {}
-```
-
-**4、new绑定优先级高于bind**
-
-new绑定和call、apply是不允许同时使用，所以不能比较
-
-```js
-function foo() {
-    console.log(this);
-}
-
-var bar = foo.bind('aaa')
-var obj = new bar() //输出：foo {}
-```
-
-**总结：**
-
-new绑定  >  显示绑定(call/apply/bind)  >  隐式绑定  >  默认绑定（独立函数调用）
-
-### 6.7 规则之外
-
-上边所涉及的规则已基本足以应付平时的开发，但是总还是有一些语法，超出了规则
-
-当涉及这些语法时，一般是函数内部做出了特殊处理
-
-**1、忽略显示绑定**
-
-```js
-function foo() {
-    console.log(this);
-}
-
-foo.call(null)           //window
-foo.apply(undefined)    //window
-var fn = foo.bind(null)
-fn() //window
-```
-
-按照显示绑定的规则，本来应该this指向null/undefined
-
-但是这些方法内部做了特殊的处理，将this指向了window
-
-**2、箭头函数**
-
-箭头函数不适用this的四种标准规则（也就是不绑定this），而是根据外层作用域来决定this
-
-```js
-var foo = () => {
-    console.log(this);
-}
-
-foo()  //window
-foo.call('str') //window
-foo.apply({}) //window
-```
-
-不管怎么调用函数，this都是指向window
-
-```js
-var name = 'linming'
-var foo = () => {
-    console.log(this.name);
-}
-
-foo() //linming
-foo.call('str') //linming
-foo.apply({}) //linming
-```
-
-**箭头函数应用场景**
-
-1、发送网络请求，并把结果放在data属性中
-
-```js
-var obj = {
-    data: [],
-    getData: function() {
-        // 箭头函数之前的解决方案
-        var _this = this
-        setTimeout(function() {
-            var result = ['abc', 'cba', 'nba']
-            _this.data = result
-        }, 1000)
-    }
-}
-
-obj.getData()
-// 调用时，getData中的this指向obj，并赋值给_this
-
-setTimeout(() => {
-    console.log(obj.data);
-},1500)
-```
-
-使用箭头函数，可以让定时器更方便的使用this
-
-```js
-var obj = {
-    data: [],
-    getData: function() {
-        setTimeout(() => {
-            this.data = ['abc', 'cba', 'nba']
-            // 箭头函数中使用this，会绑定到上一级作用域的this
-        }, 1000)
-    }
-}
-obj.getData()
-```
-
-### 6.8 this面试题
-
-**面试题一**
-
-```js
-var name = "window"
-
-var person = {
-    name: 'person',
-    sayName: function() {
-        console.log(this.name);
-    }
-}
-
-var sss = person.sayName
-sss()    //window :独立函数调用
-person.sayName(); //person 隐式调用
-(person.sayName)(); //person：隐式调用
-(b = person.sayName)(); //window:赋值表达式（独立函数调用）
-```
-
-**面试题二**
-
-```js
-var name = 'window'
-
-var person1 = {
-    name: 'person1',
-    foo1: function() {
-        console.log(this.name);
-    },
-    foo2: () => console.log(this.name),
-    foo3: function() {
-        return function() {
-            console.log(this.name);
-        }
-    },
-    foo4: function() {
-        return () => {
-            console.log(this.name);
-        }
-    }
-}
-
-var person2 = {
-    name: 'person2'
-}
-```
-
-请写出下面代码中的this
-
-```js
-person1.foo1() //隐式调用：person1
-person1.foo1.call(person2) //显示调用比隐式调用优先级高，person2
-```
-
-```js
-person1.foo2() //箭头函数不存在this，this指向全局，window
-person1.foo2.call(person2) //window
-```
-
-注：`foo2`的箭头函数的this会指向全局作用域，而不是指向`person1对象，因为person1不存在作用域`
-
-```js
-person1.foo3()() //最终返回一个独立函数，指向全局window
-person1.foo3.call(person2)()//最终返回一个独立函数，指向全局window
-person1.foo3().call(person2) //最终调用返回函数式，使用的是显示绑定
-```
-
-```js
-person1.foo4()() //返回一个箭头函数，去上层作用域foo4中寻找person1
-person1.foo4.call(person2)() //person2
-person1.foo4().call(person2) //person1
-```
-
-**面试题三**
-
-```js
-var name = 'window'
-
-function Person (name) {
-    this.name = name
-    this.foo1 = function () {
-        console.log(this.name)
-    }
-    this.foo2 = () => {
-        console.log(this.name)
-    }
-    this.foo3 = function () {
-        return function () {
-            console.log(this.name)
-        }
-    }
-    this.foo4 = function () {
-        return () => {
-            console.log(this.name)
-        }
-    }
-}
-
-
-var person1 = new Person('person1')
-var person2 = new Person('person2')
-```
-
-请输入下方代码的结果
-
-```js
-person1.foo1() //person1
-person1.foo1.call(person2) //person2
-```
-
-```js
-person1.foo2() //箭头函数，寻找上层作用域（Person构造函数） person1
-person1.foo2.call(person2) //寻找上层作用域（Person构造函数） person1
-```
-
-## 七、实现call/apply/bind
-
-js函数本质上就是对象
-
-### 7.1手写call
-
-实现一个和系统的call有相同功能的函数`lmcall`
-
-1、首先向Function的原型添加一个`lmcall`函数
-
-```js
-Function.prototype.lmcall = function() {
-    console.log("lmcall函数调用成功");
-}
-
-function foo() {}
-
-foo.lmcall() //调用成功
-```
-
-2、当某个函数调用`lmcall`时，执行该函数
-
-```js
-Function.prototype.lmcall = function() {
-    // 在这里可以去执行调用的那个函数（foo）
-    //问题：需要获取到是哪一个函数执行了lmcall
-    var fn = this //this就是调用了lmcall的函数
-    fn()
-}
-
-function foo() {
-    console.log("我被执行了");
-}
-
-// 隐式调用，所以this = foo
-foo.lmcall()
-```
-
-3、向`lmcall`传入一个对象，使得调用`lmcall`的函数的this = 这个对象
-
-```js
-Function.prototype.lmcall = function(thisArg) {
-
-    var fn = this //this就是调用了lmcall的那个函数（这里是foo）
-
-    thisArg.fn = fn
-    thisArg.fn() //隐式函数调用，所以fn的this = thisArg（即foo的this指向thisArg）
-    //问题：这里的thisArg里边有一个多余的函数属性，不过并不影响
-    delete thisArg.fn //删除这个多余的属性
-}
-
-function foo() {
-    console.log("我被执行了", this);
-}
-
-foo.lmcall({ name: 'linming'})
-//输出：我被执行了 {name: "linming", fn: ƒ}
-```
-
-4、如果传入的参数是数值？字符串？布尔值？该怎么处理
-
-```js
-Function.prototype.lmcall = function(thisArg) {
-
-    var fn = this //this就是调用了lmcall的函数
-
-    // 对thisArg转成对象类型（防止它传入的是非对象类型）
-    thisArg = Object(thisArg)
-
-    thisArg.fn = fn
-    thisArg.fn()
-    delete thisArg.fn
-}
-
-function foo() {
-    console.log("我被执行了", this);
-}
-
-foo.lmcall("hello")
-foo.lmcall(123)
-foo.lmcall(true)
-//我被执行了 String {"hello", fn: ƒ}
-//我被执行了 Number {123, fn: ƒ}
-//我被执行了 Boolean {true, fn: ƒ}
-```
-
-注：Object（）可以将对应的非对象类型转换为对象类型，比如数值，就会转换成数值包装类对象
-
-5、如果参数传入的是null或者undefined，要怎么处理
-
-根据系统的call，如果在call中传入null/undefined，那么this会被指向window
-
-```js
-Function.prototype.lmcall = function(thisArg) {
-
-    var fn = this //this就是调用了lmcall的函数
-
-    thisArg = (thisArg !== null && thisArg !== undefined)? thisArg : window
-
-    thisArg.fn = fn
-    thisArg.fn()
-    delete thisArg.fn
-}    
-
-function foo() {
-    console.log("我被执行了", this);
-}
-foo.lmcall({})
-//输出：我被执行了 Window{...}
-```
-
-6、传入其他的参数
-
-```js
-Function.prototype.lmcall = function(thisArg, ...args) {
-
-    var fn = this //this就是调用了lmcall的函数
-
-
-    thisArg = (thisArg !== null && thisArg !== undefined)? thisArg : window
-
-    thisArg.fn = fn
-    thisArg.fn(...args)
-    delete thisArg.fn
-}
-
-
-function sum(num1, num2) {
-    console.log(num1, num2, this);
-}
-
-sum.lmcall({ name: 'linming' }, 10, 20)
-//输出：10 20 {name: "linming", fn: ƒ}
-```
-
-### 7.2 手写apply
-
-创建一个与系统apply相似的函数`lmapply`
-
-```js
-Function.prototype.lmapply = function(thisArg, argArray) {
-    //获取要执行的函数
-    var fn = this
-
-    //对传入的参数进行判断
-    thisArg = (thisArg !== null && thisArg !== undefined)? thisArg : window
-
-    //执行函数
-    thisArg.fn = fn
-    thisArg.fn(...argArray)
-    delete thisArg.fn
-}
-
-//测试代码
-function sum (num1, num2) {
-    console.log(num1, num2, this);
-}
-sum.lmapply({ name: 'linming' }, [1,2])
-//输出：1 2 {name: "linming", fn: ƒ}
-```
-
-问题：如果没有传数组，这里会报错。但是确实存在不需要传数组的情况
-
-```js
-Function.prototype.lmapply = function(thisArg, argArray) {
-    //获取要执行的函数
-    var fn = this
-
-    //对传入的参数进行判断
-    thisArg = (thisArg !== null && thisArg !== undefined)? thisArg : window
-
-    //执行函数
-    thisArg.fn = fn
-    argArray = argArray ? argArray : []  //如果没有值，直接返回一个空
-    thisArg.fn(...argArray)
-    delete thisArg.fn
-}
-
-function foo () {
-    console.log(this);
-}
-foo.lmapply({ name: 'linming' })
-```
-
-### 7.3 手写bind
-
-了解bind的特殊性
-
-```js
-function foo() {
-    console.log('foo被执行了', this)
-}
-function sum(num1, num2, num3, num4) {
-    console.log(num1, num2, num3, num4, this)
-}
-
-//1.返回一个函数
-var fn1 = foo.bind('abc')
-fn1()
-
-//2.传递参数1
-var fn2 = sum.bind('abc', num1, num2, num3, num4)
-fn2()
-
-//3.传递参数2
-var fn3 = sum.bind('abc')
-fn3(num1, num2, num3, num4)
-
-//4.传递参数3
-var fn3 = sum.bind('abc', num1, num2)
-fn3(num3, num4)
-```
-
-具体实现步骤
-
-1、传入第一个参数
-
-```js
-Function.prototype.lmbind = function(thisArg) {
-    // 1.获取到真实需要调用的函数
-    var fn = this //this指向调用lmbind的那个函数
-
-    // 绑定this
-    thisArg = (thisArg !== null && thisArg !== undefined)? thisArg : window
-
-    function proxyFn() {
-        thisArg.fn = fn
-        var result = thisArg.fn()  //隐式调用，this指向thisArg
-        delete thisArg.fn
-        return result
-    }
-    return proxyFn
-}
-
-
-function foo() {
-    console.log('foo被调用了', this)
-}
-
-var newFn = foo.lmbind({})
-newFn()
-```
-
-2、传入其他参数
-
-```js
-Function.prototype.lmbind = function(thisArg, ...argArray) {
-    // 1.获取到真实需要调用的函数
-    var fn = this //this指向调用lmbind的那个函数
-
-    // 2.绑定this
-    thisArg = (thisArg !== null && thisArg !== undefined)? thisArg : window
-
-    function proxyFn(...args) {
-        // 3.将函数放到thisArg中进行调用
-        thisArg.fn = fn
-        // 特殊：对两个传入的参数进行合并
-        var finalArgs = [...argArray, ...args]
-        var result = thisArg.fn(...finalArgs)  //隐式调用，this指向thisArg
-        delete thisArg.fn
-        // 4.返回结果
-        return result
-    }
-    return proxyFn
-}
-
-//测试代码
-function add(num1, num2) {
-    console.log(num1, num2, this);
-}
-let newFn = add.lmbind({}, 32)
-newFn(21)
-```
 
 ## 八、函数式编程
 
@@ -2373,78 +1518,6 @@ compose(fn4, fn3, fn2, fn1)(10) //10初始值
 Promise.resolve(10).then(fn1).then(fn2).then(fn3).then((res) => {
   console.log(res)
 })
-```
-
-## 九、严格模式
-
-**概念**
-
-严格模式是一种具有限制性的JavaScript模式，从而使代码隐式的脱离了“懒散模式”
-
-支持严格模式的浏览器在检测到代码中有严格模式时，会以更加严格的方式对代码进行检测和执行
-
-为什么使用严格模式？
-
-+ 消除代码运行的一些不合理、不严谨之处，减少一些怪异行为
-+ 提高编译器效率，提高运行速度
-+ 为未来新版本的JavaScript做好铺垫
-
-**开启严格模式**
-
-1、在js文件中开启严格模式
-
-```javascript
-"use strict";
-x = 3.14;   //报错，x未定义
-```
-
-2、在函数中使用
-
-```javascript
-//只在函数内部使用严格模式
-function myFunction() { 
-   "use strict";
-    y = 3.14;   // 报错 (y 未定义)
-}
-```
-
-**严格模式的限制**
-
-1、禁止意外创建的全局变量
-
-```js
-message = "hello world"
-console.log(message) //报错
-```
-
-2、不允许函数有相同的参数名称
-
-```js
-function foo(x, y, x) {
-    console.log(x, y, x)
-}
-foo(10, 30, 20)  
-//非严格模式下，后边的参数值覆盖前边的：20，30， 20
-//严格模式：报错
-```
-
-3、禁止严格模式下试图删除不可删除的属性
-
-4、不允许使用“0”开头的八进制语法
-
-5、严格模式下，不允许使用with
-
-6、在严格模式下，eval不再为上层引用变量
-
-7、严格模式下，this绑定不会默认转成对象
-
-```js
-function foo() {
-    console.log(this)
-}
-foo() 
-//非严格模式：window
-//严格模式：undefined
 ```
 
 ## 十、面向对象
@@ -3435,3 +2508,722 @@ B、Object函数对象也可以理解成`const Object = new Function()`,所以�
 4、构造函数
 当我们创建一个实例对象时，默认这个实例对象的隐式原型会指向构造函数的显示原型。所以我们可以通过原型链一层层地查找想要的属性，直到顶层Obecjt
 ```
+
+
+
+
+
+### 十一、其他
+
+#### 1、闭包
+
+**一、变量的作用域**
+
+要理解闭包，首先必须理解Javascript特殊的变量作用域。
+
+变量的作用域无非就是两种：全局变量和局部变量。
+
+JavaScript语言的特殊之处，**就在于函数内部可以直接读取全局变量**。
+
+```js
+　　var n=999;
+
+　　function f1(){
+　　　　alert(n);
+　　}
+
+　　f1(); // 999
+```
+
+另一方面，**在函数外部自然无法读取函数内的局部变量**。
+
+```js
+　　function f1(){
+　　　　var n = 999;
+　　}
+
+　　alert(n); // error
+```
+
+闭包可以帮助我们从外部读取局部的变量
+
+**二、如何从外部读取局部变量？**
+
+出于种种原因，我们有时候需要得到函数内的局部变量。但是，前面已经说过了，正常情况下，这是办不到的，只有通过变通方法才能实现。
+
+那就是在函数的内部，再定义一个函数。
+
+```js
+　　function f1(){
+
+　　　　var n=999;
+
+　　　　function f2(){
+　　　　　　alert(n); // 999
+　　　　}
+
+　　}
+```
+
+在上面的代码中，函数f2就被包括在函数f1内部，这时f1内部的所有局部变量，对f2都是可见的。但是反过来就不行，f2内部的局部变量，对f1就是不可见的。这就是Javascript语言特有的"链式作用域"结构（chain scope），子对象会一级一级地向上寻找所有父对象的变量。所以，父对象的所有变量，对子对象都是可见的，反之则不成立。
+
+既然f2可以读取f1中的局部变量，那么只要把f2作为返回值，我们不就可以在f1外部读取它的内部变量了吗！
+
+```js
+function fn1() {
+    let name = 'linming'
+    function fn2() {
+        console.log(name);
+    }
+    return fn2
+}
+
+var newFn = fn1()
+newFn()
+```
+
+上面的例子实现了在全局作用域中，对函数中变量的访问
+
+**三、闭包的概念**
+
+上一节代码中的f2函数+自由变量name的组合，就是闭包。
+
+各种专业文献上的"闭包"（closure）定义非常抽象，很难看懂。我的理解是，**闭包就是能够读取其他函数内部变量的函数。**
+
+由于在Javascript语言中，只有函数内部的子函数才能读取局部变量，因此可以把闭包简单理解成"定义在一个函数内部的函数"。
+
+所以，在本质上，闭包就是将函数内部和函数外部连接起来的一座桥梁。
+
+**四、闭包的用途**
+
+闭包可以用在许多地方。它的最大用处有两个，**一个是前面提到的可以读取函数内部的变量，另一个就是让这些变量的值始终保持在内存中。**
+
+怎么来理解这句话呢？请看下面的代码。
+
+```js
+　　function f1(){
+
+　　　　var n=999;
+
+　　　　nAdd= function(){n+=1} //全局变量（函数）
+
+　　　　function f2(){
+　　　　　　alert(n);
+　　　　}
+
+　　　　return f2;
+
+　　}
+
+　　var result=f1();
+
+　　result(); // 999
+
+　　nAdd();
+
+　　result(); // 1000
+```
+
+在这段代码中，result实际上就是闭包f2函数。它一共运行了两次，第一次的值是999，第二次的值是1000。这证明了，函数f1中的局部变量n一直保存在内存中，并没有在f1调用后被自动清除。
+
+为什么会这样呢？原因就在于f1是f2的父函数，而f2被赋给了一个全局变量，这导致f2始终在内存中，而f2的存在依赖于f1，因此f1也始终在内存中，不会在调用结束后，被垃圾回收机制（garbage collection）回收。
+
+这段代码中另一个值得注意的地方，就是"nAdd=function(){n+=1}"这一行，首先在nAdd前面没有使用var关键字，因此nAdd是一个全局变量，而不是局部变量。其次，nAdd的值是一个匿名函数（anonymous function），而这个匿名函数本身也是一个闭包，所以nAdd相当于是一个setter，可以在函数外部对函数内部的局部变量进行操作。
+
+**五、使用闭包的注意点**
+
+1）由于闭包会使得函数中的变量都被保存在内存中，内存消耗很大，所以不能滥用闭包，否则会造成网页的性能问题，在IE中可能导致内存泄露。解决方法是，在退出函数之前，将不使用的局部变量全部删除。
+
+2）闭包会在父函数外部，改变父函数内部变量的值。所以，如果你把父函数当作对象（object）使用，把闭包当作它的公用方法（Public Method），把内部变量当作它的私有属性（private value），这时一定要小心，不要随便改变父函数内部变量的值。
+
+**六、思考题**
+
+如果你能理解下面两段代码的运行结果，应该就算理解闭包的运行机制了。
+
+代码片段一。
+
+```js
+　　var name = "The Window";
+
+　　var object = {
+　　　　name : "My Object",
+
+　　　　getNameFunc : function(){
+　　　　　　return function(){
+　　　　　　　　return this.name;
+　　　　　　};
+
+　　　　}
+
+　　};
+
+　　alert(object.getNameFunc()());
+```
+
+代码片段二。
+
+```js
+　　var name = "The Window";
+
+　　var object = {
+　　　　name : "My Object",
+
+　　　　getNameFunc : function(){
+　　　　　　var that = this;
+　　　　　　return function(){
+　　　　　　　　return that.name;
+　　　　　　};
+
+　　　　}
+
+　　};
+
+　　alert(object.getNameFunc()());
+```
+
+
+
+#### 2、async和await
+
+**简单总结**：
+
+1、async和await是用来处理异步函数的
+
+2、promise通过then链来解决多层回调问题，async和await可以进一步优化它
+
+3、async是“异步”的简写，await是“async wait”的简写
+
+4、async用于声明一个function是异步的，await用于等待一个异步方法执行完成的
+
+5、await只能出现在async的函数中
+
+**async基本使用**
+
+我们来对比一下普通函数与async的区别
+
+```javascript
+    // 普通函数声明
+    function timeout1 () {
+        return 'hello wolrd'
+    };
+
+    // async函数声明
+    async function timeout2 () {
+        return 'hello world'
+    }
+
+    // 两者的结果
+    console.log(timeout1());  //输出：hello world
+    console.log(timeout2());  //输出：promise对象
+```
+
+async的用法很简单，在函数前面加上这一关键字，按着平时使用函数的方式去使用它。
+
+async返回一个promise对象，如果要获取结果，就可以使用then方法了
+
+```javascript
+    timeout2().then(res => {
+        console.log(res);
+    }).catch(err => {
+        console.log(err);
+    })
+```
+
+值得注意的是：async函数返回一个promise对象，如果在函数return一个直接量，async会把这个直接通过promise.resolve()封装成Promise对象。如果函数内部出错了，则调用promise.reject，也是返回一个promise对象
+
+```javascript
+async function timeout(flag) {
+    if (flag) {
+        return 'hello world'
+    } else {
+        throw 'my god, failure'
+    }
+}
+console.log(timeout(true))  // 调用Promise.resolve() 返回promise 对象。
+console.log(timeout(false)); // 调用Promise.reject() 返回promise 对象。
+```
+
+**await基本使用**
+
+await后边可以放任何表达式，不过放的更多的返回一个promise对象的表达式。注：await关键字只能放在async函数里边。
+
+案例解析
+
+现在写一个函数，让它返回promise 对象，该函数的作用是2s 之后让数值乘以2
+
+```javascript
+    function mult (num) {
+        return new Promise((resolve,reject) =>{
+            setTimeout(() =>{
+                resolve(num *2);
+            },2000)
+        })
+    } 
+
+    async function getResult (num) {
+        const res = await mult(num);
+        console.log(res);
+    }
+
+    getResult(44) //2s后输出88
+```
+
+执行过程：调用了getResult函数，它里边遇到了await，代码暂停到了这里不再向下执行。只有等到它后边的promise对象执行完毕，拿到promise resolve的值并进行返回，它才继续向下执行。
+
+注：如果await等到的不是一个promise对象，那么await表达式的运算结果就是它等到的东西；如果等到了promise，它会阻塞后边的代码，等着promise对象resolve，然后得到resolve的值，作为await表达式的运算结果
+
+就这一个函数，我们可能看不出async/await 的作用，如果我们要计算3个数的值，然后把得到的值进行输出呢？
+
+```javascript
+    async function getResult () {
+        const firstRes = await mult(20);
+        const secondRes = await mult(30);
+        const thirdRes = await mult(40);
+        console.log(firstRes+secondRes+thirdRes); //6s后输出180
+    }
+
+    getResult()
+```
+
+可以想象，如果上边的代码用then链来写，是特别不优雅的。而使用async和await看起来就像在使用同步代码一样
+
+#### 4、promise对象
+
+**promise两个特点**
+
+1、对象的状态不受外界的影响。只有异步操作可以决定当前是哪一种状态，任何其他操作都无法改变这个状态
+
+2、一旦状态改变就不会再改变，任何时候都可以得到这个结果
+
+**promise三种状态**
+
++ pending：等待状态，比如正在进行网络请求，或者定时器没有到时间
++ fulfilled：满足状态，当我们主动回调了resolve时，就处于该状态，并且会回调.then()
++ rejected:拒绝状态，当我们主动回调了reject，就处于状态，并且会回调.catch()
+
+**基本用法**
+
+```js
+let promise = new Promise((resolve,reject) {
+    //...some code
+    if (/*异步操作成功*/) {
+    resolve(value)
+} else {
+    reject(err)
+}              
+})
+```
+
+调用resolve函数和reject函数时带有参数，那么这些参数会被传递给回调函数
+
+1、resolve函数的作用是，将Promise对象的状态从“未完成”变为“成功”（即从pending变为fulfilled），在异步操作成功时调用，并将异步操作的结果作为参数传递出去；
+
+2、reject函数的作用是，将Promise对象的状态从“未完成”变成“失败”（即从pending变为rejected），在异步操作操作失败时调用，并将异步操作报出的错误作为参数传递出去
+
+**promise新建后会立即执行**
+
+```js
+//请打印下面代码的执行顺序
+let promise = new Promise(function(resolve, reject) {
+    console.log('Promise')
+    resolve()
+})
+
+promise.then(function() {
+    console.log('Resolved')
+})
+
+console.log('Hi！')
+
+//输出：
+//Promise
+//Hi!
+//Resolved
+```
+
+**promise.all()方法**
+
+ 该方法的作用是将多个`Promise`对象实例包装，生成并返回一个新的`Promise`实例。 
+
+```js
+Promise.all([
+    new Promise((resolve, reject) => {
+        resolve("hello")
+    }),
+    new Promise((resolve, reject) => {
+        resolve("world")
+    })  
+]).then(res => {
+    console.log(res);
+})
+
+//输出：[ 'hello', 'world' ]
+```
+
+**promise.race()方法**
+
+只要p1,p2,p3中有一个实例率先改变状态，p的状态就跟着改变。那个率先改变的Promise实例的返回值就传递给P的回调函数
+
+```js
+Promise.race([
+    new Promise((resolve,reject) => {
+        setTimeout(() => {
+           resolve("p1")
+        }, 1000);
+    }),
+    new Promise((resolve,reject) => {
+        setTimeout(() => {
+           resolve("p2")
+        }, 2000);
+    }),
+    new Promise((resolve,reject) => {
+        setTimeout(() => {
+           resolve("p3")
+        }, 3000);
+    }),
+]).then((res) => {
+    console.log(res);
+})
+
+//输出：p1
+```
+
+**promise.resolve()**
+
+有时需要将现有对象转成Promise对象，该方法就起到这个作用
+
+```js
+Promise.resolve('foo')
+//等价于
+new Promise (resolve => resolve('foo'))
+
+//所以
+Promise.resolve('foo').then(res => {
+    console.log(res);
+}) //输出foo
+new Promise (resolve => resolve('foo')).then(res => {
+    console.log(res);
+}) //输出foo
+```
+
+注：立即resolve的Promise对象是在本轮“事件循环”结束时，而不是在下一轮“事件循环”开始时
+
+```js
+//打印下方代码的输出顺序
+
+setTimeout(() => {
+    console.log("three");
+}, 0);
+
+Promise.resolve().then(() => {
+    console.log("two");
+})
+
+console.log("one");
+
+//输出：one 、two 、three
+```
+
+
+
+#### 5、Proxy代理
+
+proxy可以理解成在目标对象前架设一个“拦截”层，外界对该对象的访问都必须先通过这层拦截，因此提供了一种机制可以对外界的访问进行过滤和改写
+
+**1、创建proxy实例**
+
+`var proxy = new Proxy(target, handler)`
+
+其中，target参数表示所要拦截的目标对象，handler参数也是一个对象，用来定制拦截操作
+
+如果handler没有设置任何拦截，那就等同于直接通向原对象
+
+**2、proxy实例的方法——get（）**
+
+get方法用于拦截某个属性的读取操作
+
+```js
+        let person = {
+            name: "张三"
+        }
+        var proxy = new Proxy (person, {
+            get: function(target, key) {
+                if(property in target) {
+                    return target[key]
+                } else {
+                    throw new ReferenceError("出错啦")
+                }
+            }
+        })
+        // console.log(proxy.name)
+        // console.log(proxy.age) //报错
+```
+
+如果没有这个拦截器，访问不存在的属性只会返回undefined
+
+**3、set（）方法**
+
+set（）方法用于拦截某个属性的赋值操作
+
+```js
+//假定obj对象有一个age属性，要求该属性是一个不大于150的整数，可以使用proxy对象保证age的属性符合要求
+
+        handler = {
+            set: function(obj, key, value) {
+                if (key ==='age') { //如果属性名为age
+                    if (!Number.isInteger(value)) { //如果值不为整数
+                        throw new TypeError('the age is not a integer')
+                    }
+                    if (value > 150) { // 如果值大于150
+                        throw new RangeError('the age seems invalid')
+                    }
+                }
+                obj[key] = value
+            }
+        }
+        const proxy = new Proxy({}, handler)
+        console.log(proxy.age = 100); //100
+        console.log(proxy.age = 151); //报错 the age seems invalid
+```
+
+另外一个案例
+
+```js
+//防止对象中，属性名的第一个字符以下划线开头的属性，被外部读取，修改
+function invariant(key, action) {
+    if(key[0] === "_") {
+        throw new Error('Invalid attempt to ${action} private "${key}" property')
+    }
+}
+
+let handler = {
+    get(target, key) {
+        invariant(key, 'get'); //执行时抛出错误，不再执行下文
+        return target[key]
+    },
+    set(target, key, value) {
+        invariant(key, 'get') //执行时抛出错误，不再执行下文
+        target[key] = value
+        return true
+    }
+}
+
+const proxy = new Proxy({},handler)
+console.log(proxy._aa); //报错
+console.log(proxy._bb = 'haha') //报错
+```
+
+**4、has方法**
+
+has方法用来拦截HasProperty操作，即判断对象是否具有某个属性，这个方法会生效
+
+```js
+let handler = {
+    has (target, key) {
+        if (key[0] === '_') {
+            return false
+        }
+        return key in target
+    }
+}
+
+let target = {
+    _prop : 'foo', //不允许被in运算符发现
+    prop : 'foo'
+}
+
+let proxy = new Proxy(target, handler)
+console.log('prop' in proxy);
+console.log('_prop' in proxy);
+```
+
+**5、deleteProperty方法**
+
+该方法用于拦截delete操作，如果这个方法排抛出错误或者返回false，当前属性就无法被delete命令删除
+
+```js
+let handler = {
+    deleteProperty (target, key) {
+        invariant (key, 'delete')
+        return true
+    }
+}
+
+let target = {
+    _prop : 'foo'
+}
+let proxy = new Proxy(target, handler)
+console.log(delete proxy._prop);
+```
+
+**this问题**
+
+在proxy代理情况下，目标对象内部的this关键字会指向proxy代理
+
+```js
+const target = {
+    m: function () {
+        console.log(this === proxy);
+    }
+}
+
+const handler = {}
+const proxy = new Proxy(target, handler)
+target.m() //false
+proxy.m() //true
+```
+
+
+
+#### 6、遍历器itertator
+
+**概念**
+
+迭代器（iterator）是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构，只要部署了iterator接口，就可以完成遍历操作（即依次处理该数据结构的所有成员）
+
+**作用**
+
+1、为各种数据结构提供统一的、简便的访问接口；
+
+2、使得数据结构的成员能够按某种次序排序
+
+3、ES6创造了一种新的遍历命令-for..of 循环，iterator接口主要供for...of消费
+
+**遍历过程**
+
+1、创建一个指针对象，指向当前数据结构的起始位置。也就是说，遍历器对象的本质就是一个指针对象
+
+2、第一次调用指针对象的next方法，可以将指针指向数据结构的第一个成员
+
+3、第二次调用指针对象的next方法，指针就指向数据结构的第二个成员
+
+4、不断调用指针对象的next方法，直到指向数据结构的结束位置
+
+每次调用next方法，就会返回当前成员的信息。具体来说，就是返回一个包含value和done两个属性的对象
+
+**案例**
+
+```js
+// 定义遍历器生成函数
+function makeIterator (array) {
+    let nextIndex = 0;
+    return {
+        next: function () {
+            return nextIndex < array.length? 
+            {value: array[nextIndex++], done: false} :
+            {value: undefined, done: true}
+        }
+    }
+} 
+let example = makeIterator(["a","b"])
+console.log(example.next()); //{value: "a", done: false}
+console.log(example.next()); //{value: "b", done: false}
+console.log(example.next()); //{value: undefined, done: true}
+```
+
+**默认Iterator接口**
+
+数据结构只要部署了iterator接口，我们就称这种数据结构为“可遍历”的
+
+ES6规定，默认的iterator接口部署在数据结构的Symbol.iterator属性，或者说，一个属性结构只要有了Symbol.iterator，就是“可遍历的”
+
+原生具备Iterator接口的数据结构如下：
+
++ Array
++ Map
++ Set
++ String
++ TypedArray
++ 函数的argument对象
++ NodeList对象
+
+**for...of循环**
+
+数据结构只要部署了Symbol.iterator属性，就视为部署了iterator接口，可以使用for...of循环
+
+适用范围：数组、Set、Map、某些类似数组的对象、generator对象、字符串
+
+#### 7、Generator函数
+
+Generator函数是es6提供的一种异步编程解决方案，语法行为与传统函数完全不同
+
+执行generator函数会返回一个**遍历器对象**，也就是说，generator函数除了是状态机，还是一个遍历器对象生成的函数，返回的遍历器对象可以一次遍历generator函数内部的每一个状态
+
+```js
+function * helloWorldGenerator () {
+    yield 'hello'
+    yield 'world'
+    return 'ending'
+}
+
+let hw = helloWorldGenerator()
+console.log(hw); //返回一个iterator对象
+```
+
+调用`helloWorldGenerator()`后，函数并不执行，而是返回一个执行内部状态的指针对象（遍历器对象）
+
+```js
+console.log(hw.next());
+console.log(hw.next());
+console.log(hw.next());
+console.log(hw.next());
+//输出 {value: "hello", done: false}
+//输出 {value: "world", done: false}
+//输出 {value: "ending", done: true}
+//输出 {value: undefined, done: true}
+
+//value属性表示当前的内部状态的值，是yield语句后面那个表达式的值，done属性是一个布尔值，表示是否遍历结束
+```
+
+使用遍历器对象的next方法，使得指针指向下一个状态，也就是说，每次调用next方法，内部指针就从函数头部或者上一次停下来的地方开始执行，直到遇到下一条yield（或return语句）。换言之，Generator函数是分段执行的，yield语句是暂停执行的标记，而next方法可以回复执行
+
+**关于yield表达式**
+
+1、遇到yield语句就暂停执行后面的操作，并将紧跟在yield后的表达式的值作为返回的对象的value的属性值
+
+2、如果没有yield语句，就一直执行到函数结束，直到遇到return语句
+
+3、如果没有遇到return语句，则返回对象的value属性值为undefined
+
+注：yield表达式只能在generator中使用
+
+**与iterator接口的关系**
+
+由于Generator函数就是遍历器生成函数，因此可以把Generator赋值给对象的Symbol.interator属性，从而使该具有iterator接口
+
+```js
+let myIterator = {}
+
+myIterator[Symbol.iterator] = function * () {
+    yield 1
+    yield 2
+    yield 3
+}
+
+console.log([...myIterator]); //[1, 2, 3]
+```
+
+前面说过对象是不具有iterator接口的，也不可被for..of遍历，但是通过上边的**Generator赋值给对象的Symbol.interator属性**，使得对象变为可遍历的
+
+**遍历generator函数**
+
+for...of, 扩展运算符，Array.from（）方法都是调用iterator接口，也就是可以用来遍历generator
+
+```js
+function * numbers () {
+    yield 1
+    yield 2
+    yield 3
+    return 4
+}
+console.log([...numbers()]);
+for(let i of numbers()) {
+    console.log(i);
+}
+console.log(Array.from(numbers()));
+
+//均能够遍历出 1,2,3
+```
+
+为什么没有4呢？因为当遇到return时，done的状态改为true，表示遍历结束
+
