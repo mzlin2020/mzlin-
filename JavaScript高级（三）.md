@@ -212,331 +212,11 @@ foo().catch(err => {
 //输出：代码执行，发生了不可描述的错误,.....(错误说明)
 ```
 
-## 二、JavaScript的模块化
 
-**什么是模块化？**
 
-- 将一个复杂的程序依据一定的规则(规范)封装成几个块(文件), 并进行组合在一起
-- 块的内部数据与实现是私有的, 只是向外部暴露一些接口(方法)与外部其它模块通信
 
-**模块化的优势？**
 
-1、避免命名冲突
 
-2、更好的分离，按需加载
-
-3、更高复用性
-
-4、高可维护性
-
-### 2.1 CommonJS规范
-
-CommonJS是一个规范，最初提出来是在浏览器以外的地方使用，并且当时被命名为ServerJS，后来为了体现它的广泛性，修改为CommonJS。
-
-Node是CommonJS在服务器端的一个具有代表性的实现。
-
-1、在node中每一个js文件都是一个单独的模块
-
-2、这个模块中包括CommonJS规范的核心变量：exports、module.exports、require
-
-**exports与require**
-
-案例理解
-
-创建main.js 与bar.js ，在main.js中导入bar.js模块
-
-```javascript
-//main.js
-
-// require("./bar") 相当于导入了exports（本质是指向了与exports一样的内存地址）
-//require是一个函数，可以理解成它返回了exports对象
-
-//这里变量bar==exports （也指向了与exports一样的对象）
-const bar = require('./bar')
-
-// 这里利用了ES6的解构赋值
-// const {name,age,fn} = require('./bar')
-
-console.log(bar.name);
-console.log(bar.age);
-bar.fn();
-```
-
-```javascript
-//bar.js
-const name = "linming";
-const age = 18;
-
-function fn() {
-    console.log("hello " + name);
-}
-
-//exports默认是一个全局空对象
-exports.name = name;
-exports.age = age;
-exports.fn = fn;
-```
-
-从上面的例子我们可以知道，exports是一个默认存在的空的对象，我们向外导出的变量变成了exports的属性（方法），用require导入的其实就是exports这个对象。
-
-**module.exports**
-
-在Node中我们进行导出时，往往不用exports，而是通过module.exports导出的。
-
-那么exports与module.exports有什么关系吗?
-
-1、CommonJS中是没有module.exports这个概念的，但是为了实现模块的导出，Node中使用的是Module的类，每一个模块都是module的一个实例。
-
-2、所以在Node中真正用于导出的其实根本不是exports，而是module.exports
-
-在Node源码中规定`module.exports = exports`，所以二者指向同一个引用。即**module.exports = exports=require（）**
-
-所以，在开发中，尽量使用`module.exports`进行导出
-
-**require细节**
-
-require是一个函数，可以帮助我们引入一个文件（模块）中导入的对象。
-
-require的查找规则是怎么样的呢？
-
-requiere（X）
-
-1、情况一：
-
-X是一个核心模块，比如path。那么直接返回核心模块，并停止查找
-
-2、情况二：
-
-X是以 ./ 或 ../ 或 / 开头的
-
-查找规则：
-
-将X当做一个文件在对应目录下查找，如果有拓展名，按照拓展名查找；
-
-没有拓展名，则查找文件X>查找X.js >查找X.json > 查找X.node文件，直到找到为止。或者将X当做一个文件夹查找，会依次去查找上述规则文件夹下的index.js文件
-
-3、情况三：
-
-直接是一个X（没有路径），并且X不是一个核心模块
-
-查找规则：会循着文件路径，依次去每个文件夹下的node_modules文件夹下查找。
-
-**模块的加载过程**
-
-结论一：模块在被第一次引入时，模块中的js代码会被运行一次
-
-结论二：模块被多次引入时，会缓存，最终只加载（运行）一次
-
-为什么只加载一次呢？因为每个模块对象module都有一个属性loaded，默认为false，为true时表示已经被加载了
-
-结论三：存在循环引用、也只加载一次。而且按照的是图结构的深度优先搜索的顺序
-
-**CommonJS规范的缺点**
-
-1、CommonJS加载模块是同步的。
-
-这意味着只有等到对应的模块加载完毕，后续的内容才能被运行（从上往下），这在服务器中不会有什么问题，因为服务器加载的js文件都是本地文件，加载速度非常快。
-
-但是如果它应用于浏览器。因为浏览器需要从服务器中将文件下载下来，再运行。采用同步的方式则意味着之后的js代码无法正常运行。
-
-### 2.2 ES Module
-
-ES Module与CommonJS的模块化有一些不同之处
-
-1、它使用了import和export关键字
-
-2、另一方面它采用编译期的静态分析，并且加入了动态引用的方式。
-
-3、采用ES Module将**自动**采用严格模式： use strict
-
-4、ES Module加载模块是异步的
-
-**导入导出的三种方式**
-
-注：es6的模块化需要在服务器上运行才有效。（使用vscode的live serve插件）
-
-```javascript
-//创建index.html
-<body>
-    <script src="./index.js" type="module"></script>
-</body>
-```
-
-注：下面的演示，并不是一一对应关系
-
-1、方式一
-
-```javascript
-//foo.js
-//在语句声明的前面直接加上export关键字
-export const name = 'linming';
-export const age = 18;
-export const sayHello = function (name) {
-    console.log("你好"+name);
-}
-
-//index.js
-//import {标识符列表} from '模块'
-import { name,age,sayHello } from "./js/foo.js"; //拓展名不能省
-console.log(name);
-console.log(age);
-sayHello('lin')
-```
-
-2、方式二
-
-```javascript
-//foo.js
-//将所有需要导出的标识符，放到export后面的 {}中
-const name = 'linming';
-const age = 18;
-const sayHello = function (name) {
-    console.log("你好"+name);
-}
-export {name,age,sayHello}
-// 注：{}中统一导出，{}大括号不是一个对象
-
-//index.js
-//导入时给标识符起别名
-import {name as wName, age as wAge, sayHello as Wfn} from './js/foo.js'
-console.log(wName);
-console.log(wAge);
-Wfn('linming')
-```
-
-3、方式三
-
-```javascript
-//foo.js
-//导出时给标识符起一个别名
-export {
-    name as fName,
-    age as fAge,
-    sayHello as fFn
-}
-
-//index.js
-//通过 * 将模块功能放到一个模块功能对象（a module object）上
-import * as obj from './js/foo.js'
-console.log(obj.fName);
-console.log(obj.fAge);
-obj.fFn('linming')
-```
-
-**default用法**
-
-前面学习的导出功能都是有名字的导出，比如导出
-
-```javascript
-export const sayHello = function () {}
-//在导出时指定了名字，在导入import时需要知道具体的名字
-```
-
-但是，默认导出（default export）可以不用指定名字，并且在导入时可以自己来指定名字。
-
-```javascript
-//导出
-export default function () {}
-//导入import fn from '路径'
-```
-
-注：在一个模块中，只能有一个默认导出
-
-**Node对ES Module的支持**
-
-在Node的current版本（v14.13.1）中，支持es module。
-
-方式一：在package.json中配置 type：module
-
-方式二：文件以.mjs结尾，表示使用的是ES Module
-
-```javascript
-//演示方式二
-//js/bar.mjs
-const name = 'ming';
-const sayHello = function (name) {    
-    console.log("你好" + name);}
-export {
-    name,
-    sayHello
-}
-
-//main.mjs
-import { name,sayHello } from "./js/bar.mjs";
-console.log(name);
-sayHello("明明");
-```
-
-### 2.3 ES Module原理
-
-**ES Module的解析流程**
-
-+ 阶段一：构建（constructor）,根据地址查找js文件，并且下载，将其解析成模块记录（module record）
-
-+ 阶段二：实例化(instantiation)，对模块记录进行实例化，并且分配内存空间（其中的属性为undefined，未赋值），解析模块的导入和导出语句，把模块指向对应的内存地址
-
-+ 阶段三：运行（Evaluation），运行代码，计算值，并且将值填充到内存地址中
-
-**阶段一：构建**
-
-![](img/js高级/esmodule原理1.jpg)
-
-```html
-<script src="main.js" type="module"></script>
-```
-
-当执行上方代码时，浏览器会把main.js中的代码下载下来，并生成一个`Module Record`（数据结构），它有一个属性`RequestedModules`，这个属性记录着main.js中依赖的其他js文件
-
-是否存在同一个文件被多次引用的情况呢？
-
-不存在，因为每一个JS文件都会被映射到了`Module Map`表中，该映射表不允许存在相同的文件地址
-
-ES Module有个特点：静态分析。也就是说js文件被下载好了，但是并不会执行其中的代码
-
-```js
-//静态分析
-import bar from 'bar.js'
-
-//静态分析不了的代码:因为代码未被执行，isFlag的值也没有确定下来
-let isFlag = true
-if(isFlag) {
-    import bar from 'bar.js'
-}
-```
-
-**阶段二、阶段三**
-
-![](img/js高级/esmodule原理2.jpg)
-
-```js
-//假设main.js引用着其他两个js文件
-import { count } from 'counter.js'
-import { render } from 'display.js'
-```
-
-这两个被引用的JS文件也会形成`Module Record`数据结构，并且两个文件分别向外暴露了`count`和`render`函数，这些变量方法会被存放在一块内存空间中，在静态编译阶段，他们的值都是undefined。
-
-代码运行后，他们被赋值了，并最终引入了main.js中
-
-注：
-
-1、允许在原文件中修改数据，但是通过导入方式导入的数据不允许被修改
-
-2、在webpack环境下，允许CommonJS与ESModule相互引用
-
-### 2.4 对比
-
-1、导入导出语法不同，commonJS是`module.exports、exports、require`，es模块是`export、import`
-
-2、CommonJS模块输出的是一个值的拷贝（浅拷贝），ES模块输出的是值的引用
-
-注：CommonJS导出的是一个值拷贝，会对加载结果进行缓存，一旦内部再修改这个值，则不会同步到外部。ES6是导出一个值的引用，内部修改可以同步到外部（一般不建议修改）
-
-3、CommonJS模块是运行时加载，ES模块是静态编译时加载
-
-4、CommonJS中顶层的this指向这个模块本身，而ES6中顶层this指向undefined
-
-5、ES6在编译期间会将所有import提升到顶部，CommonJS不会提升require
 
 ## 三、包管理工具npm
 
@@ -957,985 +637,6 @@ request.onsuccess = function(event) {
 //输出：{id: 200, name: 'linming', age: '14'}
 ```
 
-## 五、防抖节流
-
-**防抖节流**的概念其实最早并不是出现在软件工程中，防抖是出现在电子元件中，节流出现在流体流动中。
-
-JavaScript是事件驱动的，大量的操作会触发事件，加入到事件队列中处理。而对于某些频繁的事件处理会造成性能的损耗，我们就可以**通过防抖和节流来限制事件频繁的发生**。
-
-### 5.1 防抖基本理解
-
-在开发中，我们经常使用一些库来提供防抖节流的方法
-
-```js
-//lodash
-//说明：传递一个想要进行防抖处理的函数与触发时间，返回一个处理好的防抖函数
-const newFn = lodash.debounce(fn, 1000)
-btn.onclick = newFn
-```
-
-**防抖案例理解**：假设有一个搜索框，用户往里边输入内容时，该搜索框下方会帮用户匹配可能想要搜索的内容
-
-```html
-搜索：<input type="text">
-```
-
-问题：但是如果用户每输入一个单词，都触发一次处理程序去联想可能的内容。假设用户输入：`helloworld`，就触发了10次处理程序，十分消耗性能
-
-解决思路：规定一个时间（如500ms），用户每输入一个单词后延迟500ms后才触发处理程序。
-
-注：（每次输入一个新单词，都会刷新这个500ms的延迟时间）
-
-**防抖的应用场景**
-
-1、输入框中频繁输入内容，搜索或者提交信息
-
-2、频繁的点击按钮，触发某个事件
-
-3、监听浏览器滚动事件，完成某些特定操作
-
-4、用户缩放浏览器的resize事件
-
-**防抖代码案例**
-
-```html
-<!--输入框案例-->
-<body>
-  搜索：<input type="text">
-  <script>
-    const inputEl = document.querySelector("input")
-    let counter = 0
-    inputEl.addEventListener('input', () => {
-      console.log(`发送了第${++counter}次网络请求`);
-    })
-  </script>
-</body>
-```
-
-在输入框中输入`12345`，结果触发了5次事件`发生了第1、2、3、4、5次网络请求`
-
-```html
-<!--借助第三方库进行防抖-->
-<body>
-  搜索：<input type="text">
-  <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
-  <script>
-    const inputEl = document.querySelector("input")
-    let counter = 0
-    const fn = function() {
-      console.log(`发送了第${++counter}次网络请求`);
-    }
-    // 使用防抖函数
-    const newFn = _.debounce(fn, 1000)
-    inputEl.addEventListener('input', newFn)
-  </script>
-</body>
-```
-
-1秒内输入内容`12345`，最后只有发送一次网络请求。实现了防抖的效果
-
-### 5.2 节流的基本理解
-
-防抖与节流的区别：防抖是从触发事件停止时，开始计时去触发处理程序；而节流是按照固定的频率触发处理程序
-
-理解：假设宣讲会后，讲师进行答疑
-
-情况一：一分钟内，无论有多少同学提问，都只回答一个问题（节流）
-
-情况二：一分钟内，如果有同学提问那么回答问题。超过一分钟无人提问，那么答疑环节结束（防抖）
-
-**节流案例理解**：
-
-1、当事件被触发时，会执行这个事件的响应函数。如果事件被频繁触发，那么节流函数会按照一定的频率来执行函数；不管这中间有多少次触发这个事件，执行函数的频率总是固定的
-
-2、在飞机大战游戏中，假设按一次空格键发射一颗子弹。但是用户在1s内按了10次空格键发射10颗子弹，显然不正常。所以一般会使用节流函数来进行处理，不论1s内按了多少次空格键，都只发射一颗
-
-**节流的应用场景**
-
-1、监听页面的滚动事件
-
-2、鼠标移动事件
-
-3、用户频繁点击按钮的操作
-
-4、游戏中的一些设计
-
-**节流的案例**
-
-```html
-<body>
-  搜索：<input type="text">
-  <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.1/underscore-umd-min.js"></script>
-  <script>
-    const inputEl = document.querySelector("input")
-    let counter = 0
-    const fn = function() {
-      console.log(`发送了第${++counter}次网络请求`);
-    }
-    // 节流处理
-    const newFn = _.throttle(fn, 1500)
-    inputEl.addEventListener('input', newFn)
-  </script>
-</body>
-```
-
-在输入框中持续输入内容，每1.5秒会发送一次网络请求
-
-### 5.3 手写防抖函数
-
-希望实现的效果
-
-```js
-let counter = 0
-function fn() {
-    console.log(`第${++counter}次触发`)
-}
-//调用
-let newFn = debounce(fn, 1000)
-input.oninput = newFn
-//触发input事件时，调用的是经过防抖处理的newFn
-```
-
-**1、基本结构**
-
-所以，我们要实现的就是debounce函数
-
-```js
-function debounce(fn, delay) {}
-```
-
-最后结果是要返回一个函数
-
-```js
-function debounce(fn, delay) {
-    const _debounce = function() {
-
-    }
-    reutrn _debounce
-}
-```
-
-传进来的fn函数，能够被执行
-
-```js
-function debounce(fn, delay) {
-    const _debounde = function() {
-        fn()
-    }
-}
-
-//调用
-let newFn = debounce(fn, 1000)
-input.oninput = newFn
-//输入时，每输入一个值就会触发一次
-```
-
-为了实现防抖的延迟执行效果，我们可以加入定时器控制
-
-```js
-function debounce(fn, delay) {
-    const _debounde = function() {
-        setTimeout(() => {
-            fn()
-        }, delay)
-    }
-}
-```
-
-问题：但是这样子做所有的输入都会在自身被输入后的delay时间后被执行
-
-解决办法：**定义一个清除定时器的变量，每一次进行输入时，把上一次的定时器给清除掉**
-
-```js
-//防抖函数基本结构
-function debounce(fn, delay) {
-    // 1.定义一个变量，保存上一次的定时器
-    let timer = null
-    //2.真正执行的函数
-    const _debounce = function() {
-        //取消上一次的定时器
-        if(timer) clearTimeout(timer)
-        timer = setTimeout(() => {
-            //外部传入的真正要执行的函数
-            fn()
-        }, delay)
-    }
-    return _debounce
-}
-
-//测试代码
-    const input = document.querySelector('input')
-    let counter = 0
-    let fn = function() {
-      console.log(`第${++counter}次触发`);
-    }
-
-    let newFn = debounce(fn, 1000)
-    input.oninput = newFn
-```
-
-这样一来，我们就基本实现了防抖函数的基本结构
-
-**2、this与参数**
-
-上边的`debounce`函数已经基本实现了防抖功能，但是`this`与参数传递仍有一些问题
-
-```js
-//默认情况下，事件处理程序中的this和event参数
-const input = document.querySelector("input")
-input.addEventListener("input", function(event) {
-    console.log(this, event);
-})
-//输出：<input type="text"> InputEvent {...}
-```
-
-但是，在上方我们自己封装的`debounce`中，打印this和event参数却不是我们想要的结果
-
-```js
-let counter = 0
-function fn(event) {
-    console.log(`第${++counter}次触发`, this, event)
-}
-//调用
-let newFn = debounce(fn, 1000)
-input.oninput = newFn
-//触发input事件时，输出：window undefined
-```
-
-显然是不对的
-
-```js
-//解决
-function debounce(fn, delay) {
-    let timer = null
-    return function(...args) {
-        if(timer) clearTimeout(timer)
-        timer = setTimeout(() => {
-            fn.apply(this, args)
-        }, delay)
-    }
-}
-
-    const input = document.querySelector('input')
-    let counter = 0
-    let fn = function(event) {
-      console.log(`第${++counter}次触发`, this, event);
-    }
-
-    let newFn = debounce(fn, 1000)
-    input.oninput = newFn
-```
-
-**3、第三个参数：立即执行**
-
-我们想要实现这么一个功能，往`debounce`中输入一个布尔值，来决定是否立刻触发一次事件处理程序
-
-为什么需要这么一个参数？
-
-```js
-//假设用户输入第一个单词，立马就触发一次事件处理程序
-搜索：<input type="text">
-```
-
-后面用户可能持续在输入，但一直都不会触发第二次程序。那么第一次已触发的事件处理程序可以提升一点用户的体验
-
-所以，我们可以为`debounce`函数增加第三个参数，当这个参数为true时，用户第一次输入立马执行事件处理程序，而不进行防抖
-
-```js
-function debounce(fn, delay, immediate = false) {
-    let timer = null
-    return function(...args) {
-        if(timer) clearTimeout(timer)
-        if(immediate) { //如果为true立即执行
-            fn.apply(this, args)
-            immediate = false
-        } else {
-        timer = setTimeout(() => {
-            fn.apply(this, args)
-        }, delay)
-        }
-    }
-}
-
-//效果
-let newFn = debounce(fn, 1000, true)
-input.addEventListener('input', newFn)
-//当用户输入第一个字母时，就会立即触发一次
-```
-
-以上的防抖函数已经可以解决大部分的应用场景。
-
-如果想要用户输入一段内容后，停顿了一些时间。用户在输入第二段内容的时候，第二段内容的第一个字母也能实现立即执行事件处理程序，可以对代码进行如下改变
-
-```js
-//最终效果
-function debounce(fn, delay, immediate = false) {
-    let timer = null
-    let isInvoke = false
-    return function(...args) {
-        if(timer) clearTimeout(timer)
-        if(immediate && !isInvoke) { 
-            fn.apply(this, args)
-            isInvoke = true
-        } else {
-        timer = setTimeout(() => {
-            fn.apply(this, args)
-            isInvoke = false
-        }, delay)
-        }
-    }
-}
-```
-
-**4、取消功能**
-
-把本次的防抖功能取消掉
-
-为什么需要这一功能？比如搜索框中，我们利用防抖来给用户提供智能联想。但是有些用户目的明确，快速输入内容并点击搜索，此时根本来不及进行一个防抖的时间还在计算当中，同时也因为用户已经不需要这一次的智能联想了，所以可以在用户点击搜索按钮时，把这个防抖功能取消掉，提升性能
-
-```js
-function debounce(fn, delay, immediate = false) {
-    let timer = null
-    let isInvoke = false
-    let _debounce = function(...args) {
-        if(timer) clearTimeout(timer)
-        if(immediate && !isInvoke) {
-            fn.apply(this, args)
-            isInvoke = true
-        } else {
-        timer = setTimeout(() => {
-            fn.apply(this, args)
-            isInvoke = false
-        }, delay)
-        }
-    }
-
-    //取消功能
-    //_debounce本身也是一个对象，往其上添加一个方法
-    _debounce.cancel = function() {  
-        if(timer) clearTimeout(timer)
-        timer = null
-        isInvoke = false
-    }
-    return _debounce
-}
-
- // 测试取消功能
-const btn = document.querySelector("button")
-btn.onclick = newFn.cancel
-```
-
-### 5.4 手写节流函数
-
-节流函数的实现效果：
-
-1、第一个输入的内容会立马执行一次事件处理程序
-
-2、后续内容输入会根据时间周期来触发事件处理程序
-
-3、最后一次事件周期，不论内容输入是否达到这个周期，都要执行一次
-
-```js
-const remainTime = interval - (nowTime - lastTime)
-// remainTime表示用户停止输入后离周期触发时的间隔时间
-//interval时间周期
-//nowTime每次触发事件的时间戳
-//lasttime初始时间
-
-if(remainTime <= 0) {
-    //说明一个周期过去了，该触发事件处理程序了
-} 
-```
-
-**1、基本结构**
-
-```js
-function throttle(fn, interval) {
-    //1.记录上一次开始的时间
-  let lastTime = 0
-  // 2.事件触发时，真正执行的函数
-  const _throttle = function() {
-      //2.1 获取当前事件触发时的时间
-    let nowTime = new Date().getTime()
-    // 2.2 计算出还剩多少时间去触发函数
-    let remainTime = interval - (nowTime - lastTime)
-    if(remainTime <= 0) {
-      fn() //触发函数
-      lastTime = nowTime
-    }
-  }
-  return _throttle
-}
-```
-
-这个也是实现了第一次输入时，会立即触发一次
-
-**2、控制开始与结尾**
-
-我们可以自定义第一次是否触发或者最后一次输入没有达到周期是否触发
-
-如何控制第一次不触发呢?
-
-可以让`lastTime = nowTime`，只有当`lastTime`过了`nowTime`时间后，才执行第一次事件处理程序
-
-```js
-function throttle(fn, interval, options = { leading: true, trailing: false }) {
-    const { leading , trailing } = options
-    let lastTime = 0
-    const _throttle = function() {
-        const nowTime = new Date().getTime()
-        if(!lastTime && !leading) lastTimg = nowTime //判断是否第一次输入？是怎让其等于当前时间
-        const remainTime = interval - (nowTime - lastTime)
-        if(remainTime <= 0) {
-            fn()
-            lastTime = nowTime
-        }
-    }
-    return _throttle
-}
-
-//节流
-let newFn = throttle(fn, 1000, { leading: false})
-inputEl.oninput = newFn
-```
-
-效果：在时间周期内，输入内容不会立马触发事件处理程序
-
-trailing的实现比较麻烦，后续再作补充
-
-**3、this和参数**
-
-```js
-function throttle(fn, interval, options = { leading: true }) {
-    let lastTime = 0
-    let { leading } = options
-    const _throttle = function(...args) {
-        //获取当前时间戳
-        let nowTime = new Date().getTime()
-        //判断是否为第一次输入，并且传进来的leading为false
-        if(!lastTime && !leading) lastTime = nowTime
-        let remainTime = interval - (nowTime - lastTime)
-        if(remainTime <= 0) {
-            fn.apply(this, args)
-            lastTime = nowTime
-        } 
-    }
-    return _throttle
-}
-
-//测试
-function fn(event) {
-    console.log(`第${++counter}次触发`, this, args)
-}
-let newFn = throttle(fn, 2000, { leading: false })
-inputEl.oninput = newFn
-```
-
-**节流的实现方式二**
-
-```html
-<body>
-  <input type="text" id="input">
-</body>
-<script>
-
-  const throttle = function(fn, delay) {
-      let flag = true
-      return function(...args) {
-        if(flag) {
-          setTimeout(() => {
-            console.log(this)
-            fn.apply(this, args)
-            flag = true
-          }, delay)
-          flag = false
-        }else {
-          return false
-        }
-      }
-    }
-  const inputDom = document.getElementById("input")
-  inputDom.oninput = throttle(function(e) {
-    console.log(e.target.value)
-  }, 500)
-
-
-</script>
-```
-
-
-
-## 七、设计模式
-
-### 7.1 概述
-
-**分类**
-
-1、创建型
-
-工厂模式---大量创建对象
-
-单例模式---全局只有一个实例
-
-建造者模式---精细化组合对象
-
-原型模式
-
-2、结构型
-
-外观模式
-
-适配器模式---用适配代替更改
-
-享元模式---共享减少数量
-
-桥接模式
-
-装饰器模式---更好地扩展需求
-
-3、行为型
-
-观察者模式
-
-职责链模式---像生产线一样组织模块
-
-状态模式
-
-命令模式
-
-策略模式
-
-迭代器模式
-
-4、技巧性
-
-链模式---链式调用
-
-惰性模式
-
-委托模式
-
-等待着模式
-
-数据访问模式
-
-### 7.2 发布订阅
-
-![发布订阅](./img/js高级/发布订阅.png)
-
-基本代码结构
-
-```js
-//消息中心
-let eventMap = {};
-
-// 发布者
-function pub(msg, ...rest) {
-  eventMap[msg] && eventMap[msg].forEach((cb) => {
-    cb(...rest)
-  })
-}
-
-//订阅者
-function sub(msg, cb) {
-  eventMap[msg] = eventMap[msg] || []
-  eventMap[msg].push(cb)
-}
-```
-
-简单理解：以日常点外卖为例，消费者（订阅者）向美团平台（消息中心）订阅一种美食，商家（发布者）发布了该美食
-
-应用：解决回调地狱的问题
-
-```js
-const pubSub = new PubSub();
-
-request('url1', (err, res) => {
-  // 处理逻辑
-  // 发布请求1成功的消息
-  pubSub.publish('request1Success')
-})
-
-//订阅请求1成功的消息，然后发起请求2
-pubSub.subscribe('request1Success', () => {
-  request('url2', (err, res) => {
-    //逻辑处理...
-    //发布请求2成功的消息
-    pubSub.publish('request2Success')
-  })
-})
-```
-
-### 7.3 观察者模式
-
-发布订阅和观察者有一定的区别：
-
-1、发布订阅低耦合，通过消息中心连接发布者和订阅着，发布者和订阅者之间没有直接的联系
-
-2、在观察者模式里就是被观察者（Subject），它只需要维护一套观察者的集合（Observer），将有关状态的任何变更自动通知给他们watcher（观察者），这个设计的松耦合的
-
-应用：Vue的响应式
-
-### 7.3 创建型设计模式
-
-**工厂模式**---大量创建对象
-
-> 应用场景：当某一个对象需要经常创建的时候
-> 
-> 设计方式：写一个方法，只需要调用该方法，就能拿到想要的对象
-
-```js
-function fn(type) {
-  switch (type) {
-    case:'type1':
-      return new Type1()
-    //...
-  }
-}
-```
-
-```js
-//案例:创建多个不同的弹窗
-(function() {
-function infoPop() {}
-function confirmPop() {}
-
-function pop(type, content, color) {
-  switch (type) {
-    case: 'infoPop':
-      return new infoPop(content, color)
-    case 'confirmPop':
-      return new confirmPop(content, color)
-  }
-}
-}){}
-
-
-pop('infoPorp', 'hello','red')
-
-
-//改进
-(function() {
-
-function pop(type, content, color) {
-  if(this instanceof pop) {
-    var s = new this[type](content, color)
-  }else {
-    return new pop(type, content, color)
-  }
-  pop.prototype.infoPop = function() {}
-  pop.prototype.confirmPop= function() {}
-}
-}){}
-```
-
-**单例模式**---全局只有一个实例
-
-> 目的：需要确保全局只有一个对象
-> 
-> 应用场景：为了避免重复新建，避免多个对象存在互相干扰
-> 
-> 设计方式：通过定义一个方法：使用时只允许通过此方法拿到存在内部的同一实例化对象
-
-```js
-let Singletin = function(name) {
-  this.name = name
-}
-Singlenton.genInstance = function(name) {
-  if(this.instance) return this.instance
-
-  return this.instance = new Singleton(name)
-}
-```
-
-```js
-//例子
-function store() {
-  this.store = {};
-  if (store.install) {
-    return store.install;
-  }
-  store.install = this;
-}
-var s1 = new store();
-var s2 = new store();
-s1.store.name = "lin";
-console.log(s2);
-
-//输出：{store:{ name:'lin' } }
-// 这样以来，只要创建实例，都会指向同一个对象
-```
-
-```js
-//例子2：vue-router保障全局有且只有一个，否则会错乱
-
-let _Vue
-function install(Vue) {
-  if(install.installed && _Vue === vue) return
-  install.installed = true
-
-   _Vue = Vue
-}
-vue.use(router) //每次执行都会指向同一个对象
-```
-
-**建造者模式**---精细化组合对象
-
-> 目的：需要组合出一个全局对象
-> 
-> 应用场景：当要创建单个、庞大的组合对象时
-> 
-> 设计方式：把一个复杂的类各个部分，拆分成独立的类，然后再在最终类里组合到一块
-
-```js
-//模块1
-function Mode1() {}
-//模块2
-function Mode2() {}
-//组合
-function fn() {
-  this.mode1 = new Mode1()
-  this.mode2 = new Mode2()
-}
-```
-
-```js
-//例子：编辑器与插件
-
-//最终类
-function Editor() {
-  this.initer = new initHTML()
-  this.fontControll = new fontControll( )
-}
-
-
-//子
-function initHTML() {}
-initHTML.prototype.initStyle = function() {}
-
-//子
-function fontControll() {}
-fontControll.prototype.changeColor = function() {}
-
-
-window.Editor = Editor 
-```
-
-### 7.4 提高复用性的设计模式
-
-**桥接模式**
-
-> 目的：通过桥接代替耦合
-> 
-> 应用场景：减少模块之间的耦合
-
-```js
-//例子：有三种形状，每种形状有不同的颜色
-function rect(color) {
-  showColor(color)
-}
-function circle(color) {
-  showColor(color)
-}
-function delta(color) {
-  showColor(color)
-}
-function showColor(color) {} 
-```
-
-**享元模式**
-
-> 目的： 减少对象/代码数量
-> 
-> 应用场景：当代码中创建了大量类似对象和类似的代码块
-
-```js
-//例子：有一百种不同的弹窗，除了文字样式不同，其他内容相同
-
-function Pop() {} 
-Pop.prototype.action = function () {}
-Pop.prototype.show = function() {}
-
-//提取不同
-var = popArr = [
-  {text: 'hello111111', style: {} },
-  {text: 'hello22222', style: {} },
-]
-let poper = new Pop()
-for (let i = 0; i < 100; i++) {
-  pop.show(popArr(i))
-}
-//思想：创建一个类保存弹窗共有的，不同的部分作为一个公共的享元
-```
-
-**模板方法模式**
-
-> 目的：定义一系列操作的骨架，简化后面类似的操作内容
-> 
-> 应用场景：当项目中出现很多类似操作内容
-
-```js
-//例子：编译个导航组件，可能其中包含很多类型。先定下一个基础的组件类，后续的需求延迟到具体使用时再决定
-
-
-function banseNav() {}
-
-baseNav.prototype.action = function(fn) {}
-```
-
-### 7.5 提高扩展性的设计模式
-
-**适配器模式**
-
-> 目的：通过写一个适配器，来代替替换
-> 
-> 应用场景：面临接口不通用的问题
-
-```js
-//例子：后端返回了数据格式不符合，我们需要在获取数据时，实现适配
-  data: [
-  {
-    path: "/home",
-    components: home
-  },
-  {
-     path: "/about",
-     components: about
-  }
-]
-
-
-function handle () {
-  return {
-    "/home": home,
-    "/about": about
-  }
-}
-```
-
-```js
-//例子2：例如你有一个自研框架，其中有很多方法跟jquery相似
-//那么完全可以不用再写一次该方法
-
-myMethods.deepClone = function() {
-  return $.cloneDeep.call(this, arguments)
-}
-```
-
-**装饰者模式**
-
-> 目的：不重写方法的扩展方法 
-> 
-> 应用场景：当一个方法需要扩展，但是又不好去修改方法
-
-```js
-//例子：当需要去改动他人的代码，往其中增加新功能时。例如给某些点击事件新增操作提示
-function decorator(dom, fn) {
-  if (typeof dom.onclick === "function") {
-    let _old = dom.onclick;
-    //重写
-    dom.onclick = function () {
-      //调用老方法
-      _old();
-      //执行新的操作
-      fn();
-    };
-  }
-}
-```
-
-**命令模式**
-
-> 目的：解耦实现和调用，让双方互不干扰
-> 
-> 应用场景：调用的命令充满不确定性
-
-**观察者模式**
-
-> 目的：减少对象间的耦合，来提高扩展性
-> 
-> 应用场景：当两个模块直接沟通会增加他们的耦合性时
-
-```js
-/基本结构
-// 观察存储器
-function observe() {
-  this.message = {};
-}
-
-// 注册监听
-observe.prototype.regist = function (type, fn) {
-  this.message[type] = fn;
-};
-
-// 触发监听
-observe.prototype.fire = function (type) {
-  this.message[type]();
-};
-```
-
-```js
-//例子：存在两个不相关的模块，需要实现通信
-const obj = {
-  message: {},
-  regist: function (type, fn) {
-    this.message[type] = fn;
-  },
-  function(type) {
-    this.message[type](); 
-  },
-};
-
-// A模块
-obj.regist('getSomething', (data) => {
-    //doSomething
-})
-// B模块
-obj.fire("getSomething")
-```
-
-**职责链模式**
-
-> 目的：为了避免请求发送者与多个请求处理者耦合再一起，形成一个链条
-> 
-> 应用场景：把操作分割成一系列模块，每个模块只处理自己的事情
-
-
-
-**提高代码质量的设计模式**
-
- **策略模式/状态模式**
-
-> 目的：优化if-else分支
-> 
-> 应用场景：当出现过多if-else分支
-
-
-
-**外观模式**
-
-> 目的：通过为多个复杂的子系统提供一个一致的接口
-> 
-> 应用场景：当完成一个操作，需要操作多个子系统，不如提供一个更高级的
-
-
-
-**迭代器模式**
-
-> 目的：不访问内部的情况下，便利数据
-> 
-> 应用场景：当我们要对某个对象进行操作，但是又不能暴露内部
-
-
-
-**备忘录模式**
-
-> 目的：记录状态，方便回滚
-> 
-> 应用场景：系统状态多样，为了保证状态的回滚方便，记录状态
-
-
-
 
 
 ## 八、webWorker
@@ -2116,4 +817,1545 @@ run(main);
   } catch (err) {}
 })()
 ```
+
+## 十、面向对象
+
+JavaScript其实支持多种编程范式的，包括**函数式编程和面向对象编程**： 
+
+1、JavaScript中的对象被设计成一组属性的无序集合，像是一个哈希表，有key和value组成
+
+2、key是一个标识符名称，value可以是任意类型，也可以是其他对象或者函数类型
+
+3、如果值是一个函数，那么我们可以称之为是对象的方法
+
+**创建对象**
+
+```js
+//方式一: new关键字
+var obj = new Object()
+
+//方式二: 字面量
+var obj = {}
+```
+
+**操作对象**
+
+```js
+//赋值
+obj.name = "linming"
+
+//取值
+obj.name
+
+//删除值
+delete obj.name
+```
+
+有时候我们也希望对一个属性进行比较精准的操作控制，比如不允许对象的某个值被删除、被赋值、不允许哪一个值被遍历等等，这个时候，就可以使用`Object.defineProperty`
+
+### 10.1 defineProperty
+
+`Object.defineProperty()`方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回此对象。
+
+**可接收三个参数**
+
+1、obj要定义属性的对象
+
+2、prop要定义或修改的属性的名称或Symbol
+
+3、descriptor要定义或修改的**属性描述符**
+
+返回值：被修改的对象obj
+
+```js
+var obj = {
+    name: "linmnig",
+    age: 19
+}
+
+// 为obj增加一个属性
+Object.defineProperty(obj, "height", {
+    value: 1.88
+})
+console.log(obj) //输出：{ name: 'linmnig', age: 19 }
+```
+
+注：通过该函数添加的新属性，默认不可被遍历
+
+**属性描述符分类**
+
+属性描述符的类型有两种：
+
+1、数据属性描述符
+
+2、存取属性(访问器)描述符
+
+| 分类       | configurabel | enumerable | value  | writable | get    | set    |
+| ---------- | ------------ | ---------- | ------ | -------- | ------ | ------ |
+| 数据描述符 | 可以         | 可以       | 可以   | 可以     | 不可以 | 不可以 |
+| 存取描述符 | 可以         | 可以       | 不可以 | 不可以   | 可以   | 可以   |
+
+如何区分：当存在get、set时，不能有value和writable（不能共存），反之同理
+
+**数据描述符的特性**
+
+1、`[[Configurable]]`：表示属性是否可以通过delete删除属性，是否可以修改它的特性，或者是否可以将它**修改为存取属性描述符**
+
+A、直接在一个对象上定义某个属性时，这个属性的[[Configurable]]为true
+
+B、通过属性描述符定义一个属性时，这个属性的[[Configurable]]默认为false
+
+2、[[Enumerable]]：表示是否可以通过遍历获得该属性
+
+A、直接在一个对象上定义某个属性时，这个属性的[[Enumerable]]为true
+
+B、通过属性描述符定义一个属性时，这个属性的[[Enumerable]]默认为false
+
+3、[[Writable]]：表示是否可以修改属性的值
+
+A、直接在一个对象上定义某个属性时，这个属性的[[Writable]]为true
+
+B、通过属性描述符定义一个属性时，这个属性的[[Writable]]默认为false
+
+4、[[value]]：属性的value值，读取属性时会返回该值，修改属性时，会对其进行修改
+
+A、默认情况下这个值是undefined
+
+```js
+var obj = {
+    name: 'linming'
+}
+
+//原先obj并没有age这个属性
+Object.defineProperty(obj, 'age', {
+    //默认值为undefined
+    //age默认不可修改或删除
+    //age不可被遍历
+})
+```
+
+**存取属性描述符**
+
+1、[[Configurable]]——与数据属性描述符一致
+
+2、[[Enumerable]]——与数据属性描述符一致
+
+3、**[[get]]**：获取属性时会执行的函数，默认为undefined
+
+4、**[[set]]:**设置属性时会执行的函数，默认为undefined
+
+```js
+let obj = {
+    name: 'linming',
+    _address: '广州'
+}
+
+Object.defineProperty(obj, "address", {
+    enumerable: true, //可遍历
+    configurable: true, //可删除
+    get: function() {
+        return this._address
+    },
+    set: function(value) {
+        this._address = value
+    }
+})
+```
+
+**get、set**的应用
+
+1、隐藏一个私有属性，不希望直接被外界使用和赋值
+
+2、希望截获某一个属性访问时，设置值时的过程
+
+```js
+Object.defineProperty(obj, "address", {
+    enumerable: true, //可遍历
+    configurable: true, //可删除
+    get: function() {
+        foo()
+        return this._address
+    },
+    set: function(value) {
+        bar()
+        this._address = value
+    }
+})
+
+function foo() {
+    console.log("取值前截获到了");
+}
+
+function bar() {
+    console.log("设置值前截获到了");
+}
+
+
+console.log(obj.address);
+console.log(obj.address = "深圳");
+```
+
+**Object.defineProperties()**
+
+Object.defineProperties()方法直接在一个对象上定义多个新的属性或修改现有属性，并且返回该对象
+
+例如：同时配置name、age属性
+
+```js
+const obj = {
+    _age: 18
+}
+
+Object.defineProperties(obj, {
+    name: {
+        configurable: true,
+        enumerable: true,
+        writableL: true,
+        value: "linming"
+    },
+    age: {
+        configurable: false,
+        enumerable: false,
+        get: function() {
+            return this._age
+        },
+        set: function(value) {
+            this._age = value
+        }
+    }
+})
+```
+
+**获取某一个属性的属性描述符**
+
+`getOwnPropertyDescriptor()`
+
+```js
+console.log(Object.getOwnPropertyDescriptor(obj, "age"));
+
+//输出：
+//{
+//  get: [Function: get],
+//  set: [Function: set],
+//  enumerable: false,
+//  configurable: false
+//}
+```
+
+**获取对象的所有属性描述符**
+
+`Object.getOwnPropertyDescriptors()`
+
+```js
+console.log(Object.getOwnPropertyDescriptors(obj));
+```
+
+### 10.2 批量创建对象
+
+**1、工厂模式**
+
+工厂模式是一种常见的设计模式
+
+通常我们会有一个工厂方法，通过该工厂方法我们可以产生想要的对象
+
+```js
+//基本结构
+function createPerson () {
+    var p = {}
+    return p
+}
+
+//创建对象实例
+var p1 = createPerson()
+```
+
+具体案例如下
+
+```js
+function createPerson (name, age, height, address) {
+    var p = {}
+    p.name = name
+    p.age = age
+    p.height = height
+    p.address = address
+    p.eating = function() {
+        this.name + "在吃东西"
+    }
+    p.running = function() {
+        this.name + "在跑步"
+    }
+    return p
+}
+
+var p1 = createPerson('linming', 22, 1.81, "广州")
+
+console.log(p1.eating);
+console.log(p1.name);
+```
+
+**工厂模式的缺点：**获取不到对象的具体类型，我们在打印对象时，对象的类型都是Obejct类型
+
+**2、构造函数**
+
+构造函数也称之为构造器（constructor），通常是我们在创建对象时会调用的函数
+
+如果一个普通的函数被使用new操作符来调用了，那么这个函数就称之为是一个构造函数
+
+```js
+function foo() {
+    console.log("foo~")
+}
+
+//普通方式调用
+foo() //输出：foo~
+
+//new调用
+new foo()  //输出：foo~
+```
+
+问题：**new调用有什么特殊的地方吗？**
+
+如果一个函数被使用new操作符调用了，那么它会执行如下操作：
+
+1、在内存中创建一个新的对象（空对象）
+
+2、这个对象内部的[[prototype]]属性会被赋值为该构造函数的prototype属性
+
+3、构造函数内部的this，会指向创建出来的新对象 `{} = this`
+
+4、执行函数的内部代码（函数体代码）
+
+5、如果构造函数没有返回非空对象，则返回创建出来的新对象
+
+```js
+function Person() {
+
+}
+var p1 =  new Person() //创建一个{}，this = {} ，执行函数体代码，返回新对象
+
+console.log(p1) //输出：Person {}
+```
+
+完整的案例代码
+
+```js
+function Person (name, age, height, address) {
+    //1.new 调用时创建一个{}
+    //2.这里的this = 那个空对象
+    //执行函数体，往对象里边添加属性、方法
+    this.name = name  
+    this.age = age
+    this.height = height
+    this.address = address
+
+    this.eating = function() {
+        console.log(this.name + "在吃东西~")
+    }
+    this.running = function() {
+        console.log(this.name + "在跑步~");
+    }
+}
+
+var p1 = new Person("linming", "18", "2.00", "深圳市")
+var p2 = new Person('xiaoming', 22, "1.92", "广州市")
+console.log(p1);
+
+p1.eating()
+p2.eating()
+
+console.log(p1.eating === p2.eating) //false
+```
+
+**构造函数的缺点：**从上边的案例中，`console.log(p1.eating === p2.eating) //false` 我们可以得出，创建出来的实例的函数地址是不同的（即内部创建了不同的内存空间来保存这个函数），但是完成没有必要。但这样子的创建实例多了，就浪费了很多的内存空间
+
+### 10.2 对象的原型
+
+**隐式原型**
+
+JavaScript当中每个对象都有一个特殊的**内置属性[[prototype]]**,这个特殊的属性可以**指向另一个对象**
+
+```js
+let obj = { name: 'linming' }  //[[prototype]]
+```
+
+如何查看这个属性？
+
+1、方式一：`__proto__`
+
+通过对象的这个属性可以获取到
+
+```js
+let obj = {}
+console.log(obj.__proto__)
+//输出：[Object: null prototype] {}
+```
+
+2、方式二：`Object.getPrototypeOf()`
+
+```js
+let obj = {}
+console.log(Object.getPrototypeOf(obj))
+//输出：[Object: null prototype] {}
+```
+
+从上边的代码中，都获取到了一个空对象，这个对象有什么用呢？
+
+当我们通过引用对象的属性key来获取一个value时，它会触发[[Get]]的操作，这个操作会首先检查该属性是否对应的属性，如果有的话就使用它；如果没有该属性，那么会访问对象的[[prototype]]内置属性指向的对象上的属性
+
+```js
+let obj = {}
+obj.__proto__.name = "linming"
+
+console.log(obj.name) //linming
+```
+
+### 10.3 函数的原型
+
+1、函数本质上也是一个对象，所以它有**隐式原型**
+
+```js
+function foo() {}
+console.log(foo.__proto__) // {}
+```
+
+2、函数还有一个显示原型属性：prototype
+
+```js
+console.log(foo.prototype)  // {}
+```
+
+思考：函数的prototype也是一个对象，那么这个对象的隐式原型是谁呢？
+
+```js
+console.log(foo.prototype.__proto__)
+//输出：[Object: null prototype] {}
+```
+
+答案：Object的原型对象
+
+3、当函数作为构造函数被调用时，其内部创造出来的对象的隐式原型会指向显示原型
+
+我们之前讨论过通过new调用一个函数会发生什么？
+
+其中的第二步：`这个对象内部的[[prototype]]属性会被赋值为该构造函数的prototype属性`
+
+```js
+function Foo() {
+    //1.创建出 {}
+    //2. {}.__proto__ = Foo.prototype
+    //3.this = {}
+    //4.执行代码
+    //5.return this 
+}
+```
+
+所以，构造函数创建出来的实例，它的隐式原型 === 它的显示原型
+
+```js
+let f1 = new Foo()
+let f2 = new Foo()
+
+console.log(f1.__proto__ === Foo.prototype)
+console.log(f2.__proto__ === Foo.prototype)
+```
+
+<img src="C:\Users\mzlin\Desktop\mzlin-notes\img\js高级\原型1.jpg" style="zoom:50%;" />
+
+所以，这样一来，往`Foo.prototype`中添加属性，在f1，f2都能访问
+
+```js
+Foo.protype.name = 'linming'
+
+console.log(f1.name) //linming
+console.log(f2.name) //linming
+
+//通过f1，或者f2向原型对象添加属性
+f1.__proto__.age = 22
+f2.__proto__.age = 18
+
+console.log(f1.age) //输出：18
+```
+
+**4、constructor属性**
+
+```js
+function Foo() {}
+
+console.log(Foo.prototype) //输出：{}
+```
+
+从上边可以知道，Foo的显示原型对象是空的。
+
+实际上，它不是空的，只是这个原型对象的**enumerable**属性被设置为false，所以我们不能遍历出其中的属性
+
+原型对象上有一个**constructor属性**，指向Foo函数本身
+
+```js
+console.log(Foo.prototype.constructor)
+//输出：[Function: Foo]
+```
+
+所以，下面这样写也是允许的
+
+```js
+//获取函数名
+console.log(Foo.prototype.constructor.name)  //输出：Foo
+
+//也可以这样
+console.log(Foo.prototype.constructor.prototype.constructor.prototype.constructor)
+//输出：[Function: Foo]
+```
+
+5、修改原型对象
+
+有时候我们不想用原来的原型对象，可以这么做
+
+```js
+function Foo() {}
+
+Foo.prototype = {}  //直接修改了整个prototype
+```
+
+这样的结果是，我们直接断开了指向原本的原型对象，转而指向这个新的{}
+
+```js
+Foo.prototype = {
+    name: 'linming',
+    age: 22,
+    height:1.78
+}
+```
+
+当然这个新创建的`{}`对象并不完美，因为 其中没有constructor属性
+
+真实开发中，我们可以通过`Object.defineProperty`方法添加constructor
+
+```js
+Object.defineProperty(Foo.prototype, "constructor", {
+    enumerable: false,  //原来的原型对象的constructor是不能被遍历的
+    writable: true,
+    configurable: true,
+    value: Foo //指向本身
+})
+```
+
+测试代码
+
+```js
+let f1 = new Foo()
+let f2 = new Foo()
+
+console.log(f1.name, f2.age, f2.height);
+
+console.log(Foo.prototype.constructor.name); //Foo
+```
+
+### 10.4 原型链
+
+我们知道，查找一个对象的属性和方法时，会触发[[ get ]]操作
+
+1、在当前对象中查找
+
+2、如果没有找到，将会去对象的原型上（`__proto__`）查找
+
+```js
+const obj = {}
+obj.__proto__.address = "广州市"
+console.log(obj.address) //输出：广州市
+```
+
+3、如果还没找到，会继续沿着原型链查找（原型对象是一个对象，对象有自己的原型对象）
+
+```js
+![原型链1](img/js高级/原型链1.jpg)obj.__proto__ = {}
+obj.__proto__.__proto__ = {}
+obj.__proto__.__proto__.__proto__ = {
+    address: 'linming'
+}
+console.log(obj.address) //输出：linming
+```
+
+​    <img src="C:\Users\mzlin\Desktop\mzlin-notes\img\js高级\原型链1.jpg" style="zoom:50%;" />
+
+但是原型链不是无限的，最终会止于最顶层原型
+
+那么最顶层的原型是是谁呢？就是Object的原型对象
+
+### 10.5 Object的原型
+
+**Object本质上是一个构造函数**，Object也是js所有类的父类
+
+```js
+const obj = {}
+console.log(obj.__proto__)
+//输出：[Object: null prototype] {}
+```
+
+这里输出的obj的隐式原型就是Object的显式原型对象`[Object: null prototype] {}`
+
+为什么呢？为什么obj的隐式原型可以打印出来的就是顶层原型？
+
+**重点理解**
+
+```js
+const obj = {}
+//等于
+const obj = new Obejct()
+```
+
+事实上字面量定义一个对象，就是`new Object()`的语法糖
+
+结合前面说过的调用new创建出一个对象所经过的步骤，就不难理解
+
+```js
+const obj = new Object()
+//1.创建出一个{}
+//2.this = {}
+//3.{}.__proto__ = Object.prototype
+//4.执行函数体
+//5.返回这个对象
+```
+
+所以，这样一来，`obj.__proto__ === Object.prototype`
+
+<img src="C:\Users\mzlin\Desktop\mzlin-notes\img\js高级\原型链2.jpg" style="zoom:50%;" />
+
+那么Object的原型对象里边都有什么呢？
+
+有很多默认的属性和方法
+
+```js
+console.log(Object.getOwnPropertyDescriptors(Object.prototype))
+//输出：
+//constructor
+//defineGetter__
+//defineSetter__
+// __lookupGetter__
+//__lookupSetter__
+//isPrototypeOf
+//toString
+//valueOf
+//__proto__
+//...
+```
+
+注意：其中，顶层显式原型对象是一个对象，它的隐式原型是null
+
+```js
+const obj = new Object()
+console.log(obj.__proto__.__proto__) //输出：null
+```
+
+**构造函数的顶层原型对象**
+
+思考：构造函数的显式原型也是一个对象，这个对象是否有[[prototype]]隐式原型属性呢？
+
+答案是肯定的
+
+```js
+function People() {}
+
+console.log(People.prototype.__proto__) 
+//[Object: null prototype] {}
+```
+
+并且该People构造函数的原型对象的原型指向最顶层的Object的原型
+
+<img src="C:\Users\mzlin\Desktop\mzlin-notes\img\js高级\原型链3.jpg" style="zoom:50%;" />
+
+所以，可以说People构造函数继承自Object
+
+### 10.6 继承
+
+**1、基于原型链的继承方案**
+
+```js
+// 父类
+function People() {
+    this.name = 'linming'
+}
+People.prototype.running = function() {
+    console.log(this.name + "在跑步")
+}
+
+// 子类
+function Student() {
+    this.age = 22
+}
+
+// 继承：改写了Student的显示原型，指向People的实例
+Student.prototype = new People()
+//也可以写成： const p1 = new People()  Student.prototype = p1
+
+Student.prototype.eating = function() {
+    console.log(this.name + "在吃东西")
+}
+
+const stu = new Student()
+console.log(stu.age) //22
+console.log(stu.name) //linming
+stu.running() //linming在跑步
+stu.eating() //linming在吃东西
+```
+
+最主要的代码是`Student.prototype = new People()`
+
+这里将Student的原型改写为People的实例，由此实现了继承
+
+<img src="C:\Users\mzlin\Desktop\mzlin-notes\img\js高级\继承1.jpg" style="zoom:50%;" />
+
+原型链实现的继承有很多的弊端：
+
+1、继承的属性是打印不出来的
+
+```js
+console.log(stu)
+//输出：People { age: 22 }
+```
+
+但是明显我们要的是能显示出继承的name属性、eating方法
+
+（错误？）2、实现继承的多个实例，新增属性时会共享,即多个实例都能访问得到（只能修改已定义的属性，新增的属性不会共享）
+
+```js
+var stu1 = new Student()
+var stu2 = new Student()
+
+stu1.name = 'xiaoming' //原先的name修改会被共享
+console.log(stu2.name);
+```
+
+通常情况下我们希望的效果是，修改stu1的name，应该只能应用在stu1上，但实际上stu2也被修改了
+
+3、传递参数不方便
+
+**2、借用构造函数的继承方案**
+
+对上边的案例进行简单的改造，就可以很好的解决出现的三个弊端
+
+```js
+function People(name, age, address) {
+    this.name = name
+    this.age = age
+    this.address = address
+}
+People.prototype.running = function() {
+    console.log(this.name + "在跑步")
+}
+
+function Student(name, age, address, sno) {
+    // this = 所创建的实例
+    People.call(this, name, age, address)
+    this.sno = sno
+}
+//改写Student的原型对象
+Student.prototype = new People()
+
+//解决弊端1、3
+const stu1 = new Student('linming', 22, '揭阳', 20180201) 
+const stu2 = new Student('小明', 223, '广州', 201803041) 
+console.log(stu1) 
+console.log(stu2)
+//解决
+stu1.name = "林明" 
+console.log(stu2.name)
+```
+
+弊端：
+
+1、Person函数至少被调用了两次
+
+2、stu的原型对象上会多出一些属性，但是这些属性是没有存在的必要
+
+**3、原型式继承**
+
+```js
+var obj = {
+    name: 'linming',
+    age : 22
+}
+//原型式继承函数
+function createObject(newPrototype) {
+    var obj = {}
+    // 将obj的原型改写为newPrototype
+    Object.setPrototypeOf(obj, newPrototype)
+    return obj
+}
+
+const info = createObject(obj)
+console.log(info) //输出：{}
+console.log(info.__proto__) //输出：{ name: 'linming', age: 22 }
+```
+
+创建出第三方的对象obj，使其成为info的隐式原型
+
+ES6之后，有一个新的函数`Object.create`，可以实现与`createObject()`同样的效果
+
+```js
+const info = Object.create(obj)
+console.log(info) //输出：{}
+console.log(info.__proto__) //输出：{ name: 'linming', age: 22 }
+```
+
+**`Object.create()`**方法创建一个新对象，使用现有的对象来提供新创建的对象的__proto__
+
+**4、寄生式继承**
+
+```js
+var personObj = {
+    running: function() {
+        console.log("running");
+    }
+}
+
+
+function createStudent(name) {
+    var stu = Object.create(personObj)
+    stu.name = name
+    stu.studying = function() {
+        console.log("studying~")
+    }
+    return stu
+}
+
+var stuObj = createStudent("why")
+var stuObj1 = createStudent("Kobe")
+var stuObj2 = createStudent("james")
+
+console.log(stuObj)
+//输出：{ name: 'why', studying: [Function (anonymous)] }
+```
+
+**5、寄生组合式继承**
+
+```js
+function Person(name, age, firedns) {
+    this.name = name
+    this.age = age
+    this.firedns = firedns
+}
+
+Person.prototype.running = function() {
+    console.log("running~")
+}
+Person.prototype.eating = function() {
+    console.log("eating~")
+}
+
+function Student(name, age, friends, sno, score) {
+    Person.call(this, name, age, friends)
+    this.sno = sno
+    this.score = score
+}
+
+// 改写Student的原型对象
+// 创建一个对象，该对象的隐式原型指向Person的原型对象，赋值给Student的原型
+Student.prototype = Object.create(Person.prototype)
+//解决Student的原型中的constructor指向Person的问题
+Object.defineProperty(Student.prototype, "constructor", {
+    enumerable: false,
+    configurable: true,
+    writable: true,
+    value: Student
+})
+
+Student.prototype.studying = function() {
+    console.log("studying~");
+}
+
+var stu = new Student("why", 18, ['kobe'], 111, 100)
+console.log(stu) 
+stu.studying() //studying~
+stu.running() //running~
+stu.eating() //eating~
+```
+
+### 10.7 原型内容补充
+
+**1、hasOwnProperty**
+
+判断对象是否有一个属于自己的属性（不是在原型上的属性）
+
+```js
+var obj = {
+    name: 'linming',
+    age: 18
+}
+
+var info = Object.create(obj, {
+    address: {
+        value: "上海市",
+        enumerable: true
+    }
+})
+//注：Object.create的第二个参数，是给info对象直接添加上去的属性，不在原型上
+
+
+console.log(obj.hasOwnProperty("address")) //true
+console.log(obj.hasOwnProperty("name")) //false
+```
+
+**2、in操作符**
+
+判断某个属性是否在某个对象或者对象的原型上
+
+```js
+console.log("address" in info) //true
+console.log("name" in info) //true
+```
+
+**3、for...in**
+
+该遍历操作可以遍历出原型上的属性
+
+```js
+for (let key in info) {
+    console.log(key)
+}
+// address name age
+```
+
+**4、instanceof**
+
+用于检测构造函数的prototype，是否出现在某个实例对象的原型链上
+
+假设Student构造函数继承自People类
+
+```js
+var stu = new Student()
+
+console.log(stu instanceof Student) //true
+console.log(stu instanceof People)  //true
+console.log(stu instanceof Object)  //true
+```
+
+### 10.8 对象-函数-原型的联系
+
+1、对象存在**隐式原型**
+
+```js
+const obj = {}
+//相当于
+const obj = new Object() //new操作，使obj的隐式原型指向Object的显式原型
+
+console.log(obj.__proto__) //顶层Object的显示原型：[Object: null prototype] {}
+
+console.log(obj.__proto__ === Object.prototype) //true
+```
+
+2、函数存在**隐式原型**、也存在**显式原型**
+
+隐式原型(对象)：`Foo.__proto__`
+
+显式原型(对象)：`Foo.prototype`
+
+```js
+//为什么FOO函数也是一个对象？
+let Foo = new Function()
+```
+
+Funtion是Foo的父类（同时，Function本身也是一个对象、也是一个构造函数）
+
+函数的显式原型与隐式原型是不相等的
+
+```js
+console.log(Foo.__proto__ === Foo.prototype) //false
+```
+
+```js
+//Foo.protorype来自哪里
+//答案：创建一个函数时，js引擎自动为其添加的
+Foo.prototype = { constructor: Foo }
+```
+
+```js
+//Foo.__proto__来自哪里
+//答案：new Function()，即Function对象的显式原型
+// Foo.__proto__ === Function.prototype
+```
+
+3、关系图
+
+特别注意：
+
+A、`Function.__proto__ === Function.prototype`（自己创造了自己）
+
+B、Object函数对象也可以理解成`const Object = new Function()`,所以它的隐式原型指向Function的显式原型
+
+<img src="C:\Users\mzlin\Desktop\mzlin-notes\img\js高级\原型链4.jpg" style="zoom:50%;" />
+
+创建一些实例，其指向关系如何
+
+<img src="C:\Users\mzlin\Desktop\mzlin-notes\img\js高级\原型链5.jpg" style="zoom:50%;" />
+
+**总结**
+
+```js
+1、对象
+在js中,每个对象都存在一个隐式原型，默认是一个空对象，可以通过.__proto__访问
+当我们访问js对象中的属性时，如果对象自身没有，则会沿着隐式原型查找，找到则返回，直到顶层对象的显示原型
+
+2、函数
+函数因为本质也是对象，所以也存在隐式原型
+同时函数也存在显示原型，通过prototype访问，显示原型里有一个constructor属性指向函数本身,同时因为显示原型也是一个对象，它也包含了隐式原型，这个隐式原型指向了顶层对象的原型
+
+3、顶层Object
+顶层Object是一个构造函数，它的显示原型中存在很多的方法，例如toString等
+它的隐式原型是null
+
+4、构造函数
+当我们创建一个实例对象时，默认这个实例对象的隐式原型会指向构造函数的显示原型。所以我们可以通过原型链一层层地查找想要的属性，直到顶层Obecjt
+```
+
+
+
+
+
+### 十一、其他
+
+
+
+#### 2、async和await
+
+**简单总结**：
+
+1、async和await是用来处理异步函数的
+
+2、promise通过then链来解决多层回调问题，async和await可以进一步优化它
+
+3、async是“异步”的简写，await是“async wait”的简写
+
+4、async用于声明一个function是异步的，await用于等待一个异步方法执行完成的
+
+5、await只能出现在async的函数中
+
+**async基本使用**
+
+我们来对比一下普通函数与async的区别
+
+```javascript
+    // 普通函数声明
+    function timeout1 () {
+        return 'hello wolrd'
+    };
+
+    // async函数声明
+    async function timeout2 () {
+        return 'hello world'
+    }
+
+    // 两者的结果
+    console.log(timeout1());  //输出：hello world
+    console.log(timeout2());  //输出：promise对象
+```
+
+async的用法很简单，在函数前面加上这一关键字，按着平时使用函数的方式去使用它。
+
+async返回一个promise对象，如果要获取结果，就可以使用then方法了
+
+```javascript
+    timeout2().then(res => {
+        console.log(res);
+    }).catch(err => {
+        console.log(err);
+    })
+```
+
+值得注意的是：async函数返回一个promise对象，如果在函数return一个直接量，async会把这个直接通过promise.resolve()封装成Promise对象。如果函数内部出错了，则调用promise.reject，也是返回一个promise对象
+
+```javascript
+async function timeout(flag) {
+    if (flag) {
+        return 'hello world'
+    } else {
+        throw 'my god, failure'
+    }
+}
+console.log(timeout(true))  // 调用Promise.resolve() 返回promise 对象。
+console.log(timeout(false)); // 调用Promise.reject() 返回promise 对象。
+```
+
+**await基本使用**
+
+await后边可以放任何表达式，不过放的更多的返回一个promise对象的表达式。注：await关键字只能放在async函数里边。
+
+案例解析
+
+现在写一个函数，让它返回promise 对象，该函数的作用是2s 之后让数值乘以2
+
+```javascript
+    function mult (num) {
+        return new Promise((resolve,reject) =>{
+            setTimeout(() =>{
+                resolve(num *2);
+            },2000)
+        })
+    } 
+
+    async function getResult (num) {
+        const res = await mult(num);
+        console.log(res);
+    }
+
+    getResult(44) //2s后输出88
+```
+
+执行过程：调用了getResult函数，它里边遇到了await，代码暂停到了这里不再向下执行。只有等到它后边的promise对象执行完毕，拿到promise resolve的值并进行返回，它才继续向下执行。
+
+注：如果await等到的不是一个promise对象，那么await表达式的运算结果就是它等到的东西；如果等到了promise，它会阻塞后边的代码，等着promise对象resolve，然后得到resolve的值，作为await表达式的运算结果
+
+就这一个函数，我们可能看不出async/await 的作用，如果我们要计算3个数的值，然后把得到的值进行输出呢？
+
+```javascript
+    async function getResult () {
+        const firstRes = await mult(20);
+        const secondRes = await mult(30);
+        const thirdRes = await mult(40);
+        console.log(firstRes+secondRes+thirdRes); //6s后输出180
+    }
+
+    getResult()
+```
+
+可以想象，如果上边的代码用then链来写，是特别不优雅的。而使用async和await看起来就像在使用同步代码一样
+
+#### 4、promise对象
+
+**promise两个特点**
+
+1、对象的状态不受外界的影响。只有异步操作可以决定当前是哪一种状态，任何其他操作都无法改变这个状态
+
+2、一旦状态改变就不会再改变，任何时候都可以得到这个结果
+
+**promise三种状态**
+
++ pending：等待状态，比如正在进行网络请求，或者定时器没有到时间
++ fulfilled：满足状态，当我们主动回调了resolve时，就处于该状态，并且会回调.then()
++ rejected:拒绝状态，当我们主动回调了reject，就处于状态，并且会回调.catch()
+
+**基本用法**
+
+```js
+let promise = new Promise((resolve,reject) {
+    //...some code
+    if (/*异步操作成功*/) {
+    resolve(value)
+} else {
+    reject(err)
+}              
+})
+```
+
+调用resolve函数和reject函数时带有参数，那么这些参数会被传递给回调函数
+
+1、resolve函数的作用是，将Promise对象的状态从“未完成”变为“成功”（即从pending变为fulfilled），在异步操作成功时调用，并将异步操作的结果作为参数传递出去；
+
+2、reject函数的作用是，将Promise对象的状态从“未完成”变成“失败”（即从pending变为rejected），在异步操作操作失败时调用，并将异步操作报出的错误作为参数传递出去
+
+**promise新建后会立即执行**
+
+```js
+//请打印下面代码的执行顺序
+let promise = new Promise(function(resolve, reject) {
+    console.log('Promise')
+    resolve()
+})
+
+promise.then(function() {
+    console.log('Resolved')
+})
+
+console.log('Hi！')
+
+//输出：
+//Promise
+//Hi!
+//Resolved
+```
+
+**promise.all()方法**
+
+ 该方法的作用是将多个`Promise`对象实例包装，生成并返回一个新的`Promise`实例。 
+
+```js
+Promise.all([
+    new Promise((resolve, reject) => {
+        resolve("hello")
+    }),
+    new Promise((resolve, reject) => {
+        resolve("world")
+    })  
+]).then(res => {
+    console.log(res);
+})
+
+//输出：[ 'hello', 'world' ]
+```
+
+**promise.race()方法**
+
+只要p1,p2,p3中有一个实例率先改变状态，p的状态就跟着改变。那个率先改变的Promise实例的返回值就传递给P的回调函数
+
+```js
+Promise.race([
+    new Promise((resolve,reject) => {
+        setTimeout(() => {
+           resolve("p1")
+        }, 1000);
+    }),
+    new Promise((resolve,reject) => {
+        setTimeout(() => {
+           resolve("p2")
+        }, 2000);
+    }),
+    new Promise((resolve,reject) => {
+        setTimeout(() => {
+           resolve("p3")
+        }, 3000);
+    }),
+]).then((res) => {
+    console.log(res);
+})
+
+//输出：p1
+```
+
+**promise.resolve()**
+
+有时需要将现有对象转成Promise对象，该方法就起到这个作用
+
+```js
+Promise.resolve('foo')
+//等价于
+new Promise (resolve => resolve('foo'))
+
+//所以
+Promise.resolve('foo').then(res => {
+    console.log(res);
+}) //输出foo
+new Promise (resolve => resolve('foo')).then(res => {
+    console.log(res);
+}) //输出foo
+```
+
+注：立即resolve的Promise对象是在本轮“事件循环”结束时，而不是在下一轮“事件循环”开始时
+
+```js
+//打印下方代码的输出顺序
+
+setTimeout(() => {
+    console.log("three");
+}, 0);
+
+Promise.resolve().then(() => {
+    console.log("two");
+})
+
+console.log("one");
+
+//输出：one 、two 、three
+```
+
+
+
+#### 5、Proxy代理
+
+proxy可以理解成在目标对象前架设一个“拦截”层，外界对该对象的访问都必须先通过这层拦截，因此提供了一种机制可以对外界的访问进行过滤和改写
+
+**1、创建proxy实例**
+
+`var proxy = new Proxy(target, handler)`
+
+其中，target参数表示所要拦截的目标对象，handler参数也是一个对象，用来定制拦截操作
+
+如果handler没有设置任何拦截，那就等同于直接通向原对象
+
+**2、proxy实例的方法——get（）**
+
+get方法用于拦截某个属性的读取操作
+
+```js
+        let person = {
+            name: "张三"
+        }
+        var proxy = new Proxy (person, {
+            get: function(target, key) {
+                if(property in target) {
+                    return target[key]
+                } else {
+                    throw new ReferenceError("出错啦")
+                }
+            }
+        })
+        // console.log(proxy.name)
+        // console.log(proxy.age) //报错
+```
+
+如果没有这个拦截器，访问不存在的属性只会返回undefined
+
+**3、set（）方法**
+
+set（）方法用于拦截某个属性的赋值操作
+
+```js
+//假定obj对象有一个age属性，要求该属性是一个不大于150的整数，可以使用proxy对象保证age的属性符合要求
+
+        handler = {
+            set: function(obj, key, value) {
+                if (key ==='age') { //如果属性名为age
+                    if (!Number.isInteger(value)) { //如果值不为整数
+                        throw new TypeError('the age is not a integer')
+                    }
+                    if (value > 150) { // 如果值大于150
+                        throw new RangeError('the age seems invalid')
+                    }
+                }
+                obj[key] = value
+            }
+        }
+        const proxy = new Proxy({}, handler)
+        console.log(proxy.age = 100); //100
+        console.log(proxy.age = 151); //报错 the age seems invalid
+```
+
+另外一个案例
+
+```js
+//防止对象中，属性名的第一个字符以下划线开头的属性，被外部读取，修改
+function invariant(key, action) {
+    if(key[0] === "_") {
+        throw new Error('Invalid attempt to ${action} private "${key}" property')
+    }
+}
+
+let handler = {
+    get(target, key) {
+        invariant(key, 'get'); //执行时抛出错误，不再执行下文
+        return target[key]
+    },
+    set(target, key, value) {
+        invariant(key, 'get') //执行时抛出错误，不再执行下文
+        target[key] = value
+        return true
+    }
+}
+
+const proxy = new Proxy({},handler)
+console.log(proxy._aa); //报错
+console.log(proxy._bb = 'haha') //报错
+```
+
+**4、has方法**
+
+has方法用来拦截HasProperty操作，即判断对象是否具有某个属性，这个方法会生效
+
+```js
+let handler = {
+    has (target, key) {
+        if (key[0] === '_') {
+            return false
+        }
+        return key in target
+    }
+}
+
+let target = {
+    _prop : 'foo', //不允许被in运算符发现
+    prop : 'foo'
+}
+
+let proxy = new Proxy(target, handler)
+console.log('prop' in proxy);
+console.log('_prop' in proxy);
+```
+
+**5、deleteProperty方法**
+
+该方法用于拦截delete操作，如果这个方法排抛出错误或者返回false，当前属性就无法被delete命令删除
+
+```js
+let handler = {
+    deleteProperty (target, key) {
+        invariant (key, 'delete')
+        return true
+    }
+}
+
+let target = {
+    _prop : 'foo'
+}
+let proxy = new Proxy(target, handler)
+console.log(delete proxy._prop);
+```
+
+**this问题**
+
+在proxy代理情况下，目标对象内部的this关键字会指向proxy代理
+
+```js
+const target = {
+    m: function () {
+        console.log(this === proxy);
+    }
+}
+
+const handler = {}
+const proxy = new Proxy(target, handler)
+target.m() //false
+proxy.m() //true
+```
+
+
+
+#### 6、遍历器itertator
+
+**概念**
+
+迭代器（iterator）是一种接口，为各种不同的数据结构提供统一的访问机制。任何数据结构，只要部署了iterator接口，就可以完成遍历操作（即依次处理该数据结构的所有成员）
+
+**作用**
+
+1、为各种数据结构提供统一的、简便的访问接口；
+
+2、使得数据结构的成员能够按某种次序排序
+
+3、ES6创造了一种新的遍历命令-for..of 循环，iterator接口主要供for...of消费
+
+**遍历过程**
+
+1、创建一个指针对象，指向当前数据结构的起始位置。也就是说，遍历器对象的本质就是一个指针对象
+
+2、第一次调用指针对象的next方法，可以将指针指向数据结构的第一个成员
+
+3、第二次调用指针对象的next方法，指针就指向数据结构的第二个成员
+
+4、不断调用指针对象的next方法，直到指向数据结构的结束位置
+
+每次调用next方法，就会返回当前成员的信息。具体来说，就是返回一个包含value和done两个属性的对象
+
+**案例**
+
+```js
+// 定义遍历器生成函数
+function makeIterator (array) {
+    let nextIndex = 0;
+    return {
+        next: function () {
+            return nextIndex < array.length? 
+            {value: array[nextIndex++], done: false} :
+            {value: undefined, done: true}
+        }
+    }
+} 
+let example = makeIterator(["a","b"])
+console.log(example.next()); //{value: "a", done: false}
+console.log(example.next()); //{value: "b", done: false}
+console.log(example.next()); //{value: undefined, done: true}
+```
+
+**默认Iterator接口**
+
+数据结构只要部署了iterator接口，我们就称这种数据结构为“可遍历”的
+
+ES6规定，默认的iterator接口部署在数据结构的Symbol.iterator属性，或者说，一个属性结构只要有了Symbol.iterator，就是“可遍历的”
+
+原生具备Iterator接口的数据结构如下：
+
++ Array
++ Map
++ Set
++ String
++ TypedArray
++ 函数的argument对象
++ NodeList对象
+
+**for...of循环**
+
+数据结构只要部署了Symbol.iterator属性，就视为部署了iterator接口，可以使用for...of循环
+
+适用范围：数组、Set、Map、某些类似数组的对象、generator对象、字符串
+
+#### 7、Generator函数
+
+Generator函数是es6提供的一种异步编程解决方案，语法行为与传统函数完全不同
+
+执行generator函数会返回一个**遍历器对象**，也就是说，generator函数除了是状态机，还是一个遍历器对象生成的函数，返回的遍历器对象可以一次遍历generator函数内部的每一个状态
+
+```js
+function * helloWorldGenerator () {
+    yield 'hello'
+    yield 'world'
+    return 'ending'
+}
+
+let hw = helloWorldGenerator()
+console.log(hw); //返回一个iterator对象
+```
+
+调用`helloWorldGenerator()`后，函数并不执行，而是返回一个执行内部状态的指针对象（遍历器对象）
+
+```js
+console.log(hw.next());
+console.log(hw.next());
+console.log(hw.next());
+console.log(hw.next());
+//输出 {value: "hello", done: false}
+//输出 {value: "world", done: false}
+//输出 {value: "ending", done: true}
+//输出 {value: undefined, done: true}
+
+//value属性表示当前的内部状态的值，是yield语句后面那个表达式的值，done属性是一个布尔值，表示是否遍历结束
+```
+
+使用遍历器对象的next方法，使得指针指向下一个状态，也就是说，每次调用next方法，内部指针就从函数头部或者上一次停下来的地方开始执行，直到遇到下一条yield（或return语句）。换言之，Generator函数是分段执行的，yield语句是暂停执行的标记，而next方法可以回复执行
+
+**关于yield表达式**
+
+1、遇到yield语句就暂停执行后面的操作，并将紧跟在yield后的表达式的值作为返回的对象的value的属性值
+
+2、如果没有yield语句，就一直执行到函数结束，直到遇到return语句
+
+3、如果没有遇到return语句，则返回对象的value属性值为undefined
+
+注：yield表达式只能在generator中使用
+
+**与iterator接口的关系**
+
+由于Generator函数就是遍历器生成函数，因此可以把Generator赋值给对象的Symbol.interator属性，从而使该具有iterator接口
+
+```js
+let myIterator = {}
+
+myIterator[Symbol.iterator] = function * () {
+    yield 1
+    yield 2
+    yield 3
+}
+
+console.log([...myIterator]); //[1, 2, 3]
+```
+
+前面说过对象是不具有iterator接口的，也不可被for..of遍历，但是通过上边的**Generator赋值给对象的Symbol.interator属性**，使得对象变为可遍历的
+
+**遍历generator函数**
+
+for...of, 扩展运算符，Array.from（）方法都是调用iterator接口，也就是可以用来遍历generator
+
+```js
+function * numbers () {
+    yield 1
+    yield 2
+    yield 3
+    return 4
+}
+console.log([...numbers()]);
+for(let i of numbers()) {
+    console.log(i);
+}
+console.log(Array.from(numbers()));
+
+//均能够遍历出 1,2,3
+```
+
+为什么没有4呢？因为当遇到return时，done的状态改为true，表示遍历结束
 
