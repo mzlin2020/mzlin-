@@ -1,7 +1,7 @@
 # JavaScript基础提升（二）
 
 ```js
-@title 'JavaScript高级（一）' 
+@title 'JavaScript基础提升（二）' 
 @description 'JavaScript新版本特性、高级用法与部分原理提升'
 @image 'https://mzlin2020-notes.oss-cn-shenzhen.aliyuncs.com/img/js%E9%AB%98%E7%BA%A7/%E7%BB%A7%E6%89%BF1.jpg'
 ```
@@ -3573,7 +3573,6 @@ son2.sayName(); // lily
 经过这么一番改造后，子类的显示原型被重新赋值了一个对象，并且该对象的隐式原型指向父类的显示原型。因此子类可以访问自己的原型和父类的原型（两者是分隔开的）
 
 另一方面，子类自身拥有父类自身所有的属性和方法（可自定义传参），也可以拥有自己的属性和方法。因此多个子类实例不用担心引用属性被共享的问题
-
 
 
 
