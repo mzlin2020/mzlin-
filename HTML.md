@@ -379,7 +379,7 @@ name: "minglin"
 
 当该js代码执行完毕后恢复继续解析HTML
 
-![](C:/Users/mzlin/Desktop/mzlin-notes/img/前端总结/defer与async的区别1.jpg)
+![](/img/html/script(1).jpg)
 
 特点：script阻塞了浏览器对HTML的解析，如果获取js脚本代码内容的网络请求迟迟得不到响应，或者js脚本执行时间过长，都会导致白屏，用户看不到页面内容
 
@@ -389,7 +389,7 @@ name: "minglin"
 
 一旦网络请求回来之后，如果HTML还没有解析完，浏览器会暂停解析，先让JS引擎执行代码，执行完毕之后再解析HTML
 
-、![](C:/Users/mzlin/Desktop/mzlin-notes/img/前端总结/defer与async的区别2.jpg)
+![](/img/html/script(2).jpg)
 
 特点：async是不可控的，因为执行时间不确定。如果在异步js脚本中获取某个DOM元素，有可能获取不到。如果存在多个async时，他们之间的执行顺序也不确定，完全依赖于网络传输结果，谁先到执行谁
 
@@ -399,7 +399,7 @@ name: "minglin"
 
 一旦网络请求回来，如果HTML还没解析完，浏览器也不会去解析js。等到HTML完全执行完毕，再去执行JS代码
 
-![](C:/Users/mzlin/Desktop/mzlin-notes/img/前端总结/defer与async的区别3.jpg)
+![](/img/html/script(3).jpg)
 
 如果存在多个defer的script标签，会按照他们在HTML中出现的顺序执行
 
