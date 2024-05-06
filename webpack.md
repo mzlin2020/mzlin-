@@ -1,4 +1,4 @@
-# 	webpack
+# webpack
 
 ```js
 @title 'Webpack框架' 
@@ -2197,3 +2197,196 @@ module.exports = {
 ```
 
 可以看到打包的的文件夹中出现了许多`.gz`结尾的文件
+
+
+
+# Vite
+
+### 1、vite为什么快
+
++ webpack的慢的原因：webpack通过分析js中的require语句分析出当前所有的依赖文件，通过递归的方式层层分析后，过程中对图中不同文件执行不同的loader，收集得到整个项目的依赖关系图。最后基于这个依赖关系读取到整个项目中所有的文件代码，进行打包处理后交给浏览器执行
++ vite借助现代浏览器能够读懂模块化语法的特点，将项目中的模块化引入统一以一个又一个http请求的方式响应给浏览器。避免了webpack构建过程中递归做依赖收集的耗时步骤
+
+
+
+### 2、简单实现
+
+通过创建一个本地服务，并将index.html返回给页面。分析index.html中的引用关系，层层发送请求获取对应的资源到浏览器
+
+1、创建项目
+
+```js
+npm init -y
+npm install vue
+```
+
+2、目录结构与基本代码
+
+基本目录结构
+
+![](C:\Users\mzlin\Desktop\mzlin-notes\img\其他img\vite1.jpeg)
+
+App.vue
+
+```vue
+<template>
+  <div>hello world {{ aaa }}</div>
+  <button @click="onClick">bbbbb</button>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      aaa: "aaaaaaaaaaaaaa",
+    };
+  },
+  methods: {
+    onClick() {
+      console.log("click");
+    },
+  },
+};
+</script>
+<style scoped></style>
+```
+
+index.html
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      window.process = {
+        env: {
+          NODE_ENV: "dev",
+        },
+      };
+    </script>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
+```
+
+3、创建simple-vite文件
+
+完整代码如下
+
+```js
+const http = require("http");
+const fs = require("fs");
+const path = require("path");
+const compilerSfc = require("@vue/compiler-sfc");
+const compilerDom = require("@vue/compiler-dom");
+
+// 重写import语句
+function rewriteImport(content) {
+  return content.replace(/ from ['|"]([^'"]+)['|"]/g, function (s0, s1) {
+    // 找到  from 'vue' 中的  'vue'
+    if (s1[0] !== "." && s1[1] !== "/") {
+      return ` from '/@modules/${s1}'`;
+    } else {
+      return s0;
+    }
+  });
+}
+
+const server = http.createServer((req, res) => {
+  const { url } = req;
+  const query = new URL(req.url, `http://${req.headers.host}`).searchParams;
+
+  if (url === "/") {
+    // 设置响应头的Content-Type是为了让浏览器以html的编码方式去加载这份资源
+    res.writeHead(200, {
+      "Content-Type": "text/html",
+    });
+
+    let content = fs.readFileSync("./index.html", "utf8");
+    res.end(content);
+  }
+  //   处理 js文件
+  else if (url.endsWith(".js")) {
+    const p = path.resolve(__dirname, url.slice(1));
+    res.writeHead(200, {
+      "Content-Type": "application/javascript",
+    });
+    const content = fs.readFileSync(p, "utf8");
+    // 资源中从node_modules导入的路径转为 from /@modules/xxxx
+    res.end(rewriteImport(content));
+  }
+
+  //   处理node_modules导入的资源
+  else if (url.startsWith("/@modules/")) {
+    const prefix = path.resolve(
+      __dirname,
+      "node_modules",
+      url.replace("/@modules/", "")
+    );
+    const module = require(prefix + "/package.json").module;
+    const p = path.resolve(prefix, module); // 资源包的路径
+    const content = fs.readFileSync(p, "utf8");
+    res.writeHead(200, {
+      "Content-Type": "application/javascript",
+    });
+
+    res.end(rewriteImport(content));
+  }
+
+  //   解析vue文件，使浏览器能够识别
+  else if (url.indexOf(".vue") !== -1) {
+    const p = path.resolve(__dirname, url.split("?")[0].slice(1));
+    const { descriptor } = compilerSfc.parse(fs.readFileSync(p, "utf8"));
+    if (!query.get("type")) {
+      res.writeHead(200, { "Content-Type": "application/javascript" });
+      //   步骤一：返回处理vue文件的js部分。并将App.vue中的template部分打造成新的请求，使浏览器再多一次请求
+      const content = `
+          ${rewriteImport(
+            descriptor.script.content.replace(
+              "export default",
+              "const __script = "
+            )
+          )}
+          import { render as __render } from "${url}?type=template"
+          __script.render = __render
+          export default __script
+        `;
+      res.end(content);
+    } else if (query.get("type") === "template") {
+      //步骤二：返回.vue文件的html部分
+      const template = descriptor.template;
+      const render = compilerDom.compile(template.content, {
+        mode: "module",
+      }).code;
+      res.writeHead(200, { "Content-Type": "application/javascript" });
+      res.end(rewriteImport(render));
+    }
+    // 处理css代码
+    else if (url.endsWith(".css")) {
+      const p = path.resolve(__dirname, url.slice(1));
+      const file = fs.readFileSync(p, "utf8");
+      const content = `
+          const css = "${file.replace(/\n/g, "")}"
+          let link = document.createElement('style')
+          link.setAttribute('type', 'text/css')
+          document.head.appendChild(link)
+          link.innerHTML = css
+          export default css
+        `;
+      res.writeHead(200, { "Content-Type": "application/javascript" });
+      res.end(content);
+    }
+  }
+});
+
+server.listen(5173, () => {
+  console.log("vite is running on port 5173");
+});
+```
+
