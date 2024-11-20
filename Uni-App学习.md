@@ -1,10 +1,5 @@
 # Uni-App学习
 
-```js
-@title 'Uni-App框架' 
-@description 'Uni-App框架学习笔记，汇总了一些基本要点，并结合记录了简单商城项目的demo'
-@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-```
 
 ##  一、概述
 

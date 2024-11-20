@@ -1,10 +1,5 @@
 # React（一）
 
-```js
-@title 'React.js' 
-@description 'React.js全生态学习笔记'
-@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-```
 
 react是一个构建用户界面的JavaScript库
 

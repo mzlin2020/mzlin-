@@ -1,11 +1,5 @@
 # HTML
 
-```js
-@title 'HTML' 
-@description 'HTML新特性与常用的DMO、BOM操作汇总'
-@image 'https://mzlin2020-notes.oss-cn-shenzhen.aliyuncs.com/img/html/vscode%E5%9F%BA%E7%A1%80%E6%8F%92%E4%BB%B6%E4%B8%8E%E9%85%8D%E7%BD%AE.jpg'
-```
-
 ## 1、HTML语义化标签
 
 HTML5语义化标签是指：特定的标签包含特定的内容

@@ -1,10 +1,5 @@
 # TypeScript
 
-```js
-@title 'TypeScript' 
-@description 'TypeScript知识点大全'
-@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-```
 
 ## 一、JavaScript的问题
 

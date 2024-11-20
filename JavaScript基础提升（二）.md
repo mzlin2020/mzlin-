@@ -1,12 +1,5 @@
 # JavaScript基础提升（二）
 
-```js
-@title 'JavaScript基础提升（二）' 
-@description 'JavaScript新版本特性、高级用法与部分原理提升'
-@image 'https://mzlin2020-notes.oss-cn-shenzhen.aliyuncs.com/img/js%E9%AB%98%E7%BA%A7/%E7%BB%A7%E6%89%BF1.jpg'
-```
-
-
 
 ## 一、浏览器工作原理
 

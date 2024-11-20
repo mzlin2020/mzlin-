@@ -1,13 +1,5 @@
 # JavaScript基础提升（一）
 
-```js
-@title 'JavaScript基础' 
-@description 'JavaScript应知应会基本知识点'
-@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-```
-
-
-
 ## 一、ECMAScript
 
 ### 1、数据类型及判断

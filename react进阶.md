@@ -1,11 +1,5 @@
 # 	react进阶
 
-```js
-@title 'React.js进阶' 
-@description 'React.js进阶知识点汇总，包括了常见api的原理、注意事项，并用代码实现了简单版本的React'
-@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-```
-
 
 ## 1、event对象
 

@@ -1,11 +1,5 @@
 # Next.js
 
-```js
-@title 'Next' 
-@description '基于Next14+的知识点汇总与学习'
-@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-```
-
 ## 一、概述
 
 nest14默认使用服务端渲染（SSR），这导致了许多客户端行之有效的API无法使用。如果想要使用客户端渲染，next也提供了简洁的方式进行声明，在组件中`use client`

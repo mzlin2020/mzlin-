@@ -1,10 +1,6 @@
 # vue3笔记
 
-```js
-@title 'Vue3学习' 
-@description 'Vue3及其生态基本知识点学习笔记'
-@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-```
+
 
 Vue是一套构建用户界面的渐进式框架。
 

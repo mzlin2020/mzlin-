@@ -1,13 +1,5 @@
 # JavaScript基础提升（三）
 
-```js
-@title 'JavaScript基础提升（三）' 
-@description 'JavaScript新版本特性、高级用法与部分原理提升'
-@image 'https://mzlin2020-notes.oss-cn-shenzhen.aliyuncs.com/img/js%E9%AB%98%E7%BA%A7/esmodule%E5%8E%9F%E7%90%861.jpg'
-```
-
-
-
 ## 一、class类
 
 ### 1.1 class基础

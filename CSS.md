@@ -1,11 +1,5 @@
 # CSS
 
-```js
-@title 'CSS' 
-@description 'CSS基础知识点汇总'
-@image 'https://mzlin2020-notes.oss-cn-shenzhen.aliyuncs.com/img/css/flex%E5%B8%83%E5%B1%801.jpg'
-```
-
 ## 一、基础提升
 
 ### 1、选择器优先级

@@ -2,12 +2,6 @@ Nodejs笔记
 
 ## 一、初识Node
 
-```js
-@title 'Node.js' 
-@description 'nodejs学习笔记，汇总了包括js引擎与浏览器渲染原理等知识，全面介绍了node的使用，并结合sql实现后端服务'
-@image 'https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png'
-```
-
 Node.js是一个基于V8 JavaScript引擎的JavaScript运行时环境
 
 ### 1.1 浏览器
